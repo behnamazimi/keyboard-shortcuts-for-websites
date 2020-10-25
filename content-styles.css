@@ -1,0 +1,102 @@
+.web-shortcut-fixed-modal {
+    position: fixed;
+    z-index: 99999;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #0404044a;
+}
+
+.web-shortcut-fixed-modal .web-shortcut-popup {
+    position: static;
+}
+
+.web-shortcut-popup {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    width: 320px;
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    box-sizing: border-box;
+    background-color: #f1f1f1;
+    box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, .18);
+    border-radius: 5px;
+    user-select: none;
+    border: 1px solid #eee;
+    z-index: 99999;
+}
+
+.web-shortcut-popup .label {
+    display: inline-block;
+    opacity: 0.7;
+    margin-bottom: 5px;
+}
+
+.web-shortcut-popup .steps {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    overflow: hidden;
+}
+
+.web-shortcut-popup .steps .step {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    text-align: left;
+}
+
+.web-shortcut-popup .steps .step-text {
+    display: inline-block;
+    white-space: nowrap;
+    max-width: 72px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.web-shortcut-popup .steps .step-event {
+    display: inline-block;
+    font-size: 14px;
+    opacity: 0.6;
+}
+
+.web-shortcut-popup .keys-container {
+    margin-bottom: 1rem;
+}
+
+.web-shortcut-popup .keys-container pre {
+    margin-top: 0;
+}
+
+.web-shortcut-popup .actions button {
+    font-size: 16px;
+    min-width: 50px;
+}
+
+.web-shortcut-toast {
+    position: fixed;
+    left: 16px;
+    bottom: 16px;
+    width: 200px;
+    padding: 0.5rem;
+    background-color: #059a4a;
+    color: #fff;
+    border-radius: 5px;
+    box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, .18);
+    user-select: none;
+}
+
+.web-shortcut-toast p {
+    margin-bottom: 0;
+}
