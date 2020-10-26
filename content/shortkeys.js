@@ -353,7 +353,7 @@ const shortkeys = (function () {
 
                 let curTarget = target;
                 do {
-                    const elm = findTargetElm(curTarget)
+                    const elm = utils.findTargetElm(curTarget)
                     fireEvent("click", elm)
 
                     curTarget = curTarget.nextStep;

@@ -1,30 +1,34 @@
 'use strict';
 
-let isOff = false;
-
 // init tab
-chrome.runtime.sendMessage({"action": "INIT", host: location.origin});
+sendGlobalMessage({action: globalActions.INIT, host: location.origin}, (data = {}) => {
+    const {shortcuts, options = {}} = data;
+
+    if (!options.off) {
+        shortkeys.upHostShortcuts(shortcuts)
+    }
+});
 
 shortkeys.onAdd((shortcuts) => {
     console.log(shortcuts);
-    chrome.runtime.sendMessage({"action": "ADD", shortcuts, host: location.origin});
+    sendGlobalMessage({
+        action: globalActions.NEW_SHORTCUT,
+        host: location.origin,
+        shortcuts,
+    });
 })
 
 chrome.runtime.onMessage.addListener(function (data, details) {
-
-    if (data.action === contentActions.OFF_STATUS) {
-        isOff = data.off;
-        if (isOff) {
+    if (data.action === contentActions.OPTION_UPDATE) {
+        const {options = {}, shortcuts = []} = data;
+        if (options.off) {
             shortkeys.downHostShortcuts()
         } else {
-            shortkeys.upHostShortcuts()
+            shortkeys.upHostShortcuts(shortcuts)
         }
 
-    } else if (data.action === contentActions.OPEN_STEPS_POPUP) {
+    } else if (data.action === contentActions.START_LISTENING) {
         startListening();
-
-    } else if (data.action === contentActions.HOST_SHORTCUTS) {
-        shortkeys.upHostShortcuts(data.shortcuts)
 
     } else if (data.action === contentActions.SHORTCUT_ADDED) {
         shortkeys.showSuccessToast(data.keys);
@@ -35,6 +39,10 @@ function startListening() {
     if (shortkeys.listening) return;
 
     shortkeys.listen();
+}
+
+function sendGlobalMessage(body, cb) {
+    chrome.runtime.sendMessage(body, cb);
 }
 
 // chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
