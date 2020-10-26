@@ -144,6 +144,19 @@ function loadData(key, cb) {
     });
 }
 
+function getAllData(cb) {
+    chrome.storage.sync.get(null, function (data) {
+        if (cb && typeof cb === "function" && data) {
+            const globalsOption = data.globalOptions;
+
+            const shortcuts = data;
+            delete shortcuts[getGlobalOptionsKey()]
+
+            cb({globalsOption, shortcuts})
+        }
+    });
+}
+
 function clearAllData() {
     chrome.storage.sync.clear(function () {
         console.log("store cleared");
@@ -170,7 +183,7 @@ function getHostKey() {
 }
 
 function getGlobalOptionsKey() {
-    return "issk-global-options";
+    return "globalOptions";
 }
 
 function sendGlobalMessage(body) {
