@@ -1,11 +1,10 @@
 'use strict';
 
-let listening = false;
-
 // init tab
 chrome.runtime.sendMessage({"action": "INIT", host: location.origin});
 
 webShortcut.onAdd((shortcuts) => {
+    console.log(shortcuts);
     chrome.runtime.sendMessage({"action": "ADD", shortcuts});
 })
 
@@ -15,6 +14,7 @@ chrome.runtime.onMessage.addListener(function (data, details) {
         startListening();
 
     } else if (data.action === "HOST_SHORTCUTS") {
+        console.log(data.shortcuts);
         webShortcut.upHostShortcuts(data.shortcuts)
 
     } else if (data.action === "SHORTCUT_ADDED") {
@@ -22,18 +22,10 @@ chrome.runtime.onMessage.addListener(function (data, details) {
     }
 })
 
-function handleDocClick(e) {
-    webShortcut.addStep(e);
-}
-
 function startListening() {
-    if (listening) return;
+    if (webShortcut.listening) return;
 
-    listening = true;
     webShortcut.listen();
-
-    document.addEventListener("click", handleDocClick)
-
 }
 
 // chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {

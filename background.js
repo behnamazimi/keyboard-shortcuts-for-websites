@@ -1,7 +1,3 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 'use strict';
 
 let host = null;
@@ -35,7 +31,10 @@ chrome.runtime.onMessage.addListener(function (data, details) {
             });
             break;
         case "ADD":
-            const shortcut = data.shortcuts[host][0]
+            if (!Array.isArray(data.shortcuts)) return;
+
+            // the last item is the new shortcut
+            const shortcut = data.shortcuts[data.shortcuts.length - 1]
             storeNewShortcut(shortcut)
             break;
     }

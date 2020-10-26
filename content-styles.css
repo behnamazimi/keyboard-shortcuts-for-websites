@@ -1,4 +1,6 @@
 .web-shortcut-fixed-modal {
+    all: initial;
+    font-family: inherit;
     position: fixed;
     z-index: 99999;
     left: 0;
@@ -34,13 +36,10 @@
     z-index: 99999;
 }
 
-.web-shortcut-popup .label {
-    display: inline-block;
-    opacity: 0.7;
-    margin-bottom: 5px;
-}
-
 .web-shortcut-popup .steps {
+    all: initial;
+    font-family: inherit;
+    line-height: 1.25;
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -58,6 +57,8 @@
 }
 
 .web-shortcut-popup .steps .step-text {
+    font-size: 14px;
+    font-weight: 500;
     display: inline-block;
     white-space: nowrap;
     max-width: 72px;
@@ -72,16 +73,14 @@
 }
 
 .web-shortcut-popup .keys-container {
-    margin-bottom: 1rem;
+    margin-bottom: 16px;
 }
 
 .web-shortcut-popup .keys-container pre {
     margin-top: 0;
-}
-
-.web-shortcut-popup .actions button {
-    font-size: 16px;
-    min-width: 50px;
+    font-size: 14px;
+    background: #e5e5e5;
+    padding: 5px;
 }
 
 .web-shortcut-toast {
@@ -89,7 +88,7 @@
     left: 16px;
     bottom: 16px;
     width: 200px;
-    padding: 0.5rem;
+    padding: 8px;
     background-color: #059a4a;
     color: #fff;
     border-radius: 5px;
@@ -99,4 +98,57 @@
 
 .web-shortcut-toast p {
     margin-bottom: 0;
+}
+
+.web-shortcut .web-shortcut-popup-msg {
+    all: initial;
+    font-family: inherit;
+    line-height: 1.5;
+    display: inline-block;
+    font-size: 14px;
+    border-left: 3px solid #de0606;
+    padding-left: 8px;
+    opacity: 0.8;
+    background: #e2e2e2;
+}
+
+.web-shortcut .actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+}
+
+.web-shortcut button {
+    all: initial;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+    min-width: 50px;
+    display: inline-block;
+    padding: 5px 16px;
+    line-height: 20px;
+    white-space: nowrap;
+    vertical-align: middle;
+    cursor: pointer;
+    border-radius: 6px;
+    color: #fff;
+    background-color: #059a4a;
+    user-select: none;
+    appearance: none;
+}
+
+.web-shortcut .label {
+    all: initial;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.25;
+    display: inline-block;
+    opacity: 0.7;
+    margin-bottom: 5px;
+    border-bottom: 1px solid #888;
+    padding-bottom: 2px;
+    padding-right: 16px;
+    color: #555;
 }

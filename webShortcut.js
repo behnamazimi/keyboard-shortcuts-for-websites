@@ -20,12 +20,75 @@ const webShortcut = (function () {
 
     let currentKeys = null;
 
+    let addedLinkSteps = [];
+
     function listen() {
         listeningToStep = true;
         currentLinkedTargets = null;
         headStep = null;
+        addedLinkSteps = [];
 
         showStepsPopup();
+
+        preventLinksClick();
+        document.addEventListener("click", handleDocClick)
+    }
+
+    function handleDocClick(e) {
+        if (!e || !e.target || !listeningToStep) return;
+
+        if (e.path && e.path.some(elm => elm === ui.stepsPopupElm)) return;
+
+        // handle links click
+        let linkTagIndex = (e.path || []).findIndex(elm => elm.tagName === "A");
+        if (linkTagIndex > -1) {
+            const target = e.path[linkTagIndex];
+            if (!isUniqueLinkInSteps(target.href)) {
+                ui.stepsPopupElmMsg.innerText = "Different link steps added, this may causes faulty action."
+            }
+        }
+
+        webShortcut.addStep(e.target);
+    }
+
+    function preventLinksClick() {
+        document.querySelectorAll("a")
+            .forEach((aElm) => {
+                aElm.addEventListener("click", handleLinkTagClick)
+            })
+    }
+
+    function releaseLinksClick() {
+        document.querySelectorAll("a")
+            .forEach((aElm) => {
+                aElm.removeEventListener("click", handleLinkTagClick)
+            })
+    }
+
+    function handleLinkTagClick(e) {
+        e.preventDefault();
+
+        return false
+    }
+
+    function isUniqueLinkInSteps(newLink) {
+        let isUnique = true;
+        const newURL = new URL(newLink);
+        const newLinkPath = newURL.origin + newURL.pathname;
+
+        for (let link of addedLinkSteps) {
+            const url = new URL(link);
+            const urlPath = url.origin + url.pathname;
+
+            if (newLinkPath !== urlPath) {
+                isUnique = false;
+                break;
+            }
+        }
+
+        addedLinkSteps.push(newLink)
+
+        return isUnique;
     }
 
     function upHostShortcuts(shortcuts) {
@@ -71,7 +134,6 @@ const webShortcut = (function () {
         if (!step) return null;
 
         const elmQuery = generateStepElmQuery(step)
-        console.log(elmQuery);
         return document.querySelector(elmQuery)
     }
 
@@ -86,20 +148,23 @@ const webShortcut = (function () {
 
         if (!targetElm) return step;
 
-        const validAttrs = ["id", "class", "role", "tabIndex", "type"]
+        const validAttrs = ["id", "class", "href", "role", "tabIndex", "type"]
 
-        const rawAttrs = targetElm.attributes;
-        const rawAttrsLen = targetElm.attributes.length;
+        const rawAttrs = targetElm.attributes || [];
+        const rawAttrsLen = rawAttrs.length;
 
         for (let i = 0; i < rawAttrsLen; i++) {
             const attrName = rawAttrs[i].nodeName;
             if (!validAttrs.includes(attrName)) continue;
 
-            step.attributes[attrName] = targetElm.getAttribute(attrName)
+            step.attributes[attrName] = (targetElm.getAttribute(attrName) || '').trim()
         }
 
         step.tag = targetElm.tagName.toLowerCase();
-        step.text = (targetElm.textContent || '').substr(0, 15) || step.tag;
+        step.text = (targetElm.textContent || 'Unknown')
+            .replace(/(\r\n|\n|\r)/gm, "")
+            .trim()
+            .substr(0, 20);
 
         if (!targetElm.isEqualNode(findTargetElm(step))) {
             step.parent = createStep(targetElm.parentNode)
@@ -147,12 +212,9 @@ const webShortcut = (function () {
         };
     }
 
-    function addStep(e) {
-        if (!e || !e.target || !listeningToStep) return;
+    function addStep(targetElm) {
 
-        if (e.path && e.path.some(elm => elm === ui.stepsPopupElm)) return;
-
-        const step = createStep(e.target)
+        const step = createStep(targetElm)
 
         if (!headStep) {
             currentLinkedTargets = headStep = step;
@@ -222,6 +284,10 @@ const webShortcut = (function () {
         listeningToStep = false;
         currentLinkedTargets = null;
         headStep = null;
+        addedLinkSteps = [];
+
+        releaseLinksClick();
+        document.removeEventListener("click", handleDocClick)
 
         keysDetection(false);
         if (ui.stepsPopupElm)
@@ -270,11 +336,12 @@ const webShortcut = (function () {
         const createPopupElm = () => {
             let temp = document.createElement("template");
             temp.innerHTML = `
-                <div class="web-shortcut-popup">
+                <div class="web-shortcut web-shortcut-popup">
                     <div class="steps-container">
                         <strong class="label">Action Steps:</strong>
                         <div class="steps" id="shortcut-steps"><span class="no-step">Click where you want</span></div>
                     </div>
+                    <div id="steps-popup-msg" class="web-shortcut-popup-msg"></div>
                     <div class="actions">
                         <button id="open-keys-modal">Set Shortcut Keys</button>
                     </div>
@@ -289,11 +356,11 @@ const webShortcut = (function () {
 
         ui.stepsPopupElm = createPopupElm();
         ui.stepsPopupElmStepsWrapper = ui.stepsPopupElm.querySelector("#shortcut-steps");
+        ui.stepsPopupElmMsg = ui.stepsPopupElm.querySelector("#steps-popup-msg");
 
         const stepsPopupElmKeysOpenBtn = ui.stepsPopupElm.querySelector("#open-keys-modal");
 
         const handleAddBtnClick = (e) => {
-            console.log(e);
             showKeysInputPopup()
 
             // remove button listener
@@ -309,13 +376,13 @@ const webShortcut = (function () {
         const createKeysInputElm = () => {
             let temp = document.createElement("template");
             temp.innerHTML = `
-                <div class="web-shortcut-fixed-modal">
+                <div class="web-shortcut web-shortcut-fixed-modal">
                     <div class="web-shortcut-popup">
                         <div class="keys-container">
                             <strong class="label">Shortcut for above steps:</strong>
                             <pre class="keys-input" id="keys-pre">Press keys that you want...</pre>
                         </div>
-                        <div id="shortcut-popup-msg"></div>
+                        <div id="keys-popup-msg" class="web-shortcut-popup-msg"></div>
                         <div class="actions">
                             <button id="shortcut-add-btn">Add</button>
                         </div>
@@ -338,7 +405,7 @@ const webShortcut = (function () {
         ui.keysPopupElmKeysWrapper = ui.keysPopupElm.querySelector("#keys-pre");
 
         const keysPopupElmAddBtn = ui.keysPopupElm.querySelector("#shortcut-add-btn");
-        const keysPopupElmMsg = ui.keysPopupElm.querySelector("#shortcut-popup-msg");
+        const keysPopupElmMsg = ui.keysPopupElm.querySelector("#keys-popup-msg");
 
         const handleAddBtnClick = (e) => {
             keysPopupElmMsg.innerHTML = "";
@@ -424,11 +491,12 @@ const webShortcut = (function () {
 
     function triggerOnAddEvent() {
         for (let fn of onAddListeners) {
-            fn(shortcuts);
+            fn(hostShortcuts);
         }
     }
 
     return {
+        listening: listeningToStep,
         shortcuts: hostShortcuts,
         upHostShortcuts,
         listen,
@@ -437,3 +505,16 @@ const webShortcut = (function () {
         showSuccessToast,
     }
 })();
+
+
+// document.querySelectorAll("a").forEach((a)=>{
+//
+//     a.addEventListener("click", (e)=>{
+//         e.preventDefault();
+//         tag = e.target.closest("a")
+//         console.log(tag.getAttribute("href"), tag.url, tag.href)
+//
+//         return false
+//     })
+//
+// })
