@@ -1,10 +1,12 @@
 'use strict';
 
-sendGlobalMessage({action: globalActions.POPUP_INIT}, (siteData) => {
+sendGlobalMessage({action: globalActions.POPUP_INIT}, (response) => {
+    const {siteData, options} = response || {};
+    console.log({siteData, options});
     if (siteData) {
-        const {options = {}, shortcuts = []} = siteData;
+        const {shortcuts = []} = siteData;
         // update off status
-        offOnSiteSwitch.checked = !!options.off
+        offOnSiteSwitch.checked = siteData.options && !!siteData.options.off
 
         const len = shortcuts ? shortcuts.length : 0;
         if (len) {
@@ -12,17 +14,28 @@ sendGlobalMessage({action: globalActions.POPUP_INIT}, (siteData) => {
             inSiteInfoWrapper.innerHTML = `<p><strong>${len}</strong> short-key${justOne ? "" : "s"} added to this site.</p>`
         }
     }
+
+    // global options
+    if (options) {
+        // update off status
+        offForAllSwitch.checked = !!options.off
+    }
 });
 
 let addNewBtn = document.getElementById('add-new-shortcut');
 let openOptionsBtn = document.getElementById('open-options-btn');
 let inSiteInfoWrapper = document.getElementById('in-site-info');
 let offOnSiteSwitch = document.getElementById('off-on-site');
-let offOnAllSwitch = document.getElementById('off-on-all');
+let offForAllSwitch = document.getElementById('off-for-all');
 
 offOnSiteSwitch.onchange = function (e) {
     const off = !!e.target.checked;
     sendGlobalMessage({action: globalActions.HOST_OPTION_UPDATE, options: {off}});
+}
+
+offForAllSwitch.onchange = function (e) {
+    const off = !!e.target.checked;
+    sendGlobalMessage({action: globalActions.OPTION_UPDATE, options: {off}});
 }
 
 openOptionsBtn.onclick = function () {
