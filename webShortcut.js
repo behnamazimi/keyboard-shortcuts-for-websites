@@ -134,7 +134,9 @@ const webShortcut = (function () {
         if (!step) return null;
 
         const elmQuery = generateStepElmQuery(step)
-        return document.querySelector(elmQuery)
+        const r = document.querySelector(elmQuery)
+        if (!r) console.log(elmQuery)
+        return r
     }
 
     function createStep(targetElm) {
@@ -281,22 +283,8 @@ const webShortcut = (function () {
             console.log("New shortcut added in tab local :)");
         }
 
-        listeningToStep = false;
-        currentLinkedTargets = null;
-        headStep = null;
-        addedLinkSteps = [];
-
-        releaseLinksClick();
-        document.removeEventListener("click", handleDocClick)
-
-        keysDetection(false);
-        if (ui.stepsPopupElm)
-            ui.stepsPopupElm.remove();
-
-        if (ui.keysPopupElm)
-            ui.keysPopupElm.remove();
-
         triggerOnAddEvent();
+        abortAdding();
     }
 
     const handleDetectionKeydown = e => {
@@ -336,13 +324,14 @@ const webShortcut = (function () {
         const createPopupElm = () => {
             let temp = document.createElement("template");
             temp.innerHTML = `
-                <div class="web-shortcut web-shortcut-popup">
+                <div class="issk issk-popup">
                     <div class="steps-container">
                         <strong class="label">Action Steps:</strong>
-                        <div class="steps" id="shortcut-steps"><span class="no-step">Click where you want</span></div>
+                        <div class="steps" id="shortcut-steps"><span class="no-step">Click on action to add step</span></div>
                     </div>
-                    <div id="steps-popup-msg" class="web-shortcut-popup-msg"></div>
+                    <div id="steps-popup-msg" class="issk-popup-msg"></div>
                     <div class="actions">
+                        <button id="shortcut-cancel-btn" class="cancel">Cancel</button>
                         <button id="open-keys-modal">Set Shortcut Keys</button>
                     </div>
                 </div>`;
@@ -359,8 +348,15 @@ const webShortcut = (function () {
         ui.stepsPopupElmMsg = ui.stepsPopupElm.querySelector("#steps-popup-msg");
 
         const stepsPopupElmKeysOpenBtn = ui.stepsPopupElm.querySelector("#open-keys-modal");
+        const popupElmCancelBtn = ui.stepsPopupElm.querySelector("#shortcut-cancel-btn");
 
         const handleAddBtnClick = (e) => {
+            ui.stepsPopupElmMsg.innerText = ""
+            if (!headStep) {
+                ui.stepsPopupElmMsg.innerText = "No steps added."
+                return;
+            }
+
             showKeysInputPopup()
 
             // remove button listener
@@ -368,6 +364,7 @@ const webShortcut = (function () {
         }
 
         stepsPopupElmKeysOpenBtn.addEventListener("click", handleAddBtnClick)
+        popupElmCancelBtn.addEventListener("click", abortAdding)
 
         document.body.appendChild(ui.stepsPopupElm)
     }
@@ -376,14 +373,18 @@ const webShortcut = (function () {
         const createKeysInputElm = () => {
             let temp = document.createElement("template");
             temp.innerHTML = `
-                <div class="web-shortcut web-shortcut-fixed-modal">
-                    <div class="web-shortcut-popup">
+                <div class="issk issk-fixed-modal" tabindex="1">
+                    <div class="issk-popup">
                         <div class="keys-container">
                             <strong class="label">Shortcut for above steps:</strong>
                             <pre class="keys-input" id="keys-pre">Press keys that you want...</pre>
                         </div>
-                        <div id="keys-popup-msg" class="web-shortcut-popup-msg"></div>
+                        <ul class="issk-popup-msg info">
+                            <li><code>ctrl + t</code> and <code>ctrl + w</code> could not override.</li>
+                        </ul>
+                        <div id="keys-popup-msg" class="issk-popup-msg"></div>
                         <div class="actions">
+                            <button id="shortcut-cancel-btn" class="cancel">Cancel</button>
                             <button id="shortcut-add-btn">Add</button>
                         </div>
                     </div>
@@ -405,6 +406,7 @@ const webShortcut = (function () {
         ui.keysPopupElmKeysWrapper = ui.keysPopupElm.querySelector("#keys-pre");
 
         const keysPopupElmAddBtn = ui.keysPopupElm.querySelector("#shortcut-add-btn");
+        const popupElmCancelBtn = ui.keysPopupElm.querySelector("#shortcut-cancel-btn");
         const keysPopupElmMsg = ui.keysPopupElm.querySelector("#keys-popup-msg");
 
         const handleAddBtnClick = (e) => {
@@ -421,8 +423,10 @@ const webShortcut = (function () {
         }
 
         keysPopupElmAddBtn.addEventListener("click", handleAddBtnClick)
+        popupElmCancelBtn.addEventListener("click", abortAdding)
 
         document.body.appendChild(ui.keysPopupElm)
+        ui.keysPopupElm.focus();
 
         // detect shortcuts and set it
         keysDetection((keys) => {
@@ -430,6 +434,25 @@ const webShortcut = (function () {
 
             ui.keysPopupElmKeysWrapper.innerHTML = generateKeysUID(keys);
         });
+
+    }
+
+    function abortAdding() {
+
+        listeningToStep = false;
+        currentLinkedTargets = null;
+        headStep = null;
+        addedLinkSteps = [];
+
+        releaseLinksClick();
+        document.removeEventListener("click", handleDocClick)
+
+        keysDetection(false);
+        if (ui.stepsPopupElm)
+            ui.stepsPopupElm.remove();
+
+        if (ui.keysPopupElm)
+            ui.keysPopupElm.remove();
 
     }
 
@@ -459,10 +482,10 @@ const webShortcut = (function () {
         const createToastElm = () => {
             let temp = document.createElement("template");
             temp.innerHTML = `
-                <div class="web-shortcut-toast">
-                    <div class="container">
-                        <p>New shortcut was added.</p>
-                        <pre>${keys || 'Unknown Keys'}</pre>
+                <div class="issk-toast">
+                    <div class="issk-container">
+                        <p class="issk-p">New shortcut was added.</p>
+                        <pre class="issk-pre">${keys || 'Unknown Keys'}</pre>
                     </div>
                 </div>`;
 
