@@ -1,6 +1,19 @@
 'use strict';
 
 let host = null;
+let options = {
+    off: false,
+    timeoutBetweenSteps: 300,
+    showInfoModal: false,
+}
+
+// update host on tab change
+chrome.tabs.onActivated.addListener(function (activeInfo) {
+    chrome.tabs.get(activeInfo.tabId, ({url}) => {
+        const uO = new URL(url)
+        host = uO.origin;
+    })
+});
 
 chrome.runtime.onInstalled.addListener(function () {
 
@@ -21,24 +34,43 @@ chrome.runtime.onMessage.addListener(function (data, details, sendResponse) {
     switch (data.action) {
         case "INIT":
             host = data.host;
-            getHostShortcuts((shortcuts = []) => {
-                sendMessageToCurrentTab({action: "HOST_SHORTCUTS", shortcuts});
+            loadHostData((siteData = {}) => {
+
+                const off = siteData.off || false;
+                if (off) {
+                    sendMessageToCurrentTab({action: contentActions.OFF_STATUS, off: true});
+                    return;
+                }
+
+                const shortcuts = siteData.shortcuts || [];
+                // do nothing if shortcuts is not an array
+                if (!Array.isArray(shortcuts)) return;
+
+                sendMessageToCurrentTab({action: contentActions.HOST_SHORTCUTS, shortcuts});
             });
+
             break;
         case "POPUP_INIT":
-            getHostShortcuts((shortcuts = []) => {
-                chrome.runtime.sendMessage({"action": "POPUP_INIT_RES", shortcuts});
+            loadHostData((siteData = {}) => {
+                sendGlobalMessage({action: "POPUP_INIT_RES", siteData});
             });
             break;
         case "ADD":
+            host = data.host;
             if (!Array.isArray(data.shortcuts)) return;
 
             // the last item is the new shortcut
             const shortcut = data.shortcuts[data.shortcuts.length - 1]
             storeNewShortcut(shortcut)
             break;
+        case "OFF_ON_CURRENT":
+            storeHostOption({off: data.off}, siteData => {
+                const off = !!siteData.off || false;
+                sendMessageToCurrentTab({action: contentActions.OFF_STATUS, off});
+            })
+            break;
     }
-    // chrome.runtime.sendMessage({"action": "INIT"});
+    // sendGlobalMessage({"action": "INIT"});
 })
 
 // clearAllData()
@@ -64,12 +96,22 @@ function loadHostData(cb) {
     });
 }
 
+function storeHostOption({off, timeoutBetweenSteps} = {}, cb) {
+    loadHostData((siteData = {}) => {
+
+        const updatedData = {...siteData, ...{off, timeoutBetweenSteps}}
+        storeData(updatedData, function () {
+            if (cb && typeof cb === "function") cb(updatedData)
+        });
+    });
+}
+
 function storeNewShortcut(shortcut) {
     loadHostData((siteData = {}) => {
 
         const updatedData = {...siteData, shortcuts: [...(siteData.shortcuts || []), shortcut]}
         storeData(updatedData, function () {
-            sendMessageToCurrentTab({action: "SHORTCUT_ADDED", keys: shortcut.keysUID})
+            sendMessageToCurrentTab({action: contentActions.SHORTCUT_ADDED, keys: shortcut.keysUID})
         });
     });
 }
@@ -97,6 +139,10 @@ function sendMessageToCurrentTab(body) {
 
 function getHostKey() {
     return 'shortcuts-' + host;
+}
+
+function sendGlobalMessage(body) {
+    chrome.runtime.sendMessage(body);
 }
 
 // chrome.runtime.sendMessage({greeting: "optionsPageURL"}, function (response) {

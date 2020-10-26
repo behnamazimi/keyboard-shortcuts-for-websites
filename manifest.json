@@ -11,6 +11,7 @@
   "options_page": "options/options.html",
   "background": {
     "scripts": [
+      "constant.js",
       "background.js"
     ],
     "persistent": false
@@ -33,6 +34,7 @@
         "<all_urls>"
       ],
       "js": [
+        "constant.js",
         "content/shortkeys.js",
         "content/index.js"
       ],

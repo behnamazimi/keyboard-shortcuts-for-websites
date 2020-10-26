@@ -91,11 +91,19 @@ const shortkeys = (function () {
         return isUnique;
     }
 
+    function downHostShortcuts() {
+        console.log("down listeners...");
+        window.removeEventListener("keydown", handleKeydown.bind(this))
+    }
+
     function upHostShortcuts(shortcuts) {
         if (!Array.isArray(shortcuts)) return;
 
         hostShortcuts = shortcuts;
-        prepareShortcutsListeners();
+
+        console.log("init listeners...");
+        window.removeEventListener("keydown", handleKeydown.bind(this))
+        window.addEventListener("keydown", handleKeydown.bind(this))
     }
 
     function generateStepElmQuery(step) {
@@ -259,12 +267,6 @@ const shortkeys = (function () {
                 break;
             }
         }
-    }
-
-    function prepareShortcutsListeners() {
-        console.log("listeners init...");
-        window.removeEventListener("keydown", handleKeydown.bind(this))
-        window.addEventListener("keydown", handleKeydown.bind(this))
     }
 
     function isKeysUsedBefore(keys) {
@@ -531,6 +533,7 @@ const shortkeys = (function () {
         listening: listeningToStep,
         shortcuts: hostShortcuts,
         upHostShortcuts,
+        downHostShortcuts,
         listen,
         addStep,
         onAdd,
