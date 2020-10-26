@@ -1,109 +1,20 @@
 // https://github.com/webextension-toolbox/webextension-toolbox
-const shortkeys = (function () {
 
-    let hostShortcuts = [];
+const utils = (function () {
 
-    const onAddListeners = [];
+    function generateKeysUID(keys) {
+        if (!keys) return "";
 
-    let currentLinkedTargets = null;
-    let headStep = null;
+        return Object.entries(keys).reduce((res, b) => {
+            if (!!b[1]) {
+                // remove Key from end of keys like ctrlKey, altKey, shiftKey, etc
+                let key = b[0].replace("Key", "");
 
-    let listeningToStep = false;
-
-    let ui = {
-        stepsPopupElm: null,
-        stepsPopupElmStepsWrapper: null,
-        keysPopupElmKeysWrapper: null,
-    }
-
-    let lastKeyEvent = null;
-
-    let currentKeys = null;
-
-    let addedLinkSteps = [];
-
-    function listen() {
-        listeningToStep = true;
-        currentLinkedTargets = null;
-        headStep = null;
-        addedLinkSteps = [];
-
-        showStepsPopup();
-
-        preventLinksClick();
-        document.addEventListener("click", handleDocClick)
-    }
-
-    function handleDocClick(e) {
-        if (!e || !e.target || !listeningToStep) return;
-
-        if (e.path && e.path.some(elm => elm === ui.stepsPopupElm)) return;
-
-        // handle links click
-        let linkTagIndex = (e.path || []).findIndex(elm => elm.tagName === "A");
-        if (linkTagIndex > -1) {
-            const target = e.path[linkTagIndex];
-            if (!isUniqueLinkInSteps(target.href)) {
-                ui.stepsPopupElmMsg.innerText = "Different link steps added, this may causes faulty action."
+                res.push(key === "key" ? keys[b[0]] : key)
             }
-        }
 
-        shortkeys.addStep(e.target);
-    }
-
-    function preventLinksClick() {
-        document.querySelectorAll("a")
-            .forEach((aElm) => {
-                aElm.addEventListener("click", handleLinkTagClick)
-            })
-    }
-
-    function releaseLinksClick() {
-        document.querySelectorAll("a")
-            .forEach((aElm) => {
-                aElm.removeEventListener("click", handleLinkTagClick)
-            })
-    }
-
-    function handleLinkTagClick(e) {
-        e.preventDefault();
-
-        return false
-    }
-
-    function isUniqueLinkInSteps(newLink) {
-        let isUnique = true;
-        const newURL = new URL(newLink);
-        const newLinkPath = newURL.origin + newURL.pathname;
-
-        for (let link of addedLinkSteps) {
-            const url = new URL(link);
-            const urlPath = url.origin + url.pathname;
-
-            if (newLinkPath !== urlPath) {
-                isUnique = false;
-                break;
-            }
-        }
-
-        addedLinkSteps.push(newLink)
-
-        return isUnique;
-    }
-
-    function downHostShortcuts() {
-        console.log("down listeners...");
-        window.removeEventListener("keydown", handleKeydown.bind(this))
-    }
-
-    function upHostShortcuts(shortcuts) {
-        if (!Array.isArray(shortcuts)) return;
-
-        hostShortcuts = shortcuts;
-
-        console.log("init listeners...");
-        window.removeEventListener("keydown", handleKeydown.bind(this))
-        window.addEventListener("keydown", handleKeydown.bind(this))
+            return res
+        }, []).join(" + ")
     }
 
     function generateStepElmQuery(step) {
@@ -190,6 +101,160 @@ const shortkeys = (function () {
         return step;
     }
 
+    function createNewShortcut(target, keys) {
+        return {
+            id: `sc-${new Date().getTime()}`,
+            keys,
+            keysUID: utils.generateKeysUID(keys),
+            target
+        };
+    }
+
+    return {
+        generateKeysUID,
+        generateStepElmQuery,
+        findTargetElm,
+        createStep,
+        createNewShortcut,
+    }
+})();
+
+const shortkeys = (function () {
+
+    let hostShortcuts = [];
+
+    const onAddListeners = [];
+
+    let currentLinkedTargets = null;
+    let headStep = null;
+
+    let listeningToStep = false;
+
+    let ui = {
+        stepsPopupElm: null,
+        stepsPopupElmStepsWrapper: null,
+        keysPopupElmKeysWrapper: null,
+    }
+
+    let lastKeyEvent = null;
+
+    let currentKeys = null;
+
+    let addedLinkSteps = [];
+
+    function listen() {
+        listeningToStep = true;
+        currentLinkedTargets = null;
+        headStep = null;
+        addedLinkSteps = [];
+
+        showStepsPopup();
+
+        preventLinksClick();
+        document.addEventListener("click", handleDocClick)
+    }
+
+    function abortAdding() {
+
+        listeningToStep = false;
+        currentLinkedTargets = null;
+        headStep = null;
+        addedLinkSteps = [];
+
+        releaseLinksClick();
+
+        deactivateKeysDetectionMode(handleKeysDetection);
+
+        if (ui.stepsPopupElm)
+            ui.stepsPopupElm.remove();
+
+        if (ui.keysPopupElm)
+            ui.keysPopupElm.remove();
+
+    }
+
+    function upHostShortcuts(shortcuts) {
+        if (!Array.isArray(shortcuts)) return;
+
+        hostShortcuts = shortcuts;
+
+        console.log("init listeners...");
+        window.removeEventListener("keydown", handleKeydown.bind(this))
+        window.addEventListener("keydown", handleKeydown.bind(this))
+    }
+
+    function downHostShortcuts() {
+        console.log("down listeners...");
+        window.removeEventListener("keydown", handleKeydown.bind(this))
+    }
+
+    function addStep(targetElm) {
+
+        const step = utils.createStep(targetElm)
+
+        if (!headStep) {
+            currentLinkedTargets = headStep = step;
+        } else {
+            headStep = headStep.nextStep = step;
+        }
+
+        addStepToPopup(step);
+    }
+
+    function addShortcut(keys) {
+        if (!keys) return;
+
+        if (currentLinkedTargets && listeningToStep) {
+
+            if (isKeysUsedBefore(keys)) {
+                throw new Error("Key used before")
+            }
+
+            const newShortcut = utils.createNewShortcut(currentLinkedTargets, keys);
+
+            // push to shortcuts
+            hostShortcuts.push(newShortcut);
+
+            console.log("New shortcut added in tab local :)");
+        }
+
+        triggerOnAddEvent();
+        abortAdding();
+    }
+
+    function activateKeysDetectionMode(cb) {
+        // add listeners
+        window.addEventListener("keydown", handleDetectionKeydown);
+        window.addEventListener("keyup", handleDetectionKeyup.bind(this, cb))
+    }
+
+    function deactivateKeysDetectionMode(cb) {
+        // remove listener
+        window.removeEventListener("keydown", handleDetectionKeydown)
+        window.removeEventListener("keyup", handleDetectionKeyup.bind(this, cb))
+    }
+
+    function addStepToPopup(step) {
+        if (!ui.stepsPopupElmStepsWrapper) return;
+
+        const createStepElm = (title, event) => {
+            let temp = document.createElement("template");
+            temp.innerHTML = `
+                <div class="step">
+                    <strong class="step-text">${title}</strong>
+                    <span class="step-event">${event}</span>
+                </div>`;
+
+            return temp.content.firstElementChild;
+        };
+
+        const noStepElm = ui.stepsPopupElmStepsWrapper.querySelector(".no-step");
+        if (noStepElm) noStepElm.remove();
+
+        ui.stepsPopupElmStepsWrapper.appendChild(createStepElm(step.text, step.tag))
+
+    }
+
     function fireEvent(event, element, options = {}) {
         setTimeout(() => {
             if (!element) {
@@ -207,41 +272,71 @@ const shortkeys = (function () {
         }, 200)
     }
 
-    function generateKeysUID(keys) {
-        if (!keys) return "";
+    // BUILD IN UTILS
+    function isUniqueLinkInSteps(newLink) {
+        let isUnique = true;
+        const newURL = new URL(newLink);
+        const newLinkPath = newURL.origin + newURL.pathname;
 
-        return Object.entries(keys).reduce((res, b) => {
-            if (!!b[1]) {
-                // remove Key from end of keys like ctrlKey, altKey, shiftKey, etc
-                let key = b[0].replace("Key", "");
+        for (let link of addedLinkSteps) {
+            const url = new URL(link);
+            const urlPath = url.origin + url.pathname;
 
-                res.push(key === "key" ? keys[b[0]] : key)
+            if (newLinkPath !== urlPath) {
+                isUnique = false;
+                break;
             }
-
-            return res
-        }, []).join(" + ")
-    }
-
-    function createNewShortcut(target, keys) {
-        return {
-            id: `sc-${new Date().getTime()}`,
-            keys,
-            keysUID: generateKeysUID(keys),
-            target
-        };
-    }
-
-    function addStep(targetElm) {
-
-        const step = createStep(targetElm)
-
-        if (!headStep) {
-            currentLinkedTargets = headStep = step;
-        } else {
-            headStep = headStep.nextStep = step;
         }
 
-        addStepToPopup(step);
+        addedLinkSteps.push(newLink)
+
+        return isUnique;
+    }
+
+    function isKeysUsedBefore(keys) {
+        if (!keys) return true;
+
+        const keysUID = utils.generateKeysUID(keys)
+
+        return hostShortcuts.some(item => item.keysUID === keysUID);
+    }
+
+    function preventLinksClick() {
+        document.querySelectorAll("a")
+            .forEach((aElm) => {
+                aElm.addEventListener("click", handleLinkTagClick)
+            })
+    }
+
+    function releaseLinksClick() {
+        document.querySelectorAll("a")
+            .forEach((aElm) => {
+                aElm.removeEventListener("click", handleLinkTagClick)
+            })
+    }
+
+    // EVENT HANDLERS
+    function handleDocClick(e) {
+        if (!e || !e.target || !listeningToStep) return;
+
+        if (e.path && e.path.some(elm => elm === ui.stepsPopupElm)) return;
+
+        // handle links click
+        let linkTagIndex = (e.path || []).findIndex(elm => elm.tagName === "A");
+        if (linkTagIndex > -1) {
+            const target = e.path[linkTagIndex];
+            if (!isUniqueLinkInSteps(target.href)) {
+                ui.stepsPopupElmMsg.innerText = "Different link steps added, this may causes faulty action."
+            }
+        }
+
+        shortkeys.addStep(e.target);
+    }
+
+    function handleLinkTagClick(e) {
+        e.preventDefault();
+
+        return false
     }
 
     function handleKeydown(e) {
@@ -269,41 +364,12 @@ const shortkeys = (function () {
         }
     }
 
-    function isKeysUsedBefore(keys) {
-        if (!keys) return true;
-
-        const keysUID = generateKeysUID(keys)
-
-        return hostShortcuts.some(item => item.keysUID === keysUID);
-    }
-
-    function addShortcut(keys) {
-        if (!keys) return;
-
-        if (currentLinkedTargets && listeningToStep) {
-
-            if (isKeysUsedBefore(keys)) {
-                throw new Error("Key used before")
-            }
-
-            const newShortcut = createNewShortcut(currentLinkedTargets, keys);
-
-            // push to shortcuts
-            hostShortcuts.push(newShortcut);
-
-            console.log("New shortcut added in tab local :)");
-        }
-
-        triggerOnAddEvent();
-        abortAdding();
-    }
-
-    const handleDetectionKeydown = e => {
+    function handleDetectionKeydown(e) {
         e.preventDefault();
         lastKeyEvent = e;
-    };
+    }
 
-    const handleDetectionKeyup = (cb, e) => {
+    function handleDetectionKeyup(cb, e) {
         e.preventDefault();
 
         if (!lastKeyEvent) return;
@@ -318,18 +384,24 @@ const shortkeys = (function () {
         }
     }
 
-    function keysDetection(cb) {
+    function handleKeysDetection(keys) {
+        currentKeys = keys;
 
-        if (cb && typeof cb === "function") {
-            window.addEventListener("keydown", handleDetectionKeydown);
-            window.addEventListener("keyup", handleDetectionKeyup.bind(this, cb))
-        } else {
-            // remove listener
-            window.removeEventListener("keydown", handleDetectionKeydown)
-            window.removeEventListener("keyup", handleDetectionKeyup.bind(this, cb))
+        ui.keysPopupElmKeysWrapper.innerHTML = utils.generateKeysUID(keys);
+    }
+
+    function onAdd(fn) {
+        if (fn && typeof fn === "function")
+            onAddListeners.push(fn)
+    }
+
+    function triggerOnAddEvent() {
+        for (let fn of onAddListeners) {
+            fn(hostShortcuts);
         }
     }
 
+    // UI METHODS
     function showStepsPopup() {
 
         const createPopupElm = () => {
@@ -441,50 +513,7 @@ const shortkeys = (function () {
         ui.keysPopupElm.focus();
 
         // detect shortcuts and set it
-        keysDetection((keys) => {
-            currentKeys = keys;
-
-            ui.keysPopupElmKeysWrapper.innerHTML = generateKeysUID(keys);
-        });
-
-    }
-
-    function abortAdding() {
-
-        listeningToStep = false;
-        currentLinkedTargets = null;
-        headStep = null;
-        addedLinkSteps = [];
-
-        releaseLinksClick();
-
-        keysDetection(false);
-        if (ui.stepsPopupElm)
-            ui.stepsPopupElm.remove();
-
-        if (ui.keysPopupElm)
-            ui.keysPopupElm.remove();
-
-    }
-
-    function addStepToPopup(step) {
-        if (!ui.stepsPopupElmStepsWrapper) return;
-
-        const createStepElm = (title, event) => {
-            let temp = document.createElement("template");
-            temp.innerHTML = `
-                <div class="step">
-                    <strong class="step-text">${title}</strong>
-                    <span class="step-event">${event}</span>
-                </div>`;
-
-            return temp.content.firstElementChild;
-        };
-
-        const noStepElm = ui.stepsPopupElmStepsWrapper.querySelector(".no-step");
-        if (noStepElm) noStepElm.remove();
-
-        ui.stepsPopupElmStepsWrapper.appendChild(createStepElm(step.text, step.tag))
+        activateKeysDetectionMode(handleKeysDetection);
 
     }
 
@@ -518,24 +547,14 @@ const shortkeys = (function () {
         }, 3000)
     }
 
-    function onAdd(fn) {
-        if (fn && typeof fn === "function")
-            onAddListeners.push(fn)
-    }
-
-    function triggerOnAddEvent() {
-        for (let fn of onAddListeners) {
-            fn(hostShortcuts);
-        }
-    }
 
     return {
         listening: listeningToStep,
         shortcuts: hostShortcuts,
-        upHostShortcuts,
-        downHostShortcuts,
         listen,
         addStep,
+        upHostShortcuts,
+        downHostShortcuts,
         onAdd,
         showSuccessToast,
     }
