@@ -1,0 +1,131 @@
+* {
+    box-sizing: border-box;
+    font-family: 'Roboto', Arial, sans-serif;
+}
+
+body {
+    margin: 0;
+    width: 320px;
+    overflow: hidden;
+    color: #ffffff;
+    cursor: default;
+    background: #23282e;
+    user-select: none;
+}
+
+.popup {
+    position: relative;
+    padding: 40px 16px 16px;
+}
+
+.popup .header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 40px;
+    width: 100%;
+    padding: 0 16px;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+    background: #23282e;
+    color: #bdc2c6;
+}
+
+.popup .header .options {
+    cursor: pointer;
+}
+
+.popup .header .options:hover {
+    font-weight: 500;
+}
+
+.popup .quick-options {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 16px 0;
+    border-top: 1px solid #797979;
+}
+
+.popup .quick-options > *:not(:last-child) {
+    margin-bottom: 8px;
+}
+
+#add-new-shortcut {
+    all: initial;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+    line-height: 20px;
+    white-space: nowrap;
+    vertical-align: middle;
+    cursor: pointer;
+    border-radius: 6px;
+    padding: 5px 16px;
+    color: #fff;
+    background-color: #059a4a;
+    user-select: none;
+    appearance: none;
+    width: 100%;
+    max-width: 100%;
+    display: block;
+    box-sizing: border-box;
+}
+
+.custom-switch {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.custom-switch input[type="checkbox"] {
+    display: none;
+}
+
+.custom-switch label {
+    all: initial;
+    position: relative;
+    padding-left: 40px;
+    color: #efefef;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.custom-switch input[type="checkbox"] + label::before {
+    content: " ";
+    display: block;
+    height: 16px;
+    width: 32px;
+    border-radius: 9px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 0;
+    background: #e2e2e2;
+}
+
+.custom-switch input[type="checkbox"] + label::after {
+    content: " ";
+    display: block;
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 2px;
+    transform: translateY(-50%);
+    background: #e82a2a;
+    transition: all 0.2s ease-in-out;
+}
+
+.custom-switch input[type="checkbox"]:checked + label::after {
+    transform: translateY(-50%) translateX(16px);
+    transition: all 0.2s ease-in-out;
+    background-color: #32c28a;
+}

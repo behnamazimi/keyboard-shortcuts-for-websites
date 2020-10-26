@@ -1,7 +1,7 @@
 'use strict';
 
 let addNewBtn = document.getElementById('add-new-shortcut');
-let settingsBtn = document.getElementById('open-settings');
+let openOptionsBtn = document.getElementById('open-options-btn');
 
 let color = null;
 
@@ -9,8 +9,13 @@ chrome.storage.sync.get('color', function (data) {
     color = data.color;
 });
 
-addNewBtn.onclick = function (element) {
+openOptionsBtn.onclick = function () {
+    const optionsPageURL = chrome.extension.getURL("options.html");
+    window.open(optionsPageURL);
+}
 
+addNewBtn.onclick = function (element) {
+    window.close();
     // send message to content
     sendMessageToCurrentTab({action: "OPEN_POPUP"})
 
