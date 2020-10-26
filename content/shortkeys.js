@@ -174,9 +174,10 @@ const shortkeys = (function () {
     }
 
     function upHostShortcuts(shortcuts) {
-        if (!Array.isArray(shortcuts)) return;
-
-        hostShortcuts = shortcuts;
+        // update shortcuts list
+        if (Array.isArray(shortcuts) && shortcuts.length > 0) {
+            hostShortcuts = shortcuts;
+        }
 
         console.log("init listeners...");
         window.removeEventListener("keydown", handleKeydown)

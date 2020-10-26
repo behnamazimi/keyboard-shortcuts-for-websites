@@ -1,8 +1,8 @@
 'use strict';
 
 sendGlobalMessage({action: globalActions.POPUP_INIT}, (response) => {
-    const {siteData, options} = response || {};
-    console.log({siteData, options});
+    const {siteData, globalOptions} = response || {};
+
     if (siteData) {
         const {shortcuts = []} = siteData;
         // update off status
@@ -16,9 +16,9 @@ sendGlobalMessage({action: globalActions.POPUP_INIT}, (response) => {
     }
 
     // global options
-    if (options) {
+    if (globalOptions) {
         // update off status
-        offForAllSwitch.checked = !!options.off
+        offForAllSwitch.checked = !!globalOptions.off
     }
 });
 
@@ -35,7 +35,7 @@ offOnSiteSwitch.onchange = function (e) {
 
 offForAllSwitch.onchange = function (e) {
     const off = !!e.target.checked;
-    sendGlobalMessage({action: globalActions.OPTION_UPDATE, options: {off}});
+    sendGlobalMessage({action: globalActions.GLOBAL_OPTIONS_UPDATE, options: {off}});
 }
 
 openOptionsBtn.onclick = function () {

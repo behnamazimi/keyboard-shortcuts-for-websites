@@ -1,11 +1,6 @@
 'use strict';
 
 let host = null;
-let options = {
-    off: false,
-    timeoutBetweenSteps: 300,
-    showInfoModal: false,
-}
 
 // update host on tab change
 chrome.tabs.onActivated.addListener(function (activeInfo) {
@@ -34,22 +29,19 @@ chrome.runtime.onMessage.addListener(function (data, details, sendResponse) {
     switch (data.action) {
         case globalActions.INIT:
             host = data.host;
-            loadHostData((siteData = {}) => {
-
-                const options = siteData.options;
-                const shortcuts = siteData.shortcuts || [];
-
-                sendResponse({shortcuts, options});
-            });
+            loadGlobalOptions((globalOptions) => {
+                loadHostData((siteData = {}) => {
+                    sendResponse({siteData, globalOptions});
+                })
+            })
             return true;
         case globalActions.POPUP_INIT:
             // get site data and global options
-            loadHostData((siteData = {}) => {
-                loadOptions((options) => {
-                    console.log(options);
-                    sendResponse({siteData, options});
+            loadGlobalOptions((globalOptions) => {
+                loadHostData((siteData = {}) => {
+                    sendResponse({siteData, globalOptions});
                 })
-            });
+            })
             return true;
         case globalActions.NEW_SHORTCUT:
             host = data.host;
@@ -68,8 +60,10 @@ chrome.runtime.onMessage.addListener(function (data, details, sendResponse) {
                 });
             })
             break;
-        case globalActions.OPTION_UPDATE:
-            storeOptions(data.options)
+        case globalActions.GLOBAL_OPTIONS_UPDATE:
+            storeGlobalOptions(data.options, (globalOptions) => {
+                sendMessageToAllTabs({action: contentActions.OPTION_UPDATE, globalOptions})
+            })
             break;
     }
     // sendGlobalMessage({"action": "INIT"});
@@ -98,9 +92,9 @@ function loadHostData(cb) {
     });
 }
 
-function storeOptions(options = {}, cb) {
-    loadOptions((data) => {
-        const key = getOptionsKey();
+function storeGlobalOptions(options = {}, cb) {
+    loadGlobalOptions((data) => {
+        const key = getGlobalOptionsKey();
         const updatedData = {...data, ...options}
         storeData(key, updatedData, function () {
             if (cb && typeof cb === "function") cb(updatedData)
@@ -108,8 +102,8 @@ function storeOptions(options = {}, cb) {
     });
 }
 
-function loadOptions(cb) {
-    const key = getOptionsKey();
+function loadGlobalOptions(cb) {
+    const key = getGlobalOptionsKey();
     loadData(key, (data) => {
         if (cb && typeof cb === "function") cb(data)
     });
@@ -163,12 +157,20 @@ function sendMessageToCurrentTab(body) {
     });
 }
 
+function sendMessageToAllTabs(body) {
+    chrome.tabs.query({}, function (tabs) {
+        for (let i = 0; i < tabs.length; ++i) {
+            chrome.tabs.sendMessage(tabs[i].id, body);
+        }
+    });
+}
+
 function getHostKey() {
     return 'shortcuts-' + host;
 }
 
-function getOptionsKey() {
-    return "issk-options";
+function getGlobalOptionsKey() {
+    return "issk-global-options";
 }
 
 function sendGlobalMessage(body) {

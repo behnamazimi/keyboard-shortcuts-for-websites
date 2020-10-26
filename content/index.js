@@ -2,10 +2,14 @@
 
 // init tab
 sendGlobalMessage({action: globalActions.INIT, host: location.origin}, (data = {}) => {
-    const {shortcuts, options = {}} = data;
+    const {siteData, globalOptions = {}} = data;
+    if (globalOptions.off)
+        return;
+
+    const options = siteData && siteData.options ? siteData.options : {};
 
     if (!options.off) {
-        shortkeys.upHostShortcuts(shortcuts)
+        shortkeys.upHostShortcuts(siteData.shortcuts || [])
     }
 });
 
@@ -19,20 +23,32 @@ shortkeys.onAdd((shortcuts) => {
 })
 
 chrome.runtime.onMessage.addListener(function (data, details) {
-    if (data.action === contentActions.OPTION_UPDATE) {
-        const {options = {}, shortcuts = []} = data;
-        if (options.off) {
-            shortkeys.downHostShortcuts()
-        } else {
-            shortkeys.upHostShortcuts(shortcuts)
-        }
+    switch (data.action) {
+        case globalActions.GLOBAL_OPTIONS_UPDATE:
+        case contentActions.OPTION_UPDATE:
+            const {globalOptions = {}, options = {}, shortcuts = []} = data;
 
-    } else if (data.action === contentActions.START_LISTENING) {
-        startListening();
+            if (globalOptions.off) {
+                shortkeys.downHostShortcuts()
+            } else {
+                if (options.off) {
+                    shortkeys.downHostShortcuts()
+                } else {
+                    shortkeys.upHostShortcuts(shortcuts)
+                }
+            }
+            break;
 
-    } else if (data.action === contentActions.SHORTCUT_ADDED) {
-        shortkeys.showSuccessToast(data.keys);
+        case contentActions.START_LISTENING:
+            startListening();
+            break;
+
+        case contentActions.SHORTCUT_ADDED:
+            shortkeys.showSuccessToast(data.keys);
+            break;
+
     }
+
 })
 
 function startListening() {
