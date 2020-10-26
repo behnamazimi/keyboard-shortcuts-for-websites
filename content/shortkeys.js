@@ -179,13 +179,13 @@ const shortkeys = (function () {
         hostShortcuts = shortcuts;
 
         console.log("init listeners...");
-        window.removeEventListener("keydown", handleKeydown.bind(this))
-        window.addEventListener("keydown", handleKeydown.bind(this))
+        window.removeEventListener("keydown", handleKeydown)
+        window.addEventListener("keydown", handleKeydown)
     }
 
     function downHostShortcuts() {
         console.log("down listeners...");
-        window.removeEventListener("keydown", handleKeydown.bind(this))
+        window.removeEventListener("keydown", handleKeydown)
     }
 
     function addStep(targetElm) {
