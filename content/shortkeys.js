@@ -1,5 +1,5 @@
 // https://github.com/webextension-toolbox/webextension-toolbox
-const webShortcut = (function () {
+const shortkeys = (function () {
 
     let hostShortcuts = [];
 
@@ -48,7 +48,7 @@ const webShortcut = (function () {
             }
         }
 
-        webShortcut.addStep(e.target);
+        shortkeys.addStep(e.target);
     }
 
     function preventLinksClick() {
@@ -104,39 +104,46 @@ const webShortcut = (function () {
         const parent = step.parent;
 
         let parentQ = '';
-        if (parent) parentQ = generateStepElmQuery(parent)
+        if (parent) {
+            // always use simple query as parents
+            parentQ = generateStepElmQuery(parent)[0]
+        }
 
-        let q = `${parentQ} ${tag}`;
+        let simpleQuery = `${parentQ} ${tag}`;
+        let complexQuery = `${parentQ} ${tag}`;
         if (attributes.id) {
-            q += `#${attributes.id}`;
+            simpleQuery += `#${attributes.id}`;
+            complexQuery += `#${attributes.id}`;
 
         } else {
             for (let [attr, value] of Object.entries(attributes)) {
                 switch (attr) {
-                    case "id":
-                        q += `#${value}`;
-                        break;
                     case "class":
                         const classes = value.split(" ").map(c => "." + c).join("").trim();
-                        q += `${classes}`;
+                        complexQuery += `${classes}`;
                         break;
                     default:
-                        q += `[${attr}="${value}"]`;
+                        complexQuery += `[${attr}="${value}"]`;
                         break;
                 }
             }
         }
 
-        return q.replace(/\.\./, ".").trim();
+        complexQuery = complexQuery.replace(/\.\./, ".").trim();
+
+        return [simpleQuery, complexQuery]
     }
 
     function findTargetElm(step) {
         if (!step) return null;
 
-        const elmQuery = generateStepElmQuery(step)
-        const r = document.querySelector(elmQuery)
-        if (!r) console.log(elmQuery)
-        return r
+        const [simpleQuery, complexQuery] = generateStepElmQuery(step)
+        let elm = document.querySelector(complexQuery)
+        if (!elm)
+            elm = document.querySelector(simpleQuery)
+
+        if (!elm) console.log({simpleQuery, complexQuery})
+        return elm
     }
 
     function createStep(targetElm) {
@@ -150,7 +157,7 @@ const webShortcut = (function () {
 
         if (!targetElm) return step;
 
-        const validAttrs = ["id", "class", "href", "role", "tabIndex", "type"]
+        const validAttrs = ["id", "class", "href", "role", "tabIndex", "type", "onclick"]
 
         const rawAttrs = targetElm.attributes || [];
         const rawAttrsLen = rawAttrs.length;
@@ -176,18 +183,20 @@ const webShortcut = (function () {
     }
 
     function fireEvent(event, element, options = {}) {
-        if (!element) {
-            console.log("Element not found!");
-            return
-        }
+        setTimeout(() => {
+            if (!element) {
+                console.log("Element not found!");
+                return
+            }
 
-        if (element[event] && typeof element[event] === "function") {
-            element[event]();
+            if (element[event] && typeof element[event] === "function") {
+                element[event]();
 
-        } else {
-            const ev = new Event(event, {bubbles: true, ...options})
-            element.dispatchEvent(ev)
-        }
+            } else {
+                const ev = new Event(event, {bubbles: true, ...options})
+                element.dispatchEvent(ev)
+            }
+        }, 200)
     }
 
     function generateKeysUID(keys) {
@@ -357,6 +366,7 @@ const webShortcut = (function () {
                 return;
             }
 
+            document.removeEventListener("click", handleDocClick)
             showKeysInputPopup()
 
             // remove button listener
@@ -445,7 +455,6 @@ const webShortcut = (function () {
         addedLinkSteps = [];
 
         releaseLinksClick();
-        document.removeEventListener("click", handleDocClick)
 
         keysDetection(false);
         if (ui.stepsPopupElm)

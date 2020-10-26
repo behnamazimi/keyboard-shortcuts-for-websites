@@ -3,7 +3,7 @@
 // init tab
 chrome.runtime.sendMessage({"action": "INIT", host: location.origin});
 
-webShortcut.onAdd((shortcuts) => {
+shortkeys.onAdd((shortcuts) => {
     console.log(shortcuts);
     chrome.runtime.sendMessage({"action": "ADD", shortcuts});
 })
@@ -15,17 +15,17 @@ chrome.runtime.onMessage.addListener(function (data, details) {
 
     } else if (data.action === "HOST_SHORTCUTS") {
         console.log(data.shortcuts);
-        webShortcut.upHostShortcuts(data.shortcuts)
+        shortkeys.upHostShortcuts(data.shortcuts)
 
     } else if (data.action === "SHORTCUT_ADDED") {
-        webShortcut.showSuccessToast(data.keys);
+        shortkeys.showSuccessToast(data.keys);
     }
 })
 
 function startListening() {
-    if (webShortcut.listening) return;
+    if (shortkeys.listening) return;
 
-    webShortcut.listen();
+    shortkeys.listen();
 }
 
 // chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
@@ -45,11 +45,11 @@ function startListening() {
 //
 // })
 
-// webShortcut.init(window.location.origin);
-// webShortcut.listen();
+// shortkeys.init(window.location.origin);
+// shortkeys.listen();
 //
 // document.addEventListener("click", (e) => {
-//     webShortcut.addStep(e)
+//     shortkeys.addStep(e)
 // })
 
 // chrome.runtime.sendMessage({greeting: "hello"}, function (response) {

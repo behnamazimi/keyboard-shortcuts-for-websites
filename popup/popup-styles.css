@@ -56,6 +56,16 @@ body {
     margin-bottom: 8px;
 }
 
+.popup .in-site-info p {
+    all: initial;
+    font-family: inherit;
+    line-height: inherit;
+    color: inherit;
+    display: block;
+    font-size: 14px;
+    margin: 8px 0;
+}
+
 #add-new-shortcut {
     all: initial;
     font-family: inherit;

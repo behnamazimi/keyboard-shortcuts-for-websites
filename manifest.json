@@ -8,7 +8,7 @@
     "declarativeContent",
     "storage"
   ],
-  "options_page": "options.html",
+  "options_page": "options/options.html",
   "background": {
     "scripts": [
       "background.js"
@@ -19,12 +19,12 @@
     "matches": [
       "<all_urls>"
     ],
-    "default_popup": "popup.html",
+    "default_popup": "popup/popup.html",
     "default_icon": {
-      "16": "images/16x16.png",
-      "32": "images/32x32.png",
-      "48": "images/48x48.png",
-      "128": "images/128x128.png"
+      "16": "icons/16x16.png",
+      "32": "icons/32x32.png",
+      "48": "icons/48x48.png",
+      "128": "icons/128x128.png"
     }
   },
   "content_scripts": [
@@ -33,19 +33,19 @@
         "<all_urls>"
       ],
       "js": [
-        "webShortcut.js",
-        "content.js"
+        "content/shortkeys.js",
+        "content/index.js"
       ],
       "css": [
-        "content-styles.css"
+        "content/content-styles.css"
       ]
     }
   ],
   "icons": {
-    "16": "images/16x16.png",
-    "32": "images/32x32.png",
-    "48": "images/48x48.png",
-    "128": "images/128x128.png"
+    "16": "icons/16x16.png",
+    "32": "icons/32x32.png",
+    "48": "icons/48x48.png",
+    "128": "icons/128x128.png"
   },
   "manifest_version": 2,
   "commands": {

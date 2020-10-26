@@ -1,8 +1,6 @@
 'use strict';
 
 let host = null;
-let shortcuts = null;
-const optionsPageURL = chrome.extension.getURL("options.html");
 
 chrome.runtime.onInstalled.addListener(function () {
 
@@ -18,16 +16,18 @@ chrome.commands.onCommand.addListener(function (command) {
     console.log('Command:', command);
 });
 
-chrome.runtime.onMessage.addListener(function (data, details) {
+chrome.runtime.onMessage.addListener(function (data, details, sendResponse) {
 
     switch (data.action) {
         case "INIT":
             host = data.host;
-            loadHostShortcuts((shortcuts = []) => {
-                // do nothing if shortcuts is not an array
-                if (!Array.isArray(shortcuts)) return;
-
-                sendMessageToCurrentTab({action: "HOST_SHORTCUTS", shortcuts})
+            getHostShortcuts((shortcuts = []) => {
+                sendMessageToCurrentTab({action: "HOST_SHORTCUTS", shortcuts});
+            });
+            break;
+        case "POPUP_INIT":
+            getHostShortcuts((shortcuts = []) => {
+                chrome.runtime.sendMessage({"action": "POPUP_INIT_RES", shortcuts});
             });
             break;
         case "ADD":
@@ -41,7 +41,19 @@ chrome.runtime.onMessage.addListener(function (data, details) {
     // chrome.runtime.sendMessage({"action": "INIT"});
 })
 
-function loadHostShortcuts(cb) {
+// clearAllData()
+
+function getHostShortcuts(cb) {
+    loadHostData((siteData = {}) => {
+        const shortcuts = siteData.shortcuts || [];
+        // do nothing if shortcuts is not an array
+        if (!Array.isArray(shortcuts)) return;
+
+        if (cb && typeof cb === "function") cb(shortcuts)
+    });
+}
+
+function loadHostData(cb) {
     if (!host) return;
 
     const key = getHostKey();
@@ -53,12 +65,26 @@ function loadHostShortcuts(cb) {
 }
 
 function storeNewShortcut(shortcut) {
-    loadHostShortcuts((allShortcuts = []) => {
-        const key = getHostKey();
+    loadHostData((siteData = {}) => {
 
-        chrome.storage.sync.set({[key]: [...allShortcuts, shortcut]}, function () {
+        const updatedData = {...siteData, shortcuts: [...(siteData.shortcuts || []), shortcut]}
+        storeData(updatedData, function () {
             sendMessageToCurrentTab({action: "SHORTCUT_ADDED", keys: shortcut.keysUID})
         });
+    });
+}
+
+function storeData(newData, cb) {
+    const key = getHostKey();
+
+    chrome.storage.sync.set({[key]: newData}, function () {
+        if (cb && typeof cb === "function") cb(newData)
+    });
+}
+
+function clearAllData() {
+    chrome.storage.sync.clear(function () {
+        console.log("store cleared");
     });
 }
 

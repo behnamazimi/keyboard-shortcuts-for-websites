@@ -1,18 +1,16 @@
 'use strict';
 
+chrome.runtime.sendMessage({"action": "POPUP_INIT"});
+
 let addNewBtn = document.getElementById('add-new-shortcut');
 let openOptionsBtn = document.getElementById('open-options-btn');
-
-let color = null;
-
-chrome.storage.sync.get('color', function (data) {
-    color = data.color;
-});
+let inSiteInfoWrapper = document.getElementById('in-site-info');
 
 openOptionsBtn.onclick = function () {
     const optionsPageURL = chrome.extension.getURL("options.html");
     window.open(optionsPageURL);
 }
+
 
 addNewBtn.onclick = function (element) {
     window.close();
@@ -27,6 +25,15 @@ addNewBtn.onclick = function (element) {
     // });
 };
 
+chrome.runtime.onMessage.addListener(function (data, sender, sendResponse) {
+    if (data.action === "POPUP_INIT_RES") {
+        const len = data.shortcuts ? data.shortcuts.length : 0;
+        if (len) {
+            const justOne = len === 1;
+            inSiteInfoWrapper.innerHTML = `<p><strong>${len}</strong> short-key${justOne ? "" : "s"} added to this site.</p>`
+        }
+    }
+});
 
 function sendMessageToCurrentTab(body) {
     chrome.tabs.query({currentWindow: true, active: true}, (tabs) => {
