@@ -39,7 +39,7 @@ offForAllSwitch.onchange = function (e) {
 }
 
 openOptionsBtn.onclick = function () {
-    const optionsPageURL = chrome.extension.getURL("options.html");
+    const optionsPageURL = chrome.extension.getURL("options/options.html");
     window.open(optionsPageURL);
 }
 

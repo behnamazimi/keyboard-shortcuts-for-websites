@@ -30,11 +30,18 @@ const utils = (function () {
 
         let simpleQuery = `${parentQ} ${tag}`;
         let complexQuery = `${parentQ} ${tag}`;
+
         if (attributes.id) {
             simpleQuery += `#${attributes.id}`;
             complexQuery += `#${attributes.id}`;
 
         } else {
+            // add nth-child if index is bigger than 0
+            if (tag && !!step.index) {
+                simpleQuery += `:nth-child(${step.index})`
+                complexQuery += `:nth-child(${step.index})`
+            }
+
             for (let [attr, value] of Object.entries(attributes)) {
                 switch (attr) {
                     case "class":
@@ -48,9 +55,18 @@ const utils = (function () {
             }
         }
 
+        simpleQuery = simpleQuery.replace(/\.\./, ".").trim();
         complexQuery = complexQuery.replace(/\.\./, ".").trim();
 
         return [simpleQuery, complexQuery]
+    }
+
+    function findIndexAsChild(child) {
+        if (!child || !child.parentNode) return null;
+
+        const parent = child.parentNode;
+        const index = Array.prototype.indexOf.call(parent.children, child);
+        return index + 1;
     }
 
     function findTargetElm(step) {
@@ -61,7 +77,7 @@ const utils = (function () {
         if (!elm)
             elm = document.querySelector(simpleQuery)
 
-        if (!elm) console.log({simpleQuery, complexQuery})
+        // if (!elm) console.log({simpleQuery, complexQuery})
         return elm
     }
 
@@ -74,7 +90,7 @@ const utils = (function () {
             parent: null
         }
 
-        if (!targetElm) return step;
+        if (!targetElm || targetElm.nodeName === "#document") return step;
 
         const validAttrs = ["id", "class", "href", "role", "tabIndex", "type", "onclick"]
 
@@ -93,6 +109,8 @@ const utils = (function () {
             .replace(/(\r\n|\n|\r)/gm, "")
             .trim()
             .substr(0, 20);
+
+        step.index = findIndexAsChild(targetElm)
 
         if (!targetElm.isEqualNode(findTargetElm(step))) {
             step.parent = createStep(targetElm.parentNode)
@@ -198,7 +216,8 @@ const shortkeys = (function () {
         } else {
             headStep = headStep.nextStep = step;
         }
-
+        console.log(step);
+        console.log(utils.generateStepElmQuery(step));
         addStepToPopup(step);
     }
 
