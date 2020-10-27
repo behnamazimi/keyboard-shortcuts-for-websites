@@ -304,6 +304,17 @@ const shortkeys = (function () {
         }, 200)
     }
 
+    function callNextStep(current) {
+        if (!current || current.id === void 0) return;
+
+        const elm = utils.findTargetElm(current);
+        fireEvent("click", elm);
+
+        setTimeout(() => {
+            callNextStep(current.nextStep)
+        }, current.wait || 500)
+    }
+
     // BUILD IN UTILS
     function isUniqueLinkInSteps(newLink) {
         let isUnique = true;
@@ -371,6 +382,7 @@ const shortkeys = (function () {
     }
 
     function handleKeydown(e) {
+
         for (let {keys, target} of hostShortcuts) {
 
             if (
@@ -382,13 +394,16 @@ const shortkeys = (function () {
 
                 e.preventDefault();
 
-                let curTarget = target;
-                do {
-                    const elm = utils.findTargetElm(curTarget)
-                    fireEvent("click", elm)
+                // let curTarget = target;
+                callNextStep(target)
 
-                    curTarget = curTarget.nextStep;
-                } while (curTarget && curTarget.id);
+
+                // do {
+                //     const elm = utils.findTargetElm(curTarget)
+                //     fireEvent("click", elm)
+                //
+                //     curTarget = curTarget.nextStep;
+                // } while (curTarget && curTarget.id);
 
                 break;
             }
