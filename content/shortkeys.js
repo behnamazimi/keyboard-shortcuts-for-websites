@@ -329,7 +329,6 @@ const shortkeys = (function () {
         if (!keys) return true;
 
         const keysUID = utils.generateKeysUID(keys)
-
         return hostShortcuts.some(item => item.keysUID === keysUID);
     }
 
@@ -544,10 +543,15 @@ const shortkeys = (function () {
         const popupElmCancelBtn = ui.keysPopupElm.querySelector("#shortcut-cancel-btn");
         const keysPopupElmMsg = ui.keysPopupElm.querySelector("#keys-popup-msg");
 
-        const handleAddBtnClick = (e) => {
+        const handleAddBtnClick = () => {
             keysPopupElmMsg.innerHTML = "";
             if (!currentKeys) {
                 keysPopupElmMsg.innerHTML = "Determine the shortcut first."
+                return;
+            }
+
+            if (isKeysUsedBefore(currentKeys)) {
+                keysPopupElmMsg.innerHTML = "This shortkey used before."
                 return;
             }
 

@@ -114,7 +114,7 @@
 }
 
 .issk-popup .keys-container {
-    margin-bottom: 0;
+    margin-bottom: 8px;
 }
 
 .issk-popup .keys-container pre {
@@ -172,7 +172,7 @@
     border-left: 3px solid #de0606;
     padding-left: 8px;
     opacity: 0.8;
-    background: #e2e2e2;
+    background: #eaeaea;
 }
 
 .issk .issk-popup-msg.info {
