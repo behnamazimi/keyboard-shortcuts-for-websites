@@ -180,6 +180,11 @@
     list-style: none;
 }
 
+.issk .issk-popup-msg code {
+    color: #000;
+    font-weight: bold;
+}
+
 .issk .actions {
     display: flex;
     justify-content: flex-end;
