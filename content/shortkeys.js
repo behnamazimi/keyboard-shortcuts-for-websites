@@ -77,7 +77,7 @@ const utils = (function () {
         if (!elm)
             elm = document.querySelector(simpleQuery)
 
-        // if (!elm) console.log({simpleQuery, complexQuery})
+        if (!elm) console.log({simpleQuery, complexQuery})
         return elm
     }
 
@@ -216,8 +216,7 @@ const shortkeys = (function () {
         } else {
             headStep = headStep.nextStep = step;
         }
-        console.log(step);
-        console.log(utils.generateStepElmQuery(step));
+
         addStepToPopup(step);
     }
 
