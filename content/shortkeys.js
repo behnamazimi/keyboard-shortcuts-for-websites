@@ -65,8 +65,7 @@ const utils = (function () {
         if (!child || !child.parentNode) return null;
 
         const parent = child.parentNode;
-        const index = Array.prototype.indexOf.call(parent.children, child);
-        return index + 1;
+        return Array.prototype.indexOf.call(parent.children, child) + 1;
     }
 
     function findTargetElm(step) {
@@ -83,7 +82,6 @@ const utils = (function () {
 
     function createStep(targetElm) {
         const step = {
-            uid: new Date().getTime(),
             attributes: {},
             tag: null,
             text: null,
@@ -214,8 +212,10 @@ const shortkeys = (function () {
         const step = utils.createStep(targetElm)
 
         if (!headStep) {
+            step.id = 1;
             currentLinkedTargets = headStep = step;
         } else {
+            step.id = headStep.id + 1
             headStep = headStep.nextStep = step;
         }
 
@@ -258,12 +258,12 @@ const shortkeys = (function () {
     function addStepToPopup(step) {
         if (!ui.stepsPopupElmStepsWrapper) return;
 
-        const createStepElm = (title, event) => {
+        const createStepElm = (id, title, sub) => {
             let temp = document.createElement("template");
             temp.innerHTML = `
                 <div class="step">
-                    <strong class="step-text">${title}</strong>
-                    <span class="step-event">${event}</span>
+                    <strong class="step-text" contenteditable="true" id="step-${id}">${title}</strong>
+                    <span class="step-sub">${sub}</span>
                 </div>`;
 
             return temp.content.firstElementChild;
@@ -272,7 +272,18 @@ const shortkeys = (function () {
         const noStepElm = ui.stepsPopupElmStepsWrapper.querySelector(".no-step");
         if (noStepElm) noStepElm.remove();
 
-        ui.stepsPopupElmStepsWrapper.appendChild(createStepElm(step.text, step.tag))
+        const stepElm = createStepElm(step.id, step.text, `step ${step.id}`);
+        const stepTitleElm = stepElm.querySelector(`#step-${step.id}`);
+
+        if (stepTitleElm) {
+            stepTitleElm.addEventListener("input", e => {
+                step.text = e.target.textContent
+                    .replace(/[^a-zA-Z -_.]/g, "")
+                    .substr(0, 15)
+            })
+        }
+
+        ui.stepsPopupElmStepsWrapper.appendChild(stepElm)
 
     }
 
@@ -378,7 +389,7 @@ const shortkeys = (function () {
                     fireEvent("click", elm)
 
                     curTarget = curTarget.nextStep;
-                } while (curTarget && curTarget.uid);
+                } while (curTarget && curTarget.id);
 
                 break;
             }
@@ -463,7 +474,7 @@ const shortkeys = (function () {
         const stepsPopupElmTitleInput = ui.stepsPopupElm.querySelector("#shortkey-title-input");
 
         const handleNameInputChange = e => {
-            currentShortkeyTitle = e.target.value.replace(/\W/g, "")
+            currentShortkeyTitle = e.target.value.replace(/[^a-zA-Z -_.]/g, "")
         }
 
         const handleAddBtnClick = (e) => {

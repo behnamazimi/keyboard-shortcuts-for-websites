@@ -92,15 +92,25 @@
     font-weight: 500;
     display: inline-block;
     white-space: nowrap;
-    max-width: 72px;
+    max-width: 120px;
     text-overflow: ellipsis;
     overflow: hidden;
+    padding: 0.1rem;
+    border: 1px solid transparent;
 }
 
-.issk-popup .steps .step-event {
+.issk-popup .steps .step-text:focus {
+    border-color: #ddd;
+    outline: none;
+    background-color: #fff;
+    border-radius: 3px;
+}
+
+.issk-popup .steps .step-sub {
     display: inline-block;
     font-size: 14px;
     opacity: 0.6;
+    padding-left: 0.1rem;
 }
 
 .issk-popup .keys-container {
