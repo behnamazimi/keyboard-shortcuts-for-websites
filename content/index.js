@@ -9,6 +9,7 @@ sendGlobalMessage({action: globalActions.INIT, host: location.origin}, (data = {
     const options = siteData && siteData.options ? siteData.options : {};
 
     if (!options.off) {
+        console.log(siteData.shortcuts);
         shortkeys.upHostShortcuts(siteData.shortcuts || [])
     }
 });

@@ -119,9 +119,10 @@ const utils = (function () {
         return step;
     }
 
-    function createNewShortcut(target, keys) {
+    function createNewShortcut(target, keys, title) {
         return {
             id: `sc-${new Date().getTime()}`,
+            title,
             keys,
             keysUID: utils.generateKeysUID(keys),
             target
@@ -157,6 +158,7 @@ const shortkeys = (function () {
     let lastKeyEvent = null;
 
     let currentKeys = null;
+    let currentShortkeyTitle = '';
 
     let addedLinkSteps = [];
 
@@ -229,7 +231,7 @@ const shortkeys = (function () {
                 throw new Error("Key used before")
             }
 
-            const newShortcut = utils.createNewShortcut(currentLinkedTargets, keys);
+            const newShortcut = utils.createNewShortcut(currentLinkedTargets, keys, currentShortkeyTitle);
 
             // push to shortcuts
             hostShortcuts.push(newShortcut);
@@ -423,13 +425,19 @@ const shortkeys = (function () {
     // UI METHODS
     function showStepsPopup() {
 
-        const createPopupElm = () => {
+        const createPopupElm = (shortkeyDefaultTitle = '') => {
             let temp = document.createElement("template");
             temp.innerHTML = `
                 <div class="issk issk-popup">
-                    <div class="steps-container">
+                    <div class="issk-container">
                         <strong class="label">Action Steps:</strong>
                         <div class="steps" id="shortcut-steps"><span class="no-step">Click on action to add step</span></div>
+                    </div>
+                    <div class="issk-container">
+                        <strong class="label">Shortkey Title:</strong>
+                        <input type="text" id="shortkey-title-input"
+                            value="${shortkeyDefaultTitle}" maxlength="20"
+                            placeholder="Shortcut Name *">
                     </div>
                     <div id="steps-popup-msg" class="issk-popup-msg"></div>
                     <div class="actions">
@@ -445,17 +453,28 @@ const shortkeys = (function () {
             ui.stepsPopupElm.remove();
         }
 
-        ui.stepsPopupElm = createPopupElm();
+        currentShortkeyTitle = `Shortcut ${hostShortcuts.length + 1}`;
+        ui.stepsPopupElm = createPopupElm(currentShortkeyTitle);
         ui.stepsPopupElmStepsWrapper = ui.stepsPopupElm.querySelector("#shortcut-steps");
         ui.stepsPopupElmMsg = ui.stepsPopupElm.querySelector("#steps-popup-msg");
 
         const stepsPopupElmKeysOpenBtn = ui.stepsPopupElm.querySelector("#open-keys-modal");
-        const popupElmCancelBtn = ui.stepsPopupElm.querySelector("#shortcut-cancel-btn");
+        const stepsPopupElmCancelBtn = ui.stepsPopupElm.querySelector("#shortcut-cancel-btn");
+        const stepsPopupElmTitleInput = ui.stepsPopupElm.querySelector("#shortkey-title-input");
+
+        const handleNameInputChange = e => {
+            currentShortkeyTitle = e.target.value.replace(/\W/g, "")
+        }
 
         const handleAddBtnClick = (e) => {
             ui.stepsPopupElmMsg.innerText = ""
             if (!headStep) {
                 ui.stepsPopupElmMsg.innerText = "No steps added."
+                return;
+            }
+
+            if (!currentShortkeyTitle) {
+                ui.stepsPopupElmMsg.innerText = "Enter shortkey title."
                 return;
             }
 
@@ -467,7 +486,9 @@ const shortkeys = (function () {
         }
 
         stepsPopupElmKeysOpenBtn.addEventListener("click", handleAddBtnClick)
-        popupElmCancelBtn.addEventListener("click", abortAdding)
+        stepsPopupElmCancelBtn.addEventListener("click", abortAdding)
+
+        stepsPopupElmTitleInput.addEventListener("change", handleNameInputChange)
 
         document.body.appendChild(ui.stepsPopupElm)
     }
@@ -483,7 +504,7 @@ const shortkeys = (function () {
                             <pre class="keys-input" id="keys-pre">Press keys that you want...</pre>
                         </div>
                         <ul class="issk-popup-msg info">
-                            <li><code>ctrl + t</code> and <code>ctrl + w</code> could not override.</li>
+                            <li><code>ctrl + t</code> and <code>ctrl + w</code> are reserved by your browser.</li>
                         </ul>
                         <div id="keys-popup-msg" class="issk-popup-msg"></div>
                         <div class="actions">
