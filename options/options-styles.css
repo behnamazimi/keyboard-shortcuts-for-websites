@@ -1,0 +1,208 @@
+* {
+    box-sizing: border-box;
+    font-family: 'Roboto', Arial, sans-serif !important;
+}
+
+body {
+    margin: 0 auto;
+    max-width: 768px;
+    font-size: 16px;
+    color: #ffffff;
+    cursor: default;
+    background: #122d4e;
+    user-select: none;
+}
+
+
+#options-page {
+    padding: 2rem 1rem;
+}
+
+#options-page .brand {
+    text-align: center;
+    font-weight: bold;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.4);
+    margin-bottom: 1rem;
+}
+
+#options-page .section {
+    position: relative;
+    padding-left: 20px;
+    padding-bottom: 4px;
+    margin-bottom: 2rem;
+}
+
+#options-page .section:last-child {
+    border-bottom: none;
+}
+
+#options-page .section:before {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    left: 10px;
+    top: 25px;
+    height: calc(100% - 25px);
+    background: transparent;
+    border-left: 2px solid #ffffff2e;
+}
+
+#options-page .section-title {
+    margin-bottom: 1rem;
+    margin-left: -20px;
+    font-weight: bold;
+}
+
+#options-page .section-item {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+
+#options-page .section-item small {
+    font-size: 14px;
+    opacity: 0.5;
+    font-weight: lighter;
+    display: inline-block;
+    margin-bottom: 0.25rem;
+}
+
+#options-page label {
+    margin-bottom: 0.4rem;
+    display: inline-block;
+}
+
+#options-page input[type="number"],
+#options-page input[type="text"] {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.5rem;
+    background: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    max-width: 150px;
+}
+
+#options-page .import-export-actions {
+    margin-top: 0.5rem;
+}
+
+#options-page .import-export-actions .import-input {
+    display: inline-block;
+}
+
+#options-page .waiting-input {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.5rem;
+}
+
+#options-page .confirm-checkbox {
+    display: inline-flex;
+    align-items: center;
+    margin: 0.5rem 0;
+}
+
+#options-page .confirm-checkbox input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+}
+
+#options-page .confirm-checkbox label {
+    opacity: 0.5;
+    margin-bottom: 0;
+    margin-left: 0.5rem;
+}
+
+button {
+    all: initial;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+    min-width: 50px;
+    display: inline-block;
+    padding: 5px 16px;
+    line-height: 20px;
+    white-space: nowrap;
+    vertical-align: middle;
+    border-radius: 6px;
+    color: #fff;
+    background-color: #059a4a;
+    user-select: none;
+    appearance: none;
+    transition: all 0.2s;
+}
+
+button:not(:disabled):hover {
+    cursor: pointer;
+    background-color: #048440;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+button.cancel {
+    background: transparent;
+    color: #222;
+    margin-right: 8px;
+}
+
+button.cancel:hover {
+    background-color: #0000000f;
+}
+
+.custom-switch {
+    display: inline-block;
+}
+
+.custom-switch input[type="checkbox"] {
+    display: none;
+}
+
+.custom-switch label {
+    all: initial;
+    display: inline-block;
+    position: relative;
+    padding-left: 50px;
+    margin-bottom: 0.25rem;
+    color: #efefef;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.custom-switch input[type="checkbox"] + label::before {
+    content: " ";
+    display: block;
+    height: 20px;
+    width: 42px;
+    border-radius: 9px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 0;
+    background: #e2e2e2;
+}
+
+.custom-switch input[type="checkbox"] + label::after {
+    content: " ";
+    display: block;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 2px;
+    transform: translateY(-50%);
+    background: #e82a2a;
+    transition: all 0.2s ease-in-out;
+}
+
+.custom-switch input[type="checkbox"]:checked + label::after {
+    transform: translateY(-50%) translateX(22px);
+    transition: all 0.2s ease-in-out;
+    background-color: #32c28a;
+}

@@ -1,21 +1,87 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <style>
-      button {
-        height: 30px;
-        width: 30px;
-        outline: none;
-        margin: 10px;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="buttonDiv">
+<html lang="en">
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link rel="stylesheet" href="./options-styles.css">
+    <title>Options - In-site Shortkeys</title>
+</head>
+<body>
+<div id="options-page">
+    <div class="brand">In-site Shortkeys Options</div>
+    <div class="content">
+        <div class="section">
+            <div class="section-title">Global Options</div>
+            <div class="section-item">
+                <div class="custom-switch">
+                    <input type="checkbox" id="off-for-all">
+                    <label for="off-for-all"><span>Turn off in-site shortkeys</span></label>
+                </div>
+                <small>You can turn the extension temporarily</small>
+            </div>
+
+            <div class="section-item">
+                <div class="custom-switch">
+                    <input type="checkbox" id="allow-in-inputs">
+                    <label for="allow-in-inputs"><span>Allow shortkeys even when an input focused</span></label>
+                </div>
+                <small>To disable shortkeys when an input focused switch this option.</small>
+                <small>Notice that sometimes focusing in an input may cause inactivity in your shortkeys.</small>
+            </div>
+
+            <div class="section-item">
+                <div class="waiting-input">
+                    <label for="step-waiting-time">Default waiting time (in second) between steps execution</label>
+                    <input type="number" min="0" max="10" step="0.1" id="step-waiting-time" value="0">
+                </div>
+                <small>Time to wait before triggering the next step (0 is default).</small>
+                <small>You can enter floating numbers too. e.g 0.5 means half a second.</small>
+            </div>
+            <div class="section-item">
+                <button>Save Options</button>
+            </div>
+        </div>
+        <div class="section">
+            <div class="section-title">Export / Import Data</div>
+            <div class="section-item">
+                <small>
+                    You can export the entire data of your shortkeys and scripts and import it where and when you want.
+                </small>
+                <div class="import-export-actions">
+                    <button>Export Now</button>
+                    or
+                    <div class="import-input">
+                        <input type="file" hidden>
+                        <button>Import Data</button>
+                    </div>
+                </div>
+                <small id="export-import-msg"></small>
+            </div>
+        </div>
+        <div class="section">
+            <div class="section-title">Clear All Data and Keys</div>
+            <div class="section-item">
+                <small>Notice that if the data is deleted, it will not be recovered in any way.</small>
+                <small>This process will needs your confirmation.</small>
+                <div class="confirm-checkbox">
+                    <input type="checkbox" id="approve-data-remove">
+                    <label for="approve-data-remove">I confirm the deletion of all data</label>
+                </div>
+                <div>
+                    <button disabled>Clear All</button>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <div class="section-title">Statistics</div>
+            <div class="section-item">
+                <small><strong>125</strong> shortkeys have been added in total.</small>
+                <div>
+                    <button>Show Shortkeys</button>
+                </div>
+            </div>
+        </div>
     </div>
-    <div>
-      <p>Choose a different background color!</p>
-    </div>
-  </body>
-  <script src="options.js"></script>
+</div>
+</body>
+<script src="options.js"></script>
 </html>
