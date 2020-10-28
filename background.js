@@ -1,12 +1,18 @@
 'use strict';
 
+// TODO: edit steps waiting for each shortcut
+// TODO: add options page (global options, shortcuts list, add global shortcuts, add shortcuts for scripts)
+// TODO: check if its in input when keys pressed or not
+
 let host = null;
 
 // update host on tab change
 chrome.tabs.onActivated.addListener(function (activeInfo) {
     chrome.tabs.get(activeInfo.tabId, ({url}) => {
-        const uO = new URL(url)
-        host = uO.origin;
+        if (url) {
+            const uO = new URL(url)
+            host = uO.origin;
+        }
     })
 });
 

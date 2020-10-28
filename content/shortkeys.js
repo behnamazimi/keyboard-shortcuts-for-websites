@@ -79,6 +79,7 @@ const utils = (function () {
     }
 
     function findTargetElm(step) {
+
         if (!step) return null;
 
         let elm;
@@ -176,6 +177,7 @@ const shortkeys = (function () {
 
     let currentLinkedTargets = null;
     let headStep = null;
+    let momentStepsCount = 0;
 
     let listeningToStep = false;
 
@@ -210,6 +212,7 @@ const shortkeys = (function () {
         currentLinkedTargets = null;
         headStep = null;
         addedLinkSteps = [];
+        momentStepsCount = 0;
 
         releaseLinksClick();
 
@@ -244,14 +247,13 @@ const shortkeys = (function () {
         const step = utils.createStep(targetElm)
 
         if (!headStep) {
-            step.id = 1;
             currentLinkedTargets = headStep = step;
         } else {
-            step.id = headStep.id + 1
             headStep = headStep.nextStep = step;
         }
 
-        console.log(utils.findTargetElm(step));
+        momentStepsCount++;
+
         addStepToPopup(step);
     }
 
@@ -305,8 +307,8 @@ const shortkeys = (function () {
         const noStepElm = ui.stepsPopupElmStepsWrapper.querySelector(".no-step");
         if (noStepElm) noStepElm.remove();
 
-        const stepElm = createStepElm(step.id, step.text, `step ${step.id}`);
-        const stepTitleElm = stepElm.querySelector(`#step-${step.id}`);
+        const stepElm = createStepElm(momentStepsCount, step.text, `step ${momentStepsCount}`);
+        const stepTitleElm = stepElm.querySelector(`#step-${momentStepsCount}`);
 
         if (stepTitleElm) {
             stepTitleElm.addEventListener("input", e => {
@@ -345,7 +347,7 @@ const shortkeys = (function () {
 
         setTimeout(() => {
             callNextStep(current.nextStep)
-        }, current.wait || 500)
+        }, current.wait || 1000)
     }
 
     // BUILD IN UTILS
@@ -415,7 +417,6 @@ const shortkeys = (function () {
     }
 
     function handleKeydown(e) {
-
         for (let {keys, target} of hostShortcuts) {
 
             if (
@@ -426,6 +427,9 @@ const shortkeys = (function () {
             ) {
 
                 e.preventDefault();
+
+                document.body.focus();
+                console.log("focus change");
 
                 // let curTarget = target;
                 callNextStep(target)
