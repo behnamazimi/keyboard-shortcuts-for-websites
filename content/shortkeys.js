@@ -25,15 +25,25 @@ const utils = (function () {
         let parentQ = '';
         if (parent) {
             // always use simple query as parents
-            parentQ = generateStepElmQuery(parent)[0]
+            const [_pId, _pSimple] = generateStepElmQuery(parent);
+            parentQ = _pId || _pSimple;
         }
 
+        let id = null;
         let simpleQuery = `${parentQ} ${tag}`;
         let complexQuery = `${parentQ} ${tag}`;
 
+        const allowedIdChars = /^[a-zA-z0-9-_\:\.]*$/;
+        const allowedIdSelectorChars = /^[a-zA-z0-9-_]*$/;
+
         if (attributes.id) {
-            simpleQuery += `#${attributes.id}`;
-            complexQuery += `#${attributes.id}`;
+            if (allowedIdChars.test(attributes.id))
+                id = attributes.id;
+
+            if (allowedIdSelectorChars.test(attributes.id)) {
+                simpleQuery += `#${attributes.id}`;
+                complexQuery += `#${attributes.id}`;
+            }
 
         } else {
             // add nth-child if index is bigger than 0
@@ -58,7 +68,7 @@ const utils = (function () {
         simpleQuery = simpleQuery.replace(/\.\./, ".").trim();
         complexQuery = complexQuery.replace(/\.\./, ".").trim();
 
-        return [simpleQuery, complexQuery]
+        return [id, simpleQuery, complexQuery]
     }
 
     function findIndexAsChild(child) {
@@ -71,15 +81,25 @@ const utils = (function () {
     function findTargetElm(step) {
         if (!step) return null;
 
-        const [simpleQuery, complexQuery] = generateStepElmQuery(step)
-        let elm = document.querySelector(complexQuery)
-        if (!elm)
-            elm = document.querySelector(simpleQuery)
+        let elm;
 
-        if (!elm) console.log({simpleQuery, complexQuery})
+        const [id, simpleQuery, complexQuery] = generateStepElmQuery(step);
+
+        if (id) elm = document.getElementById(id)
+
+        if (!elm) elm = document.querySelector(simpleQuery)
+
+        if (!elm) elm = document.querySelector(complexQuery)
+
+        if (!elm) console.log({id, simpleQuery, complexQuery})
         return elm
     }
 
+    /**
+     * create new step object
+     * @param targetElm
+     * @returns {object}
+     */
     function createStep(targetElm) {
         const step = {
             attributes: {},
@@ -90,7 +110,8 @@ const utils = (function () {
 
         if (!targetElm || targetElm.nodeName === "#document") return step;
 
-        const validAttrs = ["id", "class", "href", "role", "tabIndex", "type", "onclick"]
+        // const validAttrs = ["id", "class", "href", "role", "tabIndex", "type", "onclick"]
+        const validAttrs = ["id", "role", "tabIndex", "type"]
 
         const rawAttrs = targetElm.attributes || [];
         const rawAttrsLen = rawAttrs.length;
@@ -110,7 +131,19 @@ const utils = (function () {
 
         step.index = findIndexAsChild(targetElm)
 
-        if (!targetElm.isEqualNode(findTargetElm(step))) {
+        const [id, simpleQuery, complexQuery] = generateStepElmQuery(step)
+        // console.log({id, simpleQuery, complexQuery});
+        if (!id) {
+            try {
+                // if (document.querySelectorAll(simpleQuery).length > 1) {
+                //     if (document.querySelectorAll(complexQuery).length > 1)
+                //         step.parent = createStep(targetElm.parentNode)
+                // }
+            } catch (e) {
+                console.log("invalid query selector", {id, simpleQuery, complexQuery});
+            }
+
+        } else if (!targetElm.isEqualNode(findTargetElm(step))) {
             step.parent = createStep(targetElm.parentNode)
         }
 
@@ -129,7 +162,6 @@ const utils = (function () {
 
     return {
         generateKeysUID,
-        generateStepElmQuery,
         findTargetElm,
         createStep,
         createNewShortcut,
@@ -219,6 +251,7 @@ const shortkeys = (function () {
             headStep = headStep.nextStep = step;
         }
 
+        console.log(utils.findTargetElm(step));
         addStepToPopup(step);
     }
 
@@ -287,28 +320,28 @@ const shortkeys = (function () {
 
     }
 
-    function fireEvent(event, element, options = {}) {
-        setTimeout(() => {
-            if (!element) {
-                console.log("Element not found!");
-                return
-            }
+    function fireElementEvents(element, options = {}) {
+        if (!element) {
+            console.log("Element not found!");
+            return
+        }
 
-            if (element[event] && typeof element[event] === "function") {
-                element[event]();
+        const eventOptions = {bubbles: true, ...options};
 
-            } else {
-                const ev = new Event(event, {bubbles: true, ...options})
-                element.dispatchEvent(ev)
-            }
-        }, 200)
+        const validMouseEvents = ["click", "mousedown", "mouseup"];
+
+        // dispatch above events
+        validMouseEvents.forEach(event => {
+            const ev = new MouseEvent(event, eventOptions)
+            element.dispatchEvent(ev)
+        })
     }
 
     function callNextStep(current) {
         if (!current || current.id === void 0) return;
 
         const elm = utils.findTargetElm(current);
-        fireEvent("click", elm);
+        fireElementEvents(elm);
 
         setTimeout(() => {
             callNextStep(current.nextStep)
@@ -397,14 +430,7 @@ const shortkeys = (function () {
                 // let curTarget = target;
                 callNextStep(target)
 
-
-                // do {
-                //     const elm = utils.findTargetElm(curTarget)
-                //     fireEvent("click", elm)
-                //
-                //     curTarget = curTarget.nextStep;
-                // } while (curTarget && curTarget.id);
-
+                // break loop when reached the target short-key
                 break;
             }
         }
@@ -629,16 +655,3 @@ const shortkeys = (function () {
         showSuccessToast,
     }
 })();
-
-
-// document.querySelectorAll("a").forEach((a)=>{
-//
-//     a.addEventListener("click", (e)=>{
-//         e.preventDefault();
-//         tag = e.target.closest("a")
-//         console.log(tag.getAttribute("href"), tag.url, tag.href)
-//
-//         return false
-//     })
-//
-// })
