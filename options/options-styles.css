@@ -7,12 +7,20 @@ body {
     margin: 0 auto;
     max-width: 768px;
     font-size: 16px;
-    color: #ffffff;
+    color: #d5d5d5;
     cursor: default;
-    background: #122d4e;
+    background: #08203e;
     user-select: none;
+    overflow-y: scroll;
 }
 
+body a {
+    color: #d5d5d5;
+}
+
+body a:hover {
+    color: #fff;
+}
 
 #options-page {
     padding: 2rem 1rem;
@@ -31,10 +39,19 @@ body {
     padding-left: 20px;
     padding-bottom: 4px;
     margin-bottom: 2rem;
+    overflow: hidden;
+    transition: all 0.4s linear;
+    max-height: 28px;
+    height: auto;
 }
 
 #options-page .section:last-child {
     border-bottom: none;
+}
+
+#options-page .section.open {
+    max-height: 1000px;
+    transition: all 0.4s linear;
 }
 
 #options-page .section:before {
@@ -42,16 +59,36 @@ body {
     display: inline-block;
     position: absolute;
     left: 10px;
-    top: 25px;
+    top: 28px;
     height: calc(100% - 25px);
     background: transparent;
     border-left: 2px solid #ffffff2e;
 }
 
 #options-page .section-title {
+    position: relative;
     margin-bottom: 1rem;
     margin-left: -20px;
     font-weight: bold;
+    cursor: pointer;
+    background: #0f2a4c;
+    padding: 0.25rem;
+}
+
+#options-page .section-title:after {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    border-top: 8px solid;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    transition: all 0.2s linear;
+}
+
+#options-page .section.open .section-title:after {
+    transform: rotate(-180deg);
 }
 
 #options-page .section-item {
@@ -124,7 +161,7 @@ button {
     min-width: 50px;
     display: inline-block;
     padding: 5px 16px;
-    line-height: 20px;
+    line-height: 24px;
     white-space: nowrap;
     vertical-align: middle;
     border-radius: 6px;
@@ -169,7 +206,7 @@ button.cancel:hover {
     position: relative;
     padding-left: 50px;
     margin-bottom: 0.25rem;
-    color: #efefef;
+    color: #d5d5d5;
     font-size: 16px;
     font-weight: 500;
 }
@@ -205,4 +242,35 @@ button.cancel:hover {
     transform: translateY(-50%) translateX(22px);
     transition: all 0.2s ease-in-out;
     background-color: #32c28a;
+}
+
+.issk-toast {
+    position: fixed;
+    left: 16px;
+    bottom: 16px;
+    width: 280px;
+    padding: 8px;
+    background-color: #059a4a;
+    color: #fff;
+    border-radius: 5px;
+    box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, .18);
+    user-select: none;
+    z-index: 99999;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(100px);
+    transition: transform 0.3s, all 0.5s;
+}
+
+.issk-toast.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    transition: all 0.3s;
+}
+
+.issk-toast p {
+    font-family: inherit;
+    font-size: 16px;
+    margin: 0;
 }

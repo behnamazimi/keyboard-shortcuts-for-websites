@@ -8,80 +8,89 @@
 <body>
 <div id="options-page">
     <div class="brand">In-site Shortkeys Options</div>
-    <div class="content">
-        <div class="section">
-            <div class="section-title">Global Options</div>
-            <div class="section-item">
-                <div class="custom-switch">
-                    <input type="checkbox" id="off-for-all">
-                    <label for="off-for-all"><span>Turn off in-site shortkeys</span></label>
+    <form id="options-form">
+        <div class="content">
+            <div class="section open">
+                <div class="section-title">Global Options</div>
+                <div class="section-item">
+                    <div class="custom-switch">
+                        <input type="checkbox" id="off-for-all" name="off">
+                        <label for="off-for-all"><span>Turn off in-site shortkeys</span></label>
+                    </div>
+                    <small>You can turn the extension temporarily</small>
                 </div>
-                <small>You can turn the extension temporarily</small>
-            </div>
 
-            <div class="section-item">
-                <div class="custom-switch">
-                    <input type="checkbox" id="allow-in-inputs">
-                    <label for="allow-in-inputs"><span>Allow shortkeys even when an input focused</span></label>
+                <div class="section-item">
+                    <div class="custom-switch">
+                        <input type="checkbox" id="allow-in-inputs" name="allowInInputs">
+                        <label for="allow-in-inputs"><span>Allow shortkeys even when an input focused</span></label>
+                    </div>
+                    <small>To disable shortkeys when an input focused switch this option.</small>
+                    <small>Notice that sometimes focusing in an input may cause inactivity in your shortkeys.</small>
                 </div>
-                <small>To disable shortkeys when an input focused switch this option.</small>
-                <small>Notice that sometimes focusing in an input may cause inactivity in your shortkeys.</small>
-            </div>
 
-            <div class="section-item">
-                <div class="waiting-input">
-                    <label for="step-waiting-time">Default waiting time (in second) between steps execution</label>
-                    <input type="number" min="0" max="10" step="0.1" id="step-waiting-time" value="0">
+                <div class="section-item">
+                    <div class="waiting-input">
+                        <label for="step-waiting-time">Default waiting time (in second) between steps execution</label>
+                        <input type="number" min="0" max="10" step="0.1"
+                               id="step-waiting-time" value="0" name="waitBetweenSteps">
+                    </div>
+                    <small>Time to wait before triggering the next step (0 is default).</small>
+                    <small>You can enter floating numbers too. e.g 0.5 means half a second.</small>
                 </div>
-                <small>Time to wait before triggering the next step (0 is default).</small>
-                <small>You can enter floating numbers too. e.g 0.5 means half a second.</small>
+                <div class="section-item">
+                    <button type="submit">Save Options</button>
+                </div>
             </div>
-            <div class="section-item">
-                <button>Save Options</button>
-            </div>
-        </div>
-        <div class="section">
-            <div class="section-title">Export / Import Data</div>
-            <div class="section-item">
-                <small>
-                    You can export the entire data of your shortkeys and scripts and import it where and when you want.
-                </small>
-                <div class="import-export-actions">
-                    <button>Export Now</button>
-                    or
-                    <div class="import-input">
-                        <input type="file" hidden>
-                        <button>Import Data</button>
+            <div class="section">
+                <div class="section-title">Statistics</div>
+                <div class="section-item">
+                    <small><strong>125</strong> shortkeys have been added in total.</small>
+                    <div>
+                        <a href="/test.html">Show Shortkeys</a>
                     </div>
                 </div>
-                <small id="export-import-msg"></small>
+            </div>
+            <div class="section">
+                <div class="section-title">Export / Import Data</div>
+                <div class="section-item">
+                    <small>
+                        You can export the entire data of your shortkeys and scripts and import it where and when you
+                        want.
+                    </small>
+                    <div class="import-export-actions">
+                        <button>Export Now</button>
+                        or
+                        <div class="import-input">
+                            <input type="file" hidden>
+                            <button>Import Data</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="section">
+                <div class="section-title">Clear All Data and Keys</div>
+                <div class="section-item">
+                    <small>Notice that if the data is deleted, it will not be recovered in any way.</small>
+                    <small>This process will needs your confirmation.</small>
+                    <div class="confirm-checkbox">
+                        <input type="checkbox" id="approve-data-remove">
+                        <label for="approve-data-remove">I confirm the deletion of all data</label>
+                    </div>
+                    <div>
+                        <button disabled>Clear All</button>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="section">
-            <div class="section-title">Clear All Data and Keys</div>
-            <div class="section-item">
-                <small>Notice that if the data is deleted, it will not be recovered in any way.</small>
-                <small>This process will needs your confirmation.</small>
-                <div class="confirm-checkbox">
-                    <input type="checkbox" id="approve-data-remove">
-                    <label for="approve-data-remove">I confirm the deletion of all data</label>
-                </div>
-                <div>
-                    <button disabled>Clear All</button>
-                </div>
-            </div>
-        </div>
-        <div class="section">
-            <div class="section-title">Statistics</div>
-            <div class="section-item">
-                <small><strong>125</strong> shortkeys have been added in total.</small>
-                <div>
-                    <button>Show Shortkeys</button>
-                </div>
-            </div>
+    </form>
+    <div class="issk-toast" id="options-toast">
+        <div class="issk-container">
+            <p class="issk-p"></p>
         </div>
     </div>
 </div>
 </body>
+<script src="../constant.js"></script>
 <script src="options.js"></script>
 </html>

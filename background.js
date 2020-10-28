@@ -68,9 +68,15 @@ chrome.runtime.onMessage.addListener(function (data, details, sendResponse) {
             break;
         case globalActions.GLOBAL_OPTIONS_UPDATE:
             storeGlobalOptions(data.options, (globalOptions) => {
-                sendMessageToAllTabs({action: contentActions.OPTION_UPDATE, globalOptions})
+                sendMessageToAllTabs({action: contentActions.OPTION_UPDATE, globalOptions});
+                sendResponse(globalOptions)
             })
-            break;
+            return true;
+        case globalActions.OPTIONS_INIT:
+            getAllData((data) => {
+                sendResponse(data)
+            })
+            return true
     }
     // sendGlobalMessage({"action": "INIT"});
 })
@@ -153,12 +159,12 @@ function loadData(key, cb) {
 function getAllData(cb) {
     chrome.storage.sync.get(null, function (data) {
         if (cb && typeof cb === "function" && data) {
-            const globalsOption = data.globalOptions;
+            const globalOptions = data.globalOptions;
 
             const shortcuts = data;
             delete shortcuts[getGlobalOptionsKey()]
 
-            cb({globalsOption, shortcuts})
+            cb({globalOptions, shortcuts})
         }
     });
 }
