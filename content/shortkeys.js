@@ -130,15 +130,11 @@ const utils = (function () {
         step.i = findIndexAsChild(targetElm)
 
         const [id, simpleQuery, complexQuery] = generateStepElmQuery(step)
-        // console.log({id, simpleQuery, complexQuery});
+
         if (!id) {
-            try {
-                // if (document.querySelectorAll(simpleQuery).length > 1) {
-                //     if (document.querySelectorAll(complexQuery).length > 1)
-                //         step.pr = createStep(targetElm.parentNode)
-                // }
-            } catch (e) {
-                console.log("invalid query selector", {id, simpleQuery, complexQuery});
+            if (document.querySelectorAll(simpleQuery).length > 1) {
+                if (document.querySelectorAll(complexQuery).length > 1)
+                    step.pr = createStep(targetElm.parentNode)
             }
 
         } else if (!targetElm.isEqualNode(findTargetElm(step))) {
