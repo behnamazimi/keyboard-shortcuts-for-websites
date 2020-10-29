@@ -26,24 +26,18 @@ const utils = (function () {
         if (parent) {
             // always use simple query as parents
             const [_pId, _pSimple] = generateStepElmQuery(parent);
-            parentQ = _pId || _pSimple;
+            parentQ = _pId ? `#${_pId}` : _pSimple;
         }
 
         let id = null;
         let simpleQuery = `${parentQ} ${tag}`;
         let complexQuery = `${parentQ} ${tag}`;
 
-        const allowedIdChars = /^[a-zA-z0-9-_\:\.]*$/;
-        const allowedIdSelectorChars = /^[a-zA-z0-9-_]*$/;
-
         if (attributes.id) {
-            if (allowedIdChars.test(attributes.id))
-                id = attributes.id;
+            id = attributes.id;
 
-            if (allowedIdSelectorChars.test(attributes.id)) {
-                simpleQuery += `#${attributes.id}`;
-                complexQuery += `#${attributes.id}`;
-            }
+            simpleQuery += `#${attributes.id}`;
+            complexQuery += `#${attributes.id}`;
 
         } else {
             // add nth-child if index is bigger than 0
@@ -54,6 +48,8 @@ const utils = (function () {
 
             for (let [attr, value] of Object.entries(attributes)) {
                 switch (attr) {
+                    case "id":
+                        break;
                     case "class":
                         const classes = value.split(" ").map(c => "." + c).join("").trim();
                         complexQuery += `${classes}`;
@@ -65,8 +61,12 @@ const utils = (function () {
             }
         }
 
-        simpleQuery = simpleQuery.replace(/\.\./, ".").trim();
-        complexQuery = complexQuery.replace(/\.\./, ".").trim();
+        simpleQuery = simpleQuery.replace(/\.\./, ".")
+            .replace(/#:/g, "#\\:")
+            .trim();
+        complexQuery = complexQuery.replace(/\.\./, ".")
+            .replace(/#:/g, "#\\:")
+            .trim();
 
         return [id, simpleQuery, complexQuery]
     }
@@ -86,8 +86,6 @@ const utils = (function () {
 
         const [id, simpleQuery, complexQuery] = generateStepElmQuery(step);
 
-        if (id) elm = document.getElementById(id)
-
         if (!elm) elm = document.querySelector(simpleQuery)
 
         if (!elm) elm = document.querySelector(complexQuery)
@@ -106,7 +104,7 @@ const utils = (function () {
 
         if (!targetElm || targetElm.nodeName === "#document") return step;
 
-        const validAttrs = ["id", "role", "tabIndex", "type", "title"]
+        const validAttrs = ["id", "role", "tabindex", "type", "title"]
 
         const rawAttrs = targetElm.attributes || [];
         const rawAttrsLen = rawAttrs.length;
@@ -122,10 +120,12 @@ const utils = (function () {
         }
 
         step.tg = targetElm.tagName.toLowerCase();
-        step.tx = (targetElm.textContent || 'Unknown')
+        const text = (targetElm.textContent || '')
             .replace(/(\r\n|\n|\r)/gm, "")
             .trim()
             .substr(0, 20);
+
+        if (text) step.tx = text;
 
         step.i = findIndexAsChild(targetElm)
 
@@ -144,12 +144,13 @@ const utils = (function () {
         return step;
     }
 
-    function createNewShortcut(target, keys, title) {
+    function createNewShortcut(target, keys, title, stepCount) {
         return {
             i: `${new Date().getTime()}`,
             t: title,
             k: utils.generateKeysString(keys),
-            tr: target
+            tr: target,
+            sc: stepCount
         };
     }
 
@@ -174,11 +175,13 @@ const shortkeys = (function () {
     let listeningToStep = false;
 
     let options = {waitBetweenSteps: 1000, off: false, preventInInputs: false};
+    let isWebApp = true;
 
     let ui = {
         stepsPopupElm: null,
         stepsPopupElmStepsWrapper: null,
         keysPopupElmKeysWrapper: null,
+        preventPageReload: false,
     }
 
     let lastKeyEvent = null;
@@ -186,18 +189,16 @@ const shortkeys = (function () {
     let currentKeys = null;
     let currentShortkeyTitle = '';
 
-    let addedLinkSteps = [];
-
     function listen() {
         listeningToStep = true;
         currentLinkedTargets = null;
         headStep = null;
-        addedLinkSteps = [];
 
         showStepsPopup();
 
         preventLinksClick();
-        document.addEventListener("click", handleDocClick)
+        // document.addEventListener("click", handleDocClick)
+        document.addEventListener("mousedown", handleDocClick)
     }
 
     function abortAdding() {
@@ -205,7 +206,6 @@ const shortkeys = (function () {
         listeningToStep = false;
         currentLinkedTargets = null;
         headStep = null;
-        addedLinkSteps = [];
         momentStepsCount = 0;
 
         releaseLinksClick();
@@ -265,7 +265,7 @@ const shortkeys = (function () {
                 throw new Error("Key used before")
             }
 
-            const newShortcut = utils.createNewShortcut(currentLinkedTargets, keys, currentShortkeyTitle);
+            const newShortcut = utils.createNewShortcut(currentLinkedTargets, keys, currentShortkeyTitle, momentStepsCount);
 
             // push to shortcuts
             hostShortcuts.push(newShortcut);
@@ -306,7 +306,7 @@ const shortkeys = (function () {
         const noStepElm = ui.stepsPopupElmStepsWrapper.querySelector(".no-step");
         if (noStepElm) noStepElm.remove();
 
-        const stepElm = createStepElm(momentStepsCount, step.text, `step ${momentStepsCount}`);
+        const stepElm = createStepElm(momentStepsCount, step.tx || "Unknown", `step ${momentStepsCount}`);
         const stepTitleElm = stepElm.querySelector(`#step-${momentStepsCount}`);
 
         if (stepTitleElm) {
@@ -350,26 +350,6 @@ const shortkeys = (function () {
     }
 
     // BUILD IN UTILS
-    function isUniqueLinkInSteps(newLink) {
-        let isUnique = true;
-        const newURL = new URL(newLink);
-        const newLinkPath = newURL.origin + newURL.pathname;
-
-        for (let link of addedLinkSteps) {
-            const url = new URL(link);
-            const urlPath = url.origin + url.pathname;
-
-            if (newLinkPath !== urlPath) {
-                isUnique = false;
-                break;
-            }
-        }
-
-        addedLinkSteps.push(newLink)
-
-        return isUnique;
-    }
-
     function isKeysUsedBefore(keysObj) {
         if (!keysObj) return true;
 
@@ -397,33 +377,25 @@ const shortkeys = (function () {
 
         if (e.path && e.path.some(elm => elm === ui.stepsPopupElm)) return;
 
-        // handle links click
-        let linkTagIndex = (e.path || []).findIndex(elm => elm.tagName === "A");
-        if (linkTagIndex > -1) {
-            const target = e.path[linkTagIndex];
-            if (!isUniqueLinkInSteps(target.href)) {
-                ui.stepsPopupElmMsg.innerText = "Different link steps added, this may causes faulty action."
-            }
-        }
-
         shortkeys.addStep(e.target);
     }
 
     function handleLinkTagClick(e) {
-        e.preventDefault();
+        if (options.preventPageReload || !isWebApp) {
+            e.preventDefault();
+            return false
+        }
 
-        return false
+        isWebApp = true;
     }
 
     function handleKeydown(e) {
-
         if (options.preventInInputs) {
             const tagName = e.path && e.path[0].tagName;
             if (tagName && ["input", "textarea"].includes(tagName.toLowerCase())) {
                 return;
             }
         }
-
 
         for (let {k, tr: target} of hostShortcuts) {
             let keys = k.split(" + ");
@@ -435,7 +407,8 @@ const shortkeys = (function () {
                 e.altKey === keys.includes("alt") &&
                 keys.includes(e.key.toLowerCase())
             ) {
-                console.log(e);
+
+                console.log(keys);
                 e.preventDefault();
 
                 // let curTarget = target;
@@ -540,7 +513,8 @@ const shortkeys = (function () {
                 return;
             }
 
-            document.removeEventListener("click", handleDocClick)
+            // document.removeEventListener("click", handleDocClick)
+            document.removeEventListener("mousedown", handleDocClick)
             showKeysInputPopup()
 
             // remove button listener
