@@ -153,7 +153,7 @@ const utils = (function () {
 
     function createNewShortcut(target, keys, title) {
         return {
-            id: `sc-${new Date().getTime()}`,
+            id: `${new Date().getTime()}`,
             title,
             keys,
             keysUID: utils.generateKeysUID(keys),

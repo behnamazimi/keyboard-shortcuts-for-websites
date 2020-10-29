@@ -26,6 +26,10 @@ body a:hover {
     padding: 2rem 1rem;
 }
 
+.page .page-head {
+    position: relative;
+}
+
 .page .brand {
     text-align: center;
     font-weight: bold;
@@ -47,6 +51,7 @@ label {
     display: inline-block;
 }
 
+input[type="search"],
 input[type="number"],
 input[type="text"] {
     width: 100%;
@@ -76,6 +81,7 @@ button {
     user-select: none;
     appearance: none;
     transition: all 0.2s;
+    border: 1px solid transparent;
 }
 
 button:not(:disabled):hover {
@@ -114,6 +120,12 @@ button.danger {
 
 button.danger:hover {
     background-color: #c10404;
+}
+
+button.small {
+    padding: .2rem .4rem;
+    font-size: 14px;
+    line-height: 18px;
 }
 
 .custom-switch {

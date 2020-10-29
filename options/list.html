@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="list-styles.css">
+    <title>Settings - In-site Shortkeys</title>
+</head>
+<body>
+<div id="list-page" class="page open">
+    <div class="page-head">
+        <div class="brand">In-site Shortkeys</div>
+        <a href="/options/settings.html">
+            <button class="small" id="open-options">Options</button>
+        </a>
+    </div>
+    <div class="content">
+        <div class="filters">
+            <input type="search" id="search-input"
+                   autocomplete="off"
+                   placeholder="Search in hosts">
+        </div>
+        <div class="hosts-container">
+            <ul id="hosts">
+                <li>There is not any hosts.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div id="host-page" class="page">
+    <div class="page-head">
+        <div class="brand"><span id="c-host-name"></span> Shortkeys</div>
+        <button class="outline small" id="close-host-page">Close</button>
+    </div>
+    <div class="content">
+        <div class="shortkeys-container">
+            <ul id="shortkeys">
+                <li>There is not any shortkeys.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="issk-toast" id="issk-toast">
+    <div class="issk-container">
+        <p class="issk-p"></p>
+    </div>
+</div>
+</body>
+<script src="../constant.js"></script>
+<script src="list.js"></script>
+</html>

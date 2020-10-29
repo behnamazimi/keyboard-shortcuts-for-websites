@@ -3,16 +3,14 @@
 // TODO: edit steps waiting for each shortcut
 // TODO: add options page (global options, shortcuts list, add global shortcuts, add shortcuts for scripts)
 // TODO: check if its in input when keys pressed or not
+// TODO: test on file protocol
 
 let host = null;
 
 // update host on tab change
 chrome.tabs.onActivated.addListener(function (activeInfo) {
     chrome.tabs.get(activeInfo.tabId, ({url}) => {
-        if (url) {
-            const uO = new URL(url)
-            host = uO.origin;
-        }
+        setHost(url)
     })
 });
 
@@ -34,7 +32,7 @@ chrome.runtime.onMessage.addListener(function (data, details, sendResponse) {
 
     switch (data.action) {
         case globalActions.INIT:
-            host = data.host;
+            setHost(data.host)
             loadGlobalOptions((globalOptions) => {
                 loadHostData((siteData = {}) => {
                     sendResponse({siteData, globalOptions});
@@ -50,7 +48,7 @@ chrome.runtime.onMessage.addListener(function (data, details, sendResponse) {
             })
             return true;
         case globalActions.NEW_SHORTCUT:
-            host = data.host;
+            setHost(data.host)
             if (!Array.isArray(data.shortcuts)) return;
 
             // the last item is the new shortcut
@@ -193,8 +191,20 @@ function sendMessageToAllTabs(body) {
     });
 }
 
+function setHost(url) {
+    if (!url) return;
+
+    const uO = new URL(url)
+    host = uO.origin;
+
+    host = host.replace("http://", "")
+        .replace("https://", "")
+
+    return host;
+}
+
 function getHostKey() {
-    return 'shortcuts-' + host;
+    return host;
 }
 
 function getGlobalOptionsKey() {

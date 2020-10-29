@@ -3,6 +3,7 @@
 // init tab
 sendGlobalMessage({action: globalActions.INIT, host: location.origin}, (data = {}) => {
     const {siteData, globalOptions = {}} = data;
+    console.log(data);
     if (globalOptions.off)
         return;
 

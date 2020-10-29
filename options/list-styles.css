@@ -1,0 +1,44 @@
+.page {
+    display: none;
+}
+
+.page.open {
+    display: block;
+}
+
+#list-page #open-options{
+    position: absolute;
+    right: 0.25rem;
+    top: -0.2rem;
+}
+
+#list-page #hosts {
+    list-style: none;
+    padding: 0;
+}
+
+#list-page #hosts .host-item {
+    background-color: rgba(255, 255, 255, 0.07);
+    padding: .5rem .5rem;
+    cursor: pointer;
+    margin-bottom: 0.5rem;
+    border: 2px solid #ffffff14;
+    border-radius: 5px;
+}
+
+#list-page #hosts .host-item .host-detail {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#list-page #hosts .host-item:hover {
+    background-color: rgba(255, 255, 255, 0.18);
+}
+
+
+#host-page #close-host-page {
+    position: absolute;
+    right: 0.25rem;
+    top: -0.2rem;
+}
