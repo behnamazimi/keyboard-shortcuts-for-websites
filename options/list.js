@@ -11,9 +11,9 @@ let listPage = document.getElementById('list-page');
 let hostPage = document.getElementById('host-page');
 let closeHostPageBtn = document.getElementById('close-host-page');
 
-init();
+initListData();
 
-function init() {
+function initListData() {
 
     sendGlobalMessage({action: globalActions.GET_OPTIONS_DATA}, (response) => {
         allData = response || {};
@@ -35,6 +35,17 @@ hostsElm.onclick = (e) => {
     if (!selectedHost) return;
 
     showHostDetails()
+}
+
+shortkeysElm.onclick = (e) => {
+    // remove shortkey
+    if (e.target.classList.contains("delete-sk")) {
+        let shortkeyElm = e.target.closest(".shortkey-item");
+        if (!shortkeyElm) return;
+
+        deleteShortkey(shortkeyElm);
+    }
+
 }
 
 closeHostPageBtn.onclick = function () {
@@ -118,7 +129,10 @@ function createShortkeyItemElement({id, title, keysUID}) {
                 <li class="shortkey-item" id="${id}">
                     <div class="sk-detail">
                         <strong class="sk-name">${title}</strong>
-                        <code class="sk-keys">[${keysUID}]</code>
+                        <code class="sk-keys">${keysUID}</code>
+                    </div>
+                    <div class="sk-actions">
+                        <button class="delete-sk small danger">Delete</button>
                     </div>
                 </li>`;
 
@@ -126,6 +140,25 @@ function createShortkeyItemElement({id, title, keysUID}) {
     };
 
     shortkeysElm.appendChild(createElm())
+}
+
+function deleteShortkey(shortkeyElm) {
+
+    const id = shortkeyElm.getAttribute("id")
+    if (!id) return;
+
+    if (!id || !selectedHost) {
+        showToast("Cannot find target shortkey", "error")
+        return
+    }
+
+    sendGlobalMessage({action: globalActions.DELETE_SHORTKEY, id, host: selectedHost}, (res) => {
+        initListData();
+        if (!res || !res.shortcuts || !res.shortcuts.length) {
+            closeHostPageBtn.click();
+        }
+        shortkeyElm.remove();
+    })
 }
 
 function showToast(msg, status = '') {

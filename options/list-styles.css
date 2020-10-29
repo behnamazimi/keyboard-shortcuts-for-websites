@@ -6,7 +6,7 @@
     display: block;
 }
 
-#list-page #open-options{
+#list-page #open-options {
     position: absolute;
     right: 0.25rem;
     top: -0.2rem;
@@ -41,4 +41,33 @@
     position: absolute;
     right: 0.25rem;
     top: -0.2rem;
+}
+
+#host-page #shortkeys {
+    list-style: none;
+    padding: 0;
+}
+
+#host-page #shortkeys .shortkey-item {
+    border-radius: 5px;
+    padding: 0.5rem;
+    background: #ffffff1a;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#host-page #shortkeys .shortkey-item .sk-detail {
+    display: inline-flex;
+    flex-direction: column;
+}
+
+#host-page #shortkeys .shortkey-item .sk-name {
+    display: inline-block;
+    margin-bottom: 0.25rem;
+}
+
+#host-page #shortkeys .shortkey-item .sk-keys {
+    opacity: 0.7;
 }

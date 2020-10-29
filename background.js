@@ -71,13 +71,19 @@ chrome.runtime.onMessage.addListener(function (data, details, sendResponse) {
             })
             return true;
         case globalActions.GET_OPTIONS_DATA:
-            getAllData((data) => {
-                sendResponse(data)
+            getAllData((res) => {
+                sendResponse(res)
             })
             return true
         case globalActions.CLEAT_DATA:
-            clearAllData((data) => {
+            clearAllData(() => {
                 sendResponse()
+            })
+            return true;
+        case globalActions.DELETE_SHORTKEY:
+            setHost(data.host)
+            removeShortkey(data.id, (res) => {
+                sendResponse(res)
             })
             return true
     }
@@ -90,6 +96,36 @@ function getHostShortcuts(cb) {
         if (!Array.isArray(shortcuts)) return;
 
         if (cb && typeof cb === "function") cb(shortcuts)
+    });
+}
+
+function removeShortkey(id, cb) {
+    if (!id) return;
+
+    loadHostData((hostData = {}) => {
+        const newSkList = (hostData.shortcuts || []).filter(sk => sk.id !== id);
+        const updatedData = {...hostData, shortcuts: newSkList}
+
+        const key = getHostKey();
+        storeData(key, updatedData, function () {
+            if (newSkList.length === 0 && !updatedData.globalOptions) {
+                removeHost(() => {
+                    if (cb && typeof cb === "function")
+                        cb(false)
+                })
+            } else {
+                if (cb && typeof cb === "function")
+                    cb(updatedData)
+            }
+        });
+    })
+
+}
+
+function removeHost(cb) {
+    removeData(host, function (data) {
+        if (cb && typeof cb === "function")
+            cb(true)
     });
 }
 
@@ -169,6 +205,13 @@ function getAllData(cb) {
     });
 }
 
+function removeData(key, cb) {
+    chrome.storage.sync.remove([key], function (data) {
+        if (cb && typeof cb === "function")
+            cb(true)
+    });
+}
+
 function clearAllData(cb) {
     chrome.storage.sync.clear(function () {
         if (cb && typeof cb === "function")
@@ -194,11 +237,15 @@ function sendMessageToAllTabs(body) {
 function setHost(url) {
     if (!url) return;
 
-    const uO = new URL(url)
-    host = uO.origin;
+    if (url.indexOf("http") > -1) {
+        const uO = new URL(url)
+        host = uO.origin;
 
-    host = host.replace("http://", "")
-        .replace("https://", "")
+        host = host.replace("http://", "")
+            .replace("https://", "")
+    } else {
+        host = url
+    }
 
     return host;
 }
