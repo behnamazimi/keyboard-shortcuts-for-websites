@@ -18,9 +18,9 @@ const utils = (function () {
     }
 
     function generateStepElmQuery(step) {
-        const tag = step.tag || '';
-        const attributes = step.attributes || '';
-        const parent = step.parent;
+        const tag = step.tg || '';
+        const attributes = step.a || '';
+        const parent = step.pr;
 
         let parentQ = '';
         if (parent) {
@@ -47,9 +47,9 @@ const utils = (function () {
 
         } else {
             // add nth-child if index is bigger than 0
-            if (tag && !!step.index) {
-                simpleQuery += `:nth-child(${step.index})`
-                complexQuery += `:nth-child(${step.index})`
+            if (tag && !!step.i) {
+                simpleQuery += `:nth-child(${step.i})`
+                complexQuery += `:nth-child(${step.i})`
             }
 
             for (let [attr, value] of Object.entries(attributes)) {
@@ -102,35 +102,32 @@ const utils = (function () {
      * @returns {object}
      */
     function createStep(targetElm) {
-        const step = {
-            attributes: {},
-            tag: null,
-            text: null,
-            parent: null
-        }
+        const step = {}
 
         if (!targetElm || targetElm.nodeName === "#document") return step;
 
-        // const validAttrs = ["id", "class", "href", "role", "tabIndex", "type", "onclick"]
         const validAttrs = ["id", "role", "tabIndex", "type"]
 
         const rawAttrs = targetElm.attributes || [];
         const rawAttrsLen = rawAttrs.length;
 
+        // set attribute (a) property
+        if (!!rawAttrsLen) step.a = {};
+
         for (let i = 0; i < rawAttrsLen; i++) {
             const attrName = rawAttrs[i].nodeName;
             if (!validAttrs.includes(attrName)) continue;
 
-            step.attributes[attrName] = (targetElm.getAttribute(attrName) || '').trim()
+            step.a[attrName] = (targetElm.getAttribute(attrName) || '').trim()
         }
 
-        step.tag = targetElm.tagName.toLowerCase();
-        step.text = (targetElm.textContent || 'Unknown')
+        step.tg = targetElm.tagName.toLowerCase();
+        step.tx = (targetElm.textContent || 'Unknown')
             .replace(/(\r\n|\n|\r)/gm, "")
             .trim()
             .substr(0, 20);
 
-        step.index = findIndexAsChild(targetElm)
+        step.i = findIndexAsChild(targetElm)
 
         const [id, simpleQuery, complexQuery] = generateStepElmQuery(step)
         // console.log({id, simpleQuery, complexQuery});
@@ -138,14 +135,14 @@ const utils = (function () {
             try {
                 // if (document.querySelectorAll(simpleQuery).length > 1) {
                 //     if (document.querySelectorAll(complexQuery).length > 1)
-                //         step.parent = createStep(targetElm.parentNode)
+                //         step.pr = createStep(targetElm.parentNode)
                 // }
             } catch (e) {
                 console.log("invalid query selector", {id, simpleQuery, complexQuery});
             }
 
         } else if (!targetElm.isEqualNode(findTargetElm(step))) {
-            step.parent = createStep(targetElm.parentNode)
+            step.pr = createStep(targetElm.parentNode)
         }
 
         return step;
@@ -153,11 +150,10 @@ const utils = (function () {
 
     function createNewShortcut(target, keys, title) {
         return {
-            id: `${new Date().getTime()}`,
-            title,
-            keys,
-            keysUID: utils.generateKeysUID(keys),
-            target
+            i: `${new Date().getTime()}`,
+            t: title,
+            k: utils.generateKeysUID(keys),
+            tr: target
         };
     }
 
@@ -256,7 +252,7 @@ const shortkeys = (function () {
         if (!headStep) {
             currentLinkedTargets = headStep = step;
         } else {
-            headStep = headStep.nextStep = step;
+            headStep = headStep.nx = step;
         }
 
         momentStepsCount++;
@@ -319,14 +315,13 @@ const shortkeys = (function () {
 
         if (stepTitleElm) {
             stepTitleElm.addEventListener("input", e => {
-                step.text = e.target.textContent
+                step.tx = e.target.textContent
                     .replace(/[^a-zA-Z -_.]/g, "")
                     .substr(0, 15)
             })
         }
 
         ui.stepsPopupElmStepsWrapper.appendChild(stepElm)
-
     }
 
     function fireElementEvents(element, options = {}) {
@@ -350,10 +345,11 @@ const shortkeys = (function () {
         if (!current) return;
 
         const elm = utils.findTargetElm(current);
+
         fireElementEvents(elm);
 
         setTimeout(() => {
-            callNextStep(current.nextStep)
+            callNextStep(current.nx)
         }, options.waitBetweenSteps || 0)
     }
 
@@ -424,17 +420,16 @@ const shortkeys = (function () {
     }
 
     function handleKeydown(e) {
-        for (let {keys, target} of hostShortcuts) {
+        for (let {k, tr: target} of hostShortcuts) {
+            let keys = k.split(" + ");
+
             if (
-                e.ctrlKey === keys.ctrlKey &&
-                e.shiftKey === keys.shiftKey &&
-                e.altKey === keys.altKey &&
-                e.key.toLowerCase() === keys.key.toLowerCase()
+                e.ctrlKey === keys.includes("ctrl") &&
+                e.shiftKey === keys.includes("shift") &&
+                e.altKey === keys.includes("alt") &&
+                keys.includes(e.key.toLowerCase())
             ) {
                 e.preventDefault();
-
-                // document.body.focus();
-                // console.log("focus change");
 
                 // let curTarget = target;
                 callNextStep(target)
