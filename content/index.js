@@ -1,18 +1,7 @@
 'use strict';
 
 // init tab
-sendGlobalMessage({action: globalActions.INIT, host: location.origin}, (data = {}) => {
-    const {siteData, globalOptions = {}} = data;
-
-    if (globalOptions.off)
-        return;
-
-    const options = siteData && siteData.options ? siteData.options : {};
-
-    console.log(siteData.shortcuts);
-    shortkeys.upHostShortcuts(siteData.shortcuts || [],
-        {...globalOptions, ...options})
-});
+initContent();
 
 shortkeys.onAdd((shortcuts) => {
     console.log(shortcuts);
@@ -40,6 +29,10 @@ chrome.runtime.onMessage.addListener(function (data, details) {
             shortkeys.showSuccessToast(data.keys);
             break;
 
+        case contentActions.SHORTCUTS_UPDATED:
+            initContent()
+            break;
+
     }
 
 })
@@ -54,38 +47,17 @@ function sendGlobalMessage(body, cb) {
     chrome.runtime.sendMessage(body, cb);
 }
 
-// chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
-//   // If the received message has the expected format...
-//   if (msg.text === 'report_back') {
-//     // Call the specified callback, passing
-//     // the web-page's DOM content as argument
-//     sendResponse(document.all[0].outerHTML);
-//   }
-// });
+function initContent() {
+    sendGlobalMessage({action: globalActions.INIT, host: location.origin}, (data = {}) => {
+        const {siteData, globalOptions = {}} = data;
 
-// chrome.runtime.onMessage.addListener(function ({action}, details) {
-//     console.log(action);
-//     // if (action === "INIT") {
-//     //     chrome.runtime.sendMessage({"action": "INIT"});
-//     // }
-//
-// })
+        if (globalOptions.off)
+            return;
 
-// shortkeys.init(window.location.origin);
-// shortkeys.listen();
-//
-// document.addEventListener("click", (e) => {
-//     shortkeys.addStep(e)
-// })
+        const options = siteData && siteData.options ? siteData.options : {};
 
-// chrome.runtime.sendMessage({greeting: "hello"}, function (response) {
-//     console.log(response);
-// });
-
-// chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-//     console.log(sender.tab ?
-//         "from a content script:" + sender.tab.url :
-//         "from the extension");
-//     if (request.greeting == "hello")
-//         sendResponse({farewell: "goodbye"});
-// });
+        console.log(siteData.shortcuts);
+        shortkeys.upHostShortcuts(siteData.shortcuts || [],
+            {...globalOptions, ...options})
+    });
+}

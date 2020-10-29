@@ -79,7 +79,10 @@ chrome.runtime.onMessage.addListener(function (data, details, sendResponse) {
             return true
         case globalActions.DELETE_SHORTKEY:
             setHost(data.host)
-            removeShortkey(data.id, (res) => sendResponse(res))
+            removeShortkey(data.id, (res) => {
+                sendResponse(res);
+                sendMessageToAllTabs({action: contentActions.SHORTCUTS_UPDATED});
+            })
             return true
     }
 })
@@ -98,7 +101,7 @@ function removeShortkey(id, cb) {
     if (!id) return;
 
     loadHostData((hostData = {}) => {
-        const newSkList = (hostData.shortcuts || []).filter(sk => sk.id !== id);
+        const newSkList = (hostData.shortcuts || []).filter(sk => sk.i !== id);
         const updatedData = {...hostData, shortcuts: newSkList}
 
         const key = getHostKey();
