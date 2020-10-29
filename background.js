@@ -1,10 +1,11 @@
 'use strict';
 
-// TODO: edit steps waiting for each shortcut
-// TODO: add options page (global options, shortcuts list, add global shortcuts, add shortcuts for scripts)
-// TODO: check if its in input when keys pressed or not
-// TODO: test on file protocol
-// TODO: handle import data
+// TODO
+//  edit steps waiting for each shortcut
+//  add shortcuts for scripts (global or in-site)
+//  check if its in input when keys pressed or not
+//  test on file protocol
+//  handle import data
 
 let host = null;
 

@@ -19,7 +19,7 @@ document.addEventListener("click", (e) => {
 }, true)
 
 exportBtn.onclick = function (e) {
-    sendGlobalMessage({action: globalActions.GET_OPTIONS_DATA}, (response) => {
+    sendGlobalMessage({action: globalActions.GET_ALL_DATA}, (response) => {
         createDownloadLink(JSON.stringify(response));
         showToast("Shortkeys exported.")
     });
@@ -43,7 +43,7 @@ optionsForm.onsubmit = function (e) {
 
     let options = {
         off: false,
-        allowInInputs: false,
+        preventInInputs: false,
         waitBetweenSteps: "0",
     };
 
@@ -55,7 +55,7 @@ optionsForm.onsubmit = function (e) {
 
     sendGlobalMessage({action: globalActions.GLOBAL_OPTIONS_UPDATE, options}, (response) => {
         if (response) {
-            showToast("Options updated.", "error");
+            showToast("Options updated.");
         }
     })
 }
@@ -91,10 +91,10 @@ function initSettingsData() {
             optionsForm.elements["off"].removeAttribute("checked");
         }
 
-        if (globalOptions.allowInInputs) {
-            optionsForm.elements["allowInInputs"].setAttribute("checked", "true");
+        if (globalOptions.preventInInputs) {
+            optionsForm.elements["preventInInputs"].setAttribute("checked", "true");
         } else {
-            optionsForm.elements["allowInInputs"].removeAttribute("checked");
+            optionsForm.elements["preventInInputs"].removeAttribute("checked");
         }
 
         shortkeysCountElm.innerText = (Object.keys(shortcuts).length) + "";

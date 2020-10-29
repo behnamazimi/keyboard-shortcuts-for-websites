@@ -173,7 +173,7 @@ const shortkeys = (function () {
 
     let listeningToStep = false;
 
-    let options = {waitBetweenSteps: 100, off: false, allowInInputs: false};
+    let options = {waitBetweenSteps: 100, off: false, preventInInputs: false};
 
     let ui = {
         stepsPopupElm: null,
@@ -417,6 +417,14 @@ const shortkeys = (function () {
 
     function handleKeydown(e) {
 
+        if (options.preventInInputs) {
+            const tagName = e.path && e.path[0].tagName;
+            if (tagName && ["input", "textarea"].includes(tagName.toLowerCase())) {
+                return;
+            }
+        }
+
+
         for (let {k, tr: target} of hostShortcuts) {
             let keys = k.split(" + ");
 
@@ -427,6 +435,7 @@ const shortkeys = (function () {
                 e.altKey === keys.includes("alt") &&
                 keys.includes(e.key.toLowerCase())
             ) {
+                console.log(e);
                 e.preventDefault();
 
                 // let curTarget = target;

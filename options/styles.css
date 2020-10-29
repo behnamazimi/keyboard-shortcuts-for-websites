@@ -3,7 +3,7 @@
     font-family: 'Roboto', Arial, sans-serif !important;
 }
 
-body {
+body.issk {
     margin: 0 auto;
     max-width: 768px;
     font-size: 16px;
