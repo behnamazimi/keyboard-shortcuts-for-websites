@@ -420,10 +420,12 @@ const shortkeys = (function () {
     }
 
     function handleKeydown(e) {
+
         for (let {k, tr: target} of hostShortcuts) {
             let keys = k.split(" + ");
 
             if (
+                e.metaKey === (keys.includes("meta") || keys.includes("super") || keys.includes("window")) &&
                 e.ctrlKey === keys.includes("ctrl") &&
                 e.shiftKey === keys.includes("shift") &&
                 e.altKey === keys.includes("alt") &&
@@ -450,9 +452,9 @@ const shortkeys = (function () {
 
         if (!lastKeyEvent) return;
 
-        const {ctrlKey, shiftKey, altKey, key} = lastKeyEvent;
+        const {ctrlKey, shiftKey, altKey, metaKey, key} = lastKeyEvent;
 
-        let keys = {ctrlKey, shiftKey, altKey, key: key.toLowerCase()}
+        let keys = {ctrlKey, shiftKey, altKey, metaKey, key: key.toLowerCase()}
         lastKeyEvent = null;
 
         if (cb && typeof cb === "function") {
