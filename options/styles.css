@@ -22,6 +22,18 @@ body a:hover {
     color: #fff;
 }
 
+.page {
+    padding: 2rem 1rem;
+}
+
+.page .brand {
+    text-align: center;
+    font-weight: bold;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.4);
+    margin-bottom: 1rem;
+}
+
 small {
     font-size: 14px;
     opacity: 0.5;
