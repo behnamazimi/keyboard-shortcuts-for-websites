@@ -2,7 +2,7 @@
 
 const utils = (function () {
 
-    function generateKeysUID(keys) {
+    function generateKeysString(keys) {
         if (!keys) return "";
 
         return Object.entries(keys).reduce((res, b) => {
@@ -152,13 +152,13 @@ const utils = (function () {
         return {
             i: `${new Date().getTime()}`,
             t: title,
-            k: utils.generateKeysUID(keys),
+            k: utils.generateKeysString(keys),
             tr: target
         };
     }
 
     return {
-        generateKeysUID,
+        generateKeysString,
         findTargetElm,
         createStep,
         createNewShortcut,
@@ -374,11 +374,11 @@ const shortkeys = (function () {
         return isUnique;
     }
 
-    function isKeysUsedBefore(keys) {
-        if (!keys) return true;
+    function isKeysUsedBefore(keysObj) {
+        if (!keysObj) return true;
 
-        const keysUID = utils.generateKeysUID(keys)
-        return hostShortcuts.some(item => item.keysUID === keysUID);
+        const keysStr = utils.generateKeysString(keysObj)
+        return hostShortcuts.some(item => item.k === keysStr);
     }
 
     function preventLinksClick() {
@@ -463,7 +463,7 @@ const shortkeys = (function () {
     function handleKeysDetection(keys) {
         currentKeys = keys;
 
-        ui.keysPopupElmKeysWrapper.innerHTML = utils.generateKeysUID(keys);
+        ui.keysPopupElmKeysWrapper.innerHTML = utils.generateKeysString(keys);
     }
 
     function onAdd(fn) {

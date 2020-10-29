@@ -4,6 +4,7 @@
 // TODO: add options page (global options, shortcuts list, add global shortcuts, add shortcuts for scripts)
 // TODO: check if its in input when keys pressed or not
 // TODO: test on file protocol
+// TODO: handle import data
 
 let host = null;
 
@@ -168,7 +169,10 @@ function storeNewShortcut(shortcut) {
         const updatedData = {...siteData, shortcuts: [...(siteData.shortcuts || []), shortcut]}
         const key = getHostKey();
         storeData(key, updatedData, function () {
-            sendMessageToCurrentTab({action: contentActions.SHORTCUT_ADDED, keys: shortcut.keysUID})
+            sendMessageToCurrentTab({
+                action: contentActions.SHORTCUT_ADDED,
+                keys: shortcut.k
+            })
         });
     });
 }

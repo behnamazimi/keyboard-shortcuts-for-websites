@@ -119,7 +119,7 @@ function createHostItemElement(host, count) {
     hostsElm.appendChild(createElm())
 }
 
-function createShortkeyItemElement({id, title, keysUID}) {
+function createShortkeyItemElement({i: id, t: title, k: keys}) {
 
     const createElm = () => {
         let temp = document.createElement("template");
@@ -127,7 +127,7 @@ function createShortkeyItemElement({id, title, keysUID}) {
                 <li class="shortkey-item" id="${id}">
                     <div class="sk-detail">
                         <strong class="sk-name">${title}</strong>
-                        <code class="sk-keys">${keysUID}</code>
+                        <code class="sk-keys">${keys}</code>
                     </div>
                     <div class="sk-actions">
                         <button class="delete-sk small danger">Delete</button>
