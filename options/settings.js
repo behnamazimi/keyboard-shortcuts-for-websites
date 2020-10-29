@@ -10,7 +10,7 @@ let importFileInput = document.getElementById('import-file-input');
 let clearDataConfirm = document.getElementById('clear-data-confirm');
 let clearDataBtn = document.getElementById('clear-data-btn');
 
-init();
+initSettingsData();
 
 document.addEventListener("click", (e) => {
     if (e.target.classList.contains('section-title')) {
@@ -70,12 +70,15 @@ clearDataConfirm.onchange = e => {
 
 clearDataBtn.onclick = () => {
     sendGlobalMessage({action: globalActions.CLEAT_DATA}, () => {
+        initSettingsData();
         showToast("Shortkeys cleared.");
-        init();
+
+        clearDataBtn.setAttribute("disabled", "true")
+        clearDataConfirm.checked = false;
     });
 }
 
-function init() {
+function initSettingsData() {
     clearDataConfirm.removeAttribute("checked");
 
     sendGlobalMessage({action: globalActions.GET_OPTIONS_DATA}, (response) => {
