@@ -40,6 +40,7 @@
         "content/index.js"
       ],
       "css": [
+        "options/styles.css",
         "content/content-styles.css"
       ]
     }

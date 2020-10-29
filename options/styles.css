@@ -14,23 +14,25 @@ body {
     overflow-y: scroll;
 }
 
-body a {
+body.issk a,
+body .issk a {
     color: #d5d5d5;
 }
 
-body a:hover {
+body.issk a:hover,
+body .issk a:hover {
     color: #fff;
 }
 
-.page {
+.issk .page {
     padding: 2rem 1rem;
 }
 
-.page .page-head {
+.issk .page .page-head {
     position: relative;
 }
 
-.page .brand {
+.issk .page .brand {
     text-align: center;
     font-weight: bold;
     padding-bottom: 0.5rem;
@@ -38,7 +40,7 @@ body a:hover {
     margin-bottom: 1rem;
 }
 
-small {
+.issk small {
     font-size: 14px;
     opacity: 0.5;
     font-weight: lighter;
@@ -46,14 +48,14 @@ small {
     margin-bottom: 0.25rem;
 }
 
-label {
+.issk label {
     margin-bottom: 0.4rem;
     display: inline-block;
 }
 
-input[type="search"],
-input[type="number"],
-input[type="text"] {
+.issk input[type="search"],
+.issk input[type="number"],
+.issk input[type="text"] {
     width: 100%;
     box-sizing: border-box;
     padding: 0.5rem;
@@ -63,7 +65,7 @@ input[type="text"] {
     max-width: 150px;
 }
 
-button {
+.issk button {
     all: initial;
     font-family: inherit;
     font-size: 16px;
@@ -84,59 +86,59 @@ button {
     border: 1px solid transparent;
 }
 
-button:not(:disabled):hover {
+.issk button:not(:disabled):hover {
     cursor: pointer;
     background-color: #048440;
 }
 
-button:disabled {
+.issk button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-button.cancel {
+.issk button.cancel {
     background: transparent;
     color: #222;
     margin-right: 8px;
 }
 
-button.cancel:hover {
+.issk button.cancel:hover {
     background-color: #0000000f;
 }
 
-button.outline {
+.issk button.outline {
     background: transparent;
     color: #d5d5d5;
     border: 1px solid #d5d5d5;
 }
 
-button.outline:hover {
+.issk button.outline:hover {
     background-color: #d5d5d526;
 }
 
-button.danger {
+.issk button.danger {
     background: #dc0505;
 }
 
-button.danger:hover {
+.issk button.danger:hover {
     background-color: #c10404;
 }
 
-button.small {
+.issk button.small {
     padding: .2rem .4rem;
     font-size: 14px;
     line-height: 18px;
 }
 
-.custom-switch {
+.issk .custom-switch {
     display: inline-block;
 }
 
-.custom-switch input[type="checkbox"] {
+.issk .custom-switch input[type="checkbox"] {
     display: none;
 }
 
-.custom-switch label {
+.issk .custom-switch label {
     all: initial;
     display: inline-block;
     position: relative;
@@ -147,7 +149,7 @@ button.small {
     font-weight: 500;
 }
 
-.custom-switch input[type="checkbox"] + label::before {
+.issk .custom-switch input[type="checkbox"] + label::before {
     content: " ";
     display: block;
     height: 20px;
@@ -160,7 +162,7 @@ button.small {
     background: #e2e2e2;
 }
 
-.custom-switch input[type="checkbox"] + label::after {
+.issk .custom-switch input[type="checkbox"] + label::after {
     content: " ";
     display: block;
     height: 16px;
@@ -174,7 +176,7 @@ button.small {
     transition: all 0.2s ease-in-out;
 }
 
-.custom-switch input[type="checkbox"]:checked + label::after {
+.issk .custom-switch input[type="checkbox"]:checked + label::after {
     transform: translateY(-50%) translateX(22px);
     transition: all 0.2s ease-in-out;
     background-color: #32c28a;
@@ -198,6 +200,10 @@ button.small {
     transition: transform 0.3s, all 0.5s;
 }
 
+.issk-toast.error {
+    background-color: #dc0505;
+}
+
 .issk-toast.visible {
     opacity: 1;
     visibility: visible;
@@ -209,4 +215,13 @@ button.small {
     font-family: inherit;
     font-size: 16px;
     margin: 0;
+}
+
+.issk-pre {
+    padding: 0;
+    border: none;
+    background: no-repeat;
+    color: inherit;
+    margin: 0;
+    display: block;
 }

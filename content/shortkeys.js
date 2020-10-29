@@ -354,7 +354,7 @@ const shortkeys = (function () {
 
         setTimeout(() => {
             callNextStep(current.nextStep)
-        }, current.wait || 100)
+        }, options.waitBetweenSteps || 0)
     }
 
     // BUILD IN UTILS
