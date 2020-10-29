@@ -211,6 +211,10 @@ body .issk a:hover {
     transition: all 0.3s;
 }
 
+.issk-toast .issk-container {
+    margin-bottom: 0;
+}
+
 .issk-toast p {
     font-family: inherit;
     font-size: 16px;

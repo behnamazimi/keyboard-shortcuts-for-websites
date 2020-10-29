@@ -189,6 +189,8 @@ const shortkeys = (function () {
     let currentKeys = null;
     let currentShortkeyTitle = '';
 
+    let lastDomClick = null
+    
     function listen() {
         listeningToStep = true;
         currentLinkedTargets = null;
@@ -197,7 +199,7 @@ const shortkeys = (function () {
         showStepsPopup();
 
         preventLinksClick();
-        // document.addEventListener("click", handleDocClick)
+        document.addEventListener("click", handleDocClick)
         document.addEventListener("mousedown", handleDocClick)
     }
 
@@ -322,11 +324,19 @@ const shortkeys = (function () {
 
     function fireElementEvents(element, options = {}) {
         if (!element) {
-            console.log("Element not found!");
+            showToast(
+                "Step calling failed because the element was not found.",
+                "Maybe you are in wrong page.",
+                true);
             return
         }
 
         const eventOptions = {bubbles: true, ...options};
+
+        if (element.click) {
+            element.click()
+            return;
+        }
 
         const validMouseEvents = ["click", "mousedown", "mouseup"];
 
@@ -373,6 +383,12 @@ const shortkeys = (function () {
 
     // EVENT HANDLERS
     function handleDocClick(e) {
+        if (performance.now() - lastDomClick < 300) {
+            e.preventDefault();
+            return;
+        }
+        lastDomClick = performance.now();
+
         if (!e || !e.target || !listeningToStep) return;
 
         if (e.path && e.path.some(elm => elm === ui.stepsPopupElm)) return;
@@ -513,7 +529,7 @@ const shortkeys = (function () {
                 return;
             }
 
-            // document.removeEventListener("click", handleDocClick)
+            document.removeEventListener("click", handleDocClick)
             document.removeEventListener("mousedown", handleDocClick)
             showKeysInputPopup()
 
@@ -598,15 +614,15 @@ const shortkeys = (function () {
 
     }
 
-    function showSuccessToast(keys) {
+    function showToast(msg, pre, error = false) {
 
         const createToastElm = () => {
             let temp = document.createElement("template");
             temp.innerHTML = `
                 <div class="issk-toast">
                     <div class="issk-container">
-                        <p class="issk-p">New shortcut was added.</p>
-                        <pre class="issk-pre">${keys || 'Unknown Keys'}</pre>
+                        <p class="issk-p">${msg}</p>
+                        ${pre ? `<pre class="issk-pre">${pre}</pre>` : ''}
                     </div>
                 </div>`;
 
@@ -618,14 +634,22 @@ const shortkeys = (function () {
         }
 
         ui.successToastElm = createToastElm();
+        ui.successToastElm.classList.add("visible")
+        if (error) ui.successToastElm.classList.add("error")
 
         document.body.appendChild(ui.successToastElm);
 
         setTimeout(() => {
-            if (ui.successToastElm)
+            if (ui.successToastElm) {
+                ui.successToastElm.classList.remove("visible")
                 ui.successToastElm.remove();
+            }
 
-        }, 3000)
+        }, 4000)
+    }
+
+    function showSuccessToast(keys) {
+        showToast("New shortcut was added", keys)
     }
 
 
