@@ -1,0 +1,125 @@
+#settings-page {
+    padding: 2rem 1rem;
+}
+
+#settings-page .brand {
+    text-align: center;
+    font-weight: bold;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.4);
+    margin-bottom: 1rem;
+}
+
+#settings-page .section {
+    position: relative;
+    padding-left: 20px;
+    padding-bottom: 4px;
+    margin-bottom: 2rem;
+    overflow: hidden;
+    transition: all 0.4s linear;
+    max-height: 28px;
+    height: auto;
+}
+
+#settings-page .section:last-child {
+    border-bottom: none;
+}
+
+#settings-page .section.open {
+    max-height: 1000px;
+    transition: all 0.4s linear;
+}
+
+#settings-page .section:before {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    left: 10px;
+    top: 28px;
+    height: calc(100% - 25px);
+    background: transparent;
+    border-left: 2px solid #ffffff2e;
+}
+
+#settings-page .section-title {
+    position: relative;
+    margin-bottom: 1rem;
+    margin-left: -20px;
+    font-weight: bold;
+    cursor: pointer;
+    background: #0f2a4c;
+    padding: 0.25rem;
+}
+
+#settings-page .section-title:hover {
+    background: #13355f;
+}
+
+#settings-page .section-title:after {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    border-top: 8px solid;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    transition: all 0.2s linear;
+}
+
+#settings-page .section.open .section-title:after {
+    transform: rotate(-180deg);
+}
+
+#settings-page .section-item {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+
+#settings-page input[type="number"],
+#settings-page input[type="text"] {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.5rem;
+    background: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    max-width: 150px;
+}
+
+#settings-page .import-export-actions {
+    margin-top: 0.5rem;
+}
+
+#settings-page .import-export-actions .divider {
+    display: inline-block;
+    margin: 0 .5rem;
+}
+
+#settings-page .import-export-actions .import-input {
+    display: inline-block;
+}
+
+#settings-page .waiting-input {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.5rem;
+}
+
+#settings-page .confirm-checkbox {
+    display: inline-flex;
+    align-items: center;
+    margin: 0.5rem 0;
+}
+
+#settings-page .confirm-checkbox input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+}
+
+#settings-page .confirm-checkbox label {
+    opacity: 0.5;
+    margin-bottom: 0;
+    margin-left: 0.5rem;
+}

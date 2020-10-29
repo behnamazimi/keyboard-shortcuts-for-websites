@@ -8,7 +8,7 @@
     "declarativeContent",
     "storage"
   ],
-  "options_page": "options/options.html",
+  "options_page": "options/settings.html",
   "background": {
     "scripts": [
       "constant.js",

@@ -2,12 +2,13 @@
 <html lang="en">
 <head>
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-    <link rel="stylesheet" href="./options-styles.css">
-    <title>Options - In-site Shortkeys</title>
+    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="settings-styles.css">
+    <title>Settings - In-site Shortkeys</title>
 </head>
 <body>
-<div id="options-page">
-    <div class="brand">In-site Shortkeys</div>
+<div id="settings-page">
+    <div class="brand">In-site Shortkeys Settings</div>
     <div class="content">
         <!-- Global Options -->
         <div class="section open">
@@ -64,7 +65,7 @@
                 </small>
                 <div class="import-export-actions">
                     <button id="export-btn" class="outline">Export Now</button>
-                    or
+                    <span class="divider">or</span>
                     <div class="import-input">
                         <input type="file" id="import-file-input" hidden>
                         <button id="import-btn" class="outline">Import Data</button>
@@ -88,7 +89,7 @@
             </div>
         </div>
     </div>
-    <div class="issk-toast" id="options-toast">
+    <div class="issk-toast" id="issk-toast">
         <div class="issk-container">
             <p class="issk-p"></p>
         </div>
@@ -96,5 +97,5 @@
 </div>
 </body>
 <script src="../constant.js"></script>
-<script src="options.js"></script>
+<script src="settings.js"></script>
 </html>

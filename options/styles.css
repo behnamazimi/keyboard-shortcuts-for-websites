@@ -22,86 +22,7 @@ body a:hover {
     color: #fff;
 }
 
-#options-page {
-    padding: 2rem 1rem;
-}
-
-#options-page .brand {
-    text-align: center;
-    font-weight: bold;
-    padding-bottom: 0.5rem;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.4);
-    margin-bottom: 1rem;
-}
-
-#options-page .section {
-    position: relative;
-    padding-left: 20px;
-    padding-bottom: 4px;
-    margin-bottom: 2rem;
-    overflow: hidden;
-    transition: all 0.4s linear;
-    max-height: 28px;
-    height: auto;
-}
-
-#options-page .section:last-child {
-    border-bottom: none;
-}
-
-#options-page .section.open {
-    max-height: 1000px;
-    transition: all 0.4s linear;
-}
-
-#options-page .section:before {
-    content: "";
-    display: inline-block;
-    position: absolute;
-    left: 10px;
-    top: 28px;
-    height: calc(100% - 25px);
-    background: transparent;
-    border-left: 2px solid #ffffff2e;
-}
-
-#options-page .section-title {
-    position: relative;
-    margin-bottom: 1rem;
-    margin-left: -20px;
-    font-weight: bold;
-    cursor: pointer;
-    background: #0f2a4c;
-    padding: 0.25rem;
-}
-
-#options-page .section-title:hover{
-    background: #13355f;
-}
-
-#options-page .section-title:after {
-    content: "";
-    display: inline-block;
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    border-top: 8px solid;
-    border-left: 6px solid transparent;
-    border-right: 6px solid transparent;
-    transition: all 0.2s linear;
-}
-
-#options-page .section.open .section-title:after {
-    transform: rotate(-180deg);
-}
-
-#options-page .section-item {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 1rem;
-}
-
-#options-page .section-item small {
+small {
     font-size: 14px;
     opacity: 0.5;
     font-weight: lighter;
@@ -109,13 +30,13 @@ body a:hover {
     margin-bottom: 0.25rem;
 }
 
-#options-page label {
+label {
     margin-bottom: 0.4rem;
     display: inline-block;
 }
 
-#options-page input[type="number"],
-#options-page input[type="text"] {
+input[type="number"],
+input[type="text"] {
     width: 100%;
     box-sizing: border-box;
     padding: 0.5rem;
@@ -123,37 +44,6 @@ body a:hover {
     border: 1px solid #ccc;
     border-radius: 5px;
     max-width: 150px;
-}
-
-#options-page .import-export-actions {
-    margin-top: 0.5rem;
-}
-
-#options-page .import-export-actions .import-input {
-    display: inline-block;
-}
-
-#options-page .waiting-input {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 0.5rem;
-}
-
-#options-page .confirm-checkbox {
-    display: inline-flex;
-    align-items: center;
-    margin: 0.5rem 0;
-}
-
-#options-page .confirm-checkbox input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-}
-
-#options-page .confirm-checkbox label {
-    opacity: 0.5;
-    margin-bottom: 0;
-    margin-left: 0.5rem;
 }
 
 button {
@@ -199,7 +89,6 @@ button.cancel:hover {
 button.outline {
     background: transparent;
     color: #d5d5d5;
-    margin-right: 8px;
     border: 1px solid #d5d5d5;
 }
 
