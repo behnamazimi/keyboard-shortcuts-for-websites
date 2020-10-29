@@ -87,7 +87,7 @@ function initSettingsData() {
 
     sendGlobalMessage({action: globalActions.GET_ALL_DATA}, (response) => {
         const {globalOptions = {}, shortcuts = {}} = allData = response || {};
-        optionsForm.elements["waitBetweenSteps"].value = globalOptions.waitBetweenSteps || 0;
+        optionsForm.elements["waitBetweenSteps"].value = (globalOptions.waitBetweenSteps / 1000) || 0.5;
 
         if (globalOptions.off) {
             optionsForm.elements["off"].setAttribute("checked", "true");
