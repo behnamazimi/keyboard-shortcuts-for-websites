@@ -155,6 +155,7 @@
 .issk .issk-popup-msg.info {
     border-color: #0066ff;
     list-style: none;
+    margin-bottom: 0.5rem;
 }
 
 .issk .issk-popup-msg code {
