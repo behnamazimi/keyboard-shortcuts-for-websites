@@ -6,6 +6,7 @@
 //  check if its in input when keys pressed or not
 //  test on file protocol
 //  handle import data
+//  add number of steps to shortcut obj
 
 let host = null;
 

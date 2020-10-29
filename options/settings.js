@@ -44,13 +44,17 @@ optionsForm.onsubmit = function (e) {
     let options = {
         off: false,
         preventInInputs: false,
-        waitBetweenSteps: "0",
+        waitBetweenSteps: ".5",
     };
 
     for (let [key, value] of formData.entries()) {
         options[key] = value;
         if (value === "on")
             options[key] = true;
+
+        if (key === "waitBetweenSteps") {
+            options[key] = +value * 1000;
+        }
     }
 
     sendGlobalMessage({action: globalActions.GLOBAL_OPTIONS_UPDATE, options}, (response) => {

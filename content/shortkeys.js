@@ -106,7 +106,7 @@ const utils = (function () {
 
         if (!targetElm || targetElm.nodeName === "#document") return step;
 
-        const validAttrs = ["id", "role", "tabIndex", "type"]
+        const validAttrs = ["id", "role", "tabIndex", "type", "title"]
 
         const rawAttrs = targetElm.attributes || [];
         const rawAttrsLen = rawAttrs.length;
@@ -173,7 +173,7 @@ const shortkeys = (function () {
 
     let listeningToStep = false;
 
-    let options = {waitBetweenSteps: 100, off: false, preventInInputs: false};
+    let options = {waitBetweenSteps: 1000, off: false, preventInInputs: false};
 
     let ui = {
         stepsPopupElm: null,
@@ -346,7 +346,7 @@ const shortkeys = (function () {
 
         setTimeout(() => {
             callNextStep(current.nx)
-        }, options.waitBetweenSteps || 0)
+        }, options.waitBetweenSteps || 500)
     }
 
     // BUILD IN UTILS
