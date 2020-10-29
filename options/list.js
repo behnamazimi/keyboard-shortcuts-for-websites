@@ -15,7 +15,7 @@ initListData();
 
 function initListData() {
 
-    sendGlobalMessage({action: globalActions.GET_OPTIONS_DATA}, (response) => {
+    sendGlobalMessage({action: globalActions.GET_ALL_DATA}, (response) => {
         allData = response || {};
 
         renderHostsList();
@@ -87,8 +87,6 @@ function renderHostsList() {
 
     let items = Object.entries(shortcuts);
 
-    if (!items.length) return;
-
     if (searchTrend) {
         items = items.filter(([host]) => host.indexOf(searchTrend) > -1)
     }
@@ -154,10 +152,10 @@ function deleteShortkey(shortkeyElm) {
 
     sendGlobalMessage({action: globalActions.DELETE_SHORTKEY, id, host: selectedHost}, (res) => {
         initListData();
+        shortkeyElm.remove();
         if (!res || !res.shortcuts || !res.shortcuts.length) {
             closeHostPageBtn.click();
         }
-        shortkeyElm.remove();
     })
 }
 

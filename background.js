@@ -70,21 +70,15 @@ chrome.runtime.onMessage.addListener(function (data, details, sendResponse) {
                 sendResponse(globalOptions)
             })
             return true;
-        case globalActions.GET_OPTIONS_DATA:
-            getAllData((res) => {
-                sendResponse(res)
-            })
+        case globalActions.GET_ALL_DATA:
+            getAllData((res) => sendResponse(res))
             return true
         case globalActions.CLEAT_DATA:
-            clearAllData(() => {
-                sendResponse()
-            })
-            return true;
+            clearAllData(() => sendResponse())
+            return true
         case globalActions.DELETE_SHORTKEY:
             setHost(data.host)
-            removeShortkey(data.id, (res) => {
-                sendResponse(res)
-            })
+            removeShortkey(data.id, (res) => sendResponse(res))
             return true
     }
 })

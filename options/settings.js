@@ -81,7 +81,7 @@ clearDataBtn.onclick = () => {
 function initSettingsData() {
     clearDataConfirm.removeAttribute("checked");
 
-    sendGlobalMessage({action: globalActions.GET_OPTIONS_DATA}, (response) => {
+    sendGlobalMessage({action: globalActions.GET_ALL_DATA}, (response) => {
         const {globalOptions = {}, shortcuts = {}} = allData = response || {};
         optionsForm.elements["waitBetweenSteps"].value = globalOptions.waitBetweenSteps || 0;
 
