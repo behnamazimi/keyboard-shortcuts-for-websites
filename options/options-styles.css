@@ -75,6 +75,10 @@ body a:hover {
     padding: 0.25rem;
 }
 
+#options-page .section-title:hover{
+    background: #13355f;
+}
+
 #options-page .section-title:after {
     content: "";
     display: inline-block;
@@ -190,6 +194,25 @@ button.cancel {
 
 button.cancel:hover {
     background-color: #0000000f;
+}
+
+button.outline {
+    background: transparent;
+    color: #d5d5d5;
+    margin-right: 8px;
+    border: 1px solid #d5d5d5;
+}
+
+button.outline:hover {
+    background-color: #d5d5d526;
+}
+
+button.danger {
+    background: #dc0505;
+}
+
+button.danger:hover {
+    background-color: #c10404;
 }
 
 .custom-switch {

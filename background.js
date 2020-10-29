@@ -72,16 +72,18 @@ chrome.runtime.onMessage.addListener(function (data, details, sendResponse) {
                 sendResponse(globalOptions)
             })
             return true;
-        case globalActions.OPTIONS_INIT:
+        case globalActions.GET_OPTIONS_DATA:
             getAllData((data) => {
                 sendResponse(data)
             })
             return true
+        case globalActions.CLEAT_DATA:
+            clearAllData((data) => {
+                sendResponse()
+            })
+            return true
     }
-    // sendGlobalMessage({"action": "INIT"});
 })
-
-// clearAllData()
 
 function getHostShortcuts(cb) {
     loadHostData((siteData = {}) => {
@@ -169,9 +171,10 @@ function getAllData(cb) {
     });
 }
 
-function clearAllData() {
+function clearAllData(cb) {
     chrome.storage.sync.clear(function () {
-        console.log("store cleared");
+        if (cb && typeof cb === "function")
+            cb()
     });
 }
 

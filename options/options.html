@@ -7,10 +7,11 @@
 </head>
 <body>
 <div id="options-page">
-    <div class="brand">In-site Shortkeys Options</div>
-    <form id="options-form">
-        <div class="content">
-            <div class="section open">
+    <div class="brand">In-site Shortkeys</div>
+    <div class="content">
+        <!-- Global Options -->
+        <div class="section open">
+            <form id="options-form">
                 <div class="section-title">Global Options</div>
                 <div class="section-item">
                     <div class="custom-switch">
@@ -41,49 +42,52 @@
                 <div class="section-item">
                     <button type="submit">Save Options</button>
                 </div>
-            </div>
-            <div class="section">
-                <div class="section-title">Statistics</div>
-                <div class="section-item">
-                    <small><strong>125</strong> shortkeys have been added in total.</small>
-                    <div>
-                        <a href="/test.html">Show Shortkeys</a>
-                    </div>
+            </form>
+        </div>
+        <!-- Statistics -->
+        <div class="section">
+            <div class="section-title">Statistics</div>
+            <div class="section-item">
+                <small><strong id="shortkeys-count">0</strong> shortkeys have been added in total.</small>
+                <div>
+                    <a href="/shortkeys.html">Show Shortkeys</a>
                 </div>
             </div>
-            <div class="section">
-                <div class="section-title">Export / Import Data</div>
-                <div class="section-item">
-                    <small>
-                        You can export the entire data of your shortkeys and scripts and import it where and when you
-                        want.
-                    </small>
-                    <div class="import-export-actions">
-                        <button>Export Now</button>
-                        or
-                        <div class="import-input">
-                            <input type="file" hidden>
-                            <button>Import Data</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="section">
-                <div class="section-title">Clear All Data and Keys</div>
-                <div class="section-item">
-                    <small>Notice that if the data is deleted, it will not be recovered in any way.</small>
-                    <small>This process will needs your confirmation.</small>
-                    <div class="confirm-checkbox">
-                        <input type="checkbox" id="approve-data-remove">
-                        <label for="approve-data-remove">I confirm the deletion of all data</label>
-                    </div>
-                    <div>
-                        <button disabled>Clear All</button>
+        </div>
+        <!-- Export/Import -->
+        <div class="section">
+            <div class="section-title">Export / Import Data</div>
+            <div class="section-item">
+                <small>
+                    You can export the entire data of your shortkeys and scripts and import it where and when you
+                    want.
+                </small>
+                <div class="import-export-actions">
+                    <button id="export-btn" class="outline">Export Now</button>
+                    or
+                    <div class="import-input">
+                        <input type="file" id="import-file-input" hidden>
+                        <button id="import-btn" class="outline">Import Data</button>
                     </div>
                 </div>
             </div>
         </div>
-    </form>
+        <!-- Clear All Data -->
+        <div class="section">
+            <div class="section-title">Clear All Data and Keys</div>
+            <div class="section-item">
+                <small>Notice that if the data is deleted, it will not be recovered in any way.</small>
+                <small>This process will needs your confirmation.</small>
+                <div class="confirm-checkbox">
+                    <input type="checkbox" id="clear-data-confirm">
+                    <label for="clear-data-confirm">I confirm the deletion of all data</label>
+                </div>
+                <div>
+                    <button disabled id="clear-data-btn" class="danger">Clear All</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="issk-toast" id="options-toast">
         <div class="issk-container">
             <p class="issk-p"></p>
