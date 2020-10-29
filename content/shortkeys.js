@@ -181,6 +181,8 @@ const shortkeys = (function () {
 
     let listeningToStep = false;
 
+    let options = {waitBetweenSteps: 100, off: false, allowInInputs: false};
+
     let ui = {
         stepsPopupElm: null,
         stepsPopupElmStepsWrapper: null,
@@ -226,15 +228,20 @@ const shortkeys = (function () {
 
     }
 
-    function upHostShortcuts(shortcuts) {
+    function upHostShortcuts(shortcuts, globalOptions) {
         // update shortcuts list
         if (Array.isArray(shortcuts) && shortcuts.length > 0) {
             hostShortcuts = shortcuts;
         }
 
+        // update global options
+        if (globalOptions) options = {...options, ...globalOptions};
+
         console.log("init listeners...");
         window.removeEventListener("keydown", handleKeydown)
         window.addEventListener("keydown", handleKeydown)
+
+        if (options.off) downHostShortcuts();
     }
 
     function downHostShortcuts() {
@@ -340,14 +347,14 @@ const shortkeys = (function () {
     }
 
     function callNextStep(current) {
-        if (!current || current.id === void 0) return;
+        if (!current) return;
 
         const elm = utils.findTargetElm(current);
         fireElementEvents(elm);
 
         setTimeout(() => {
             callNextStep(current.nextStep)
-        }, current.wait || 1000)
+        }, current.wait || 100)
     }
 
     // BUILD IN UTILS
@@ -418,18 +425,16 @@ const shortkeys = (function () {
 
     function handleKeydown(e) {
         for (let {keys, target} of hostShortcuts) {
-
             if (
                 e.ctrlKey === keys.ctrlKey &&
                 e.shiftKey === keys.shiftKey &&
                 e.altKey === keys.altKey &&
                 e.key.toLowerCase() === keys.key.toLowerCase()
             ) {
-
                 e.preventDefault();
 
-                document.body.focus();
-                console.log("focus change");
+                // document.body.focus();
+                // console.log("focus change");
 
                 // let curTarget = target;
                 callNextStep(target)

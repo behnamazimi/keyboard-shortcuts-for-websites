@@ -3,16 +3,15 @@
 // init tab
 sendGlobalMessage({action: globalActions.INIT, host: location.origin}, (data = {}) => {
     const {siteData, globalOptions = {}} = data;
-    console.log(data);
+
     if (globalOptions.off)
         return;
 
     const options = siteData && siteData.options ? siteData.options : {};
 
-    if (!options.off) {
-        console.log(siteData.shortcuts);
-        shortkeys.upHostShortcuts(siteData.shortcuts || [])
-    }
+    console.log(siteData.shortcuts);
+    shortkeys.upHostShortcuts(siteData.shortcuts || [],
+        {...globalOptions, ...options})
 });
 
 shortkeys.onAdd((shortcuts) => {
@@ -30,15 +29,7 @@ chrome.runtime.onMessage.addListener(function (data, details) {
         case contentActions.OPTION_UPDATE:
             const {globalOptions = {}, options = {}, shortcuts = []} = data;
 
-            if (globalOptions.off) {
-                shortkeys.downHostShortcuts()
-            } else {
-                if (options.off) {
-                    shortkeys.downHostShortcuts()
-                } else {
-                    shortkeys.upHostShortcuts(shortcuts)
-                }
-            }
+            shortkeys.upHostShortcuts(shortcuts, {...globalOptions, ...options})
             break;
 
         case contentActions.START_LISTENING:
