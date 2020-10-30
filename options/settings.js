@@ -3,6 +3,7 @@
 let allData = null;
 let optionsForm = document.getElementById('options-form');
 let toastElm = document.getElementById('issk-toast');
+let hostsCountElm = document.getElementById('hosts-count');
 let shortkeysCountElm = document.getElementById('shortkeys-count');
 let exportBtn = document.getElementById('export-btn');
 let importBtn = document.getElementById('import-btn');
@@ -101,7 +102,10 @@ function initSettingsData() {
             optionsForm.elements["preventInInputs"].removeAttribute("checked");
         }
 
-        shortkeysCountElm.innerText = (Object.keys(shortcuts).length) + "";
+        const allHostsLen = Object.keys(shortcuts).length;
+        const allKeysLen = Object.entries(shortcuts).reduce((a, [_, b]) => a + (b.shortcuts || []).length, 0)
+        hostsCountElm.innerText = allHostsLen + "";
+        shortkeysCountElm.innerText = allKeysLen + "";
     });
 }
 
