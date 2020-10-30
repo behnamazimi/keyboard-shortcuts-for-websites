@@ -32,18 +32,21 @@ const utils = (function () {
         let id = null;
         let simpleQuery = `${parentQ} ${tag}`;
         let complexQuery = `${parentQ} ${tag}`;
+        let multiComplexQuery = `${parentQ} ${tag}`;
 
         if (attributes.id) {
             id = attributes.id;
 
             simpleQuery += `#${attributes.id}`;
             complexQuery += `#${attributes.id}`;
+            multiComplexQuery += `#${attributes.id}`;
 
         } else {
             // add nth-child if index is bigger than 0
             if (tag && !!step.i) {
                 simpleQuery += `:nth-child(${step.i})`
                 complexQuery += `:nth-child(${step.i})`
+                multiComplexQuery += `:nth-child(${step.i})`
             }
 
             for (let [attr, value] of Object.entries(attributes)) {
@@ -51,8 +54,10 @@ const utils = (function () {
                     case "id":
                         break;
                     case "class":
-                        const classes = value.split(" ").map(c => "." + c).join("").trim();
-                        complexQuery += `${classes}`;
+                        const classesStr = value.split(" ").map(c => "." + c).join("").trim();
+                        const classes = value.split(" ").map(c => (c || '').trim());
+                        complexQuery += `[class*="${classes[0]}"]`;
+                        multiComplexQuery += `${classesStr}`;
                         break;
                     default:
                         complexQuery += `[${attr}="${value}"]`;
@@ -68,7 +73,7 @@ const utils = (function () {
             .replace(/#:/g, "#\\:")
             .trim();
 
-        return [id, simpleQuery, complexQuery]
+        return [id, simpleQuery, complexQuery, multiComplexQuery]
     }
 
     function findIndexAsChild(child) {
@@ -84,13 +89,34 @@ const utils = (function () {
 
         let elm;
 
-        const [id, simpleQuery, complexQuery] = generateStepElmQuery(step);
+        const [id, simpleQuery, complexQuery, multiComplexQuery] = generateStepElmQuery(step);
 
-        if (!elm) elm = document.querySelector(simpleQuery)
+        if (id) elm = document.getElementById(id);
 
-        if (!elm) elm = document.querySelector(complexQuery)
+        if (!elm) {
+            console.log([
+                ["simple", document.querySelectorAll(simpleQuery).length],
+                ["complex", document.querySelectorAll(complexQuery).length],
+                ["multiComplex", document.querySelectorAll(multiComplexQuery).length],
+            ]);
+            if (document.querySelectorAll(simpleQuery).length === 1) {
+                // console.log(document.querySelectorAll(simpleQuery));
+                elm = document.querySelector(simpleQuery)
+                console.log(elm, "simple", simpleQuery);
 
-        if (!elm) console.log({id, simpleQuery, complexQuery})
+            } else if (document.querySelectorAll(complexQuery).length === 1) {
+                elm = document.querySelector(complexQuery)
+                console.log(elm, "complex", complexQuery);
+
+            } else {
+                elm = document.querySelector(multiComplexQuery)
+                console.log(elm, "multicomplex", multiComplexQuery);
+            }
+        }
+
+
+        // if (!elm)
+        // console.log({id, simpleQuery, complexQuery, multiComplexQuery})
         return elm
     }
 
@@ -104,7 +130,7 @@ const utils = (function () {
 
         if (!targetElm || targetElm.nodeName === "#document") return step;
 
-        const validAttrs = ["id", "role", "tabindex", "type", "title"]
+        const validAttrs = ["id", "role", "tabindex", "type", "title", "class"]
 
         const rawAttrs = targetElm.attributes || [];
         const rawAttrsLen = rawAttrs.length;
@@ -129,18 +155,17 @@ const utils = (function () {
 
         step.i = findIndexAsChild(targetElm)
 
-        const [id, simpleQuery, complexQuery] = generateStepElmQuery(step)
+        const [id, simpleQuery, complexQuery, multiComplexQuery] = generateStepElmQuery(step)
 
-        if (!id) {
-            if (document.querySelectorAll(simpleQuery).length > 1) {
-                if (document.querySelectorAll(complexQuery).length > 1)
-                    step.pr = createStep(targetElm.parentNode)
-            }
-
-        } else if (!targetElm.isEqualNode(findTargetElm(step))) {
+        if (!id &&
+            (!targetElm.isEqualNode(findTargetElm(step)) || (
+                document.querySelectorAll(simpleQuery).length > 1 &&
+                document.querySelectorAll(complexQuery).length > 1
+            ))) {
             step.pr = createStep(targetElm.parentNode)
         }
 
+        findTargetElm(step);
         return step;
     }
 
@@ -190,7 +215,7 @@ const shortkeys = (function () {
     let currentShortkeyTitle = '';
 
     let lastDomClick = null
-    
+
     function listen() {
         listeningToStep = true;
         currentLinkedTargets = null;
@@ -331,20 +356,22 @@ const shortkeys = (function () {
             return
         }
 
-        const eventOptions = {bubbles: true, ...options};
-
-        if (element.click) {
+        if ((element.tagName === "A" || element.tagName === "BUTTON") && element.click) {
             element.click()
             return;
         }
 
-        const validMouseEvents = ["click", "mousedown", "mouseup"];
+        const eventOptions = {
+            bubbles: true, view: window,
+            ...options
+        };
 
-        // dispatch above events
-        validMouseEvents.forEach(event => {
+        const validEvents = ["mousedown", "click"];
+        for (let event of validEvents) {
             const ev = new MouseEvent(event, eventOptions)
             element.dispatchEvent(ev)
-        })
+        }
+
     }
 
     function callNextStep(current) {
@@ -352,7 +379,7 @@ const shortkeys = (function () {
 
         const elm = utils.findTargetElm(current);
 
-        fireElementEvents(elm);
+        fireElementEvents(elm, null, current);
 
         setTimeout(() => {
             callNextStep(current.nx)
@@ -387,13 +414,28 @@ const shortkeys = (function () {
             e.preventDefault();
             return;
         }
+
         lastDomClick = performance.now();
 
         if (!e || !e.target || !listeningToStep) return;
 
         if (e.path && e.path.some(elm => elm === ui.stepsPopupElm)) return;
 
-        shortkeys.addStep(e.target);
+        let target = e.target;
+
+        if (e.path) {
+            const buttonIndex = e.path.findIndex(pe => pe.tagName === "BUTTON")
+            if (buttonIndex > -1) {
+                target = e.path[buttonIndex];
+            }
+
+            const aIndex = e.path.findIndex(pe => pe.tagName === "A")
+            if (aIndex > -1) {
+                target = e.path[aIndex];
+            }
+        }
+
+        shortkeys.addStep(target);
     }
 
     function handleLinkTagClick(e) {
@@ -421,13 +463,11 @@ const shortkeys = (function () {
                 e.ctrlKey === keys.includes("ctrl") &&
                 e.shiftKey === keys.includes("shift") &&
                 e.altKey === keys.includes("alt") &&
-                keys.includes(e.key.toLowerCase())
+                keys[keys.length - 1] === e.key.toLowerCase()
             ) {
 
-                console.log(keys);
                 e.preventDefault();
 
-                // let curTarget = target;
                 callNextStep(target)
 
                 // break loop when reached the target short-key
