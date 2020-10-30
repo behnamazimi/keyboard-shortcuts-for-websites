@@ -72,6 +72,9 @@ const utils = (function () {
         complexQuery = complexQuery.replace(/\.\./, ".")
             .replace(/#:/g, "#\\:")
             .trim();
+        multiComplexQuery = multiComplexQuery.replace(/\.\./, ".")
+            .replace(/#:/g, "#\\:")
+            .trim();
 
         return [id, simpleQuery, complexQuery, multiComplexQuery]
     }
@@ -94,29 +97,17 @@ const utils = (function () {
         if (id) elm = document.getElementById(id);
 
         if (!elm) {
-            console.log([
-                ["simple", document.querySelectorAll(simpleQuery).length],
-                ["complex", document.querySelectorAll(complexQuery).length],
-                ["multiComplex", document.querySelectorAll(multiComplexQuery).length],
-            ]);
             if (document.querySelectorAll(simpleQuery).length === 1) {
-                // console.log(document.querySelectorAll(simpleQuery));
                 elm = document.querySelector(simpleQuery)
-                console.log(elm, "simple", simpleQuery);
 
             } else if (document.querySelectorAll(complexQuery).length === 1) {
                 elm = document.querySelector(complexQuery)
-                console.log(elm, "complex", complexQuery);
 
             } else {
                 elm = document.querySelector(multiComplexQuery)
-                console.log(elm, "multicomplex", multiComplexQuery);
             }
         }
 
-
-        // if (!elm)
-        // console.log({id, simpleQuery, complexQuery, multiComplexQuery})
         return elm
     }
 
@@ -224,8 +215,8 @@ const shortkeys = (function () {
         showStepsPopup();
 
         preventLinksClick();
-        document.addEventListener("click", handleDocClick)
         document.addEventListener("mousedown", handleDocClick)
+        document.addEventListener("click", handleDocClick)
     }
 
     function abortAdding() {
@@ -366,7 +357,7 @@ const shortkeys = (function () {
             ...options
         };
 
-        const validEvents = ["mousedown", "click"];
+        const validEvents = ["mouseup", "mousedown", "click"];
         for (let event of validEvents) {
             const ev = new MouseEvent(event, eventOptions)
             element.dispatchEvent(ev)
@@ -448,6 +439,7 @@ const shortkeys = (function () {
     }
 
     function handleKeydown(e) {
+        console.log(e);
         if (options.preventInInputs) {
             const tagName = e.path && e.path[0].tagName;
             if (tagName && ["input", "textarea"].includes(tagName.toLowerCase())) {
@@ -569,8 +561,8 @@ const shortkeys = (function () {
                 return;
             }
 
-            document.removeEventListener("click", handleDocClick)
             document.removeEventListener("mousedown", handleDocClick)
+            document.removeEventListener("click", handleDocClick)
             showKeysInputPopup()
 
             // remove button listener
