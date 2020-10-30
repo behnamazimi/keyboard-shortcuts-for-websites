@@ -22,7 +22,7 @@ chrome.runtime.onMessage.addListener(function (data, details) {
             break;
 
         case contentActions.START_LISTENING:
-            startListening();
+            startListening(data.type);
             break;
 
         case contentActions.SHORTCUT_ADDED:
@@ -37,10 +37,10 @@ chrome.runtime.onMessage.addListener(function (data, details) {
 
 })
 
-function startListening() {
+function startListening(type) {
     if (shortkeys.listening) return;
 
-    shortkeys.listen();
+    shortkeys.listen(type);
 }
 
 function sendGlobalMessage(body, cb) {

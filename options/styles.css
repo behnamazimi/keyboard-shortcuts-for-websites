@@ -53,6 +53,7 @@ body .issk a:hover {
     display: inline-block;
 }
 
+.issk textarea,
 .issk input[type="search"],
 .issk input[type="number"],
 .issk input[type="text"] {

@@ -1,5 +1,10 @@
 // https://github.com/webextension-toolbox/webextension-toolbox
 
+const TYPES = {
+    click: 0,
+    script: 1
+}
+
 const utils = (function () {
 
     function generateKeysString(keys) {
@@ -160,14 +165,23 @@ const utils = (function () {
         return step;
     }
 
-    function createNewShortcut(target, keys, title, stepCount) {
-        return {
-            i: `${new Date().getTime()}`,
+    function createNewShortcut({type, keys, title, target, stepCount, script} = {}) {
+        const shortcut = {
             t: title,
+            ty: type,
+            i: `${new Date().getTime()}`,
             k: utils.generateKeysString(keys),
-            tr: target,
-            sc: stepCount
-        };
+        }
+
+        if (target !== null) {
+            shortcut.tr = target
+            shortcut.c = stepCount
+        }
+
+        if (script !== null)
+            shortcut.sc = script
+
+        return shortcut
     }
 
     return {
@@ -184,17 +198,23 @@ const shortkeys = (function () {
 
     const onAddListeners = [];
 
-    let currentLinkedTargets = null;
+    let inProgressShortkeyType = null;
+    let inProgressShortkeyTitle = '';
+    let inProgressLinkedTargets = null;
     let headStep = null;
     let momentStepsCount = 0;
 
-    let listeningToStep = false;
+    let targetScript = null;
+
+    let listeningNewShortkey = false;
+
+    let isWebApp = true;
 
     let options = {waitBetweenSteps: 1000, off: false, preventInInputs: false};
-    let isWebApp = true;
 
     let ui = {
         stepsPopupElm: null,
+        scriptPopupElm: null,
         stepsPopupElmStepsWrapper: null,
         keysPopupElmKeysWrapper: null,
         preventPageReload: false,
@@ -203,28 +223,36 @@ const shortkeys = (function () {
     let lastKeyEvent = null;
 
     let currentKeys = null;
-    let currentShortkeyTitle = '';
 
     let lastDomClick = null
 
-    function listen() {
-        listeningToStep = true;
-        currentLinkedTargets = null;
+    function listen(type) {
+        listeningNewShortkey = true;
+        inProgressLinkedTargets = null;
         headStep = null;
 
-        showStepsPopup();
+        inProgressShortkeyType = type;
 
-        preventLinksClick();
-        document.addEventListener("mousedown", handleDocClick)
-        document.addEventListener("click", handleDocClick)
+        if (type === TYPES.click) {
+            showStepsPopup();
+            preventLinksClick();
+            document.addEventListener("mousedown", handleDocClick)
+            document.addEventListener("click", handleDocClick)
+
+        } else if (type === TYPES.script) {
+            showScriptPopup();
+        }
+
     }
 
     function abortAdding() {
 
-        listeningToStep = false;
-        currentLinkedTargets = null;
+        inProgressShortkeyType = null
+        listeningNewShortkey = false;
+        inProgressLinkedTargets = null;
         headStep = null;
         momentStepsCount = 0;
+        targetScript = null
 
         releaseLinksClick();
 
@@ -232,6 +260,9 @@ const shortkeys = (function () {
 
         if (ui.stepsPopupElm)
             ui.stepsPopupElm.remove();
+
+        if (ui.scriptPopupElm)
+            ui.scriptPopupElm.remove();
 
         if (ui.keysPopupElm)
             ui.keysPopupElm.remove();
@@ -264,7 +295,7 @@ const shortkeys = (function () {
         const step = utils.createStep(targetElm)
 
         if (!headStep) {
-            currentLinkedTargets = headStep = step;
+            inProgressLinkedTargets = headStep = step;
         } else {
             headStep = headStep.nx = step;
         }
@@ -277,13 +308,21 @@ const shortkeys = (function () {
     function addShortcut(keys) {
         if (!keys) return;
 
-        if (currentLinkedTargets && listeningToStep) {
+        if (isKeysUsedBefore(keys)) {
+            throw new Error("Key used before")
+        }
 
-            if (isKeysUsedBefore(keys)) {
-                throw new Error("Key used before")
-            }
+        const data = {
+            type: inProgressShortkeyType,
+            keys,
+            title: inProgressShortkeyTitle,
+            target: inProgressLinkedTargets,
+            stepCount: momentStepsCount,
+            script: targetScript
+        }
 
-            const newShortcut = utils.createNewShortcut(currentLinkedTargets, keys, currentShortkeyTitle, momentStepsCount);
+        if (listeningNewShortkey) {
+            const newShortcut = utils.createNewShortcut(data);
 
             // push to shortcuts
             hostShortcuts.push(newShortcut);
@@ -377,6 +416,13 @@ const shortkeys = (function () {
         }, options.waitBetweenSteps || 500)
     }
 
+    function addScriptToContent(script) {
+        const srcElm = document.createElement("script");
+        srcElm.setAttribute("type", "text/javascript")
+        srcElm.innerHTML = script;
+        document.body.appendChild(srcElm)
+    }
+
     // BUILD IN UTILS
     function isKeysUsedBefore(keysObj) {
         if (!keysObj) return true;
@@ -408,7 +454,7 @@ const shortkeys = (function () {
 
         lastDomClick = performance.now();
 
-        if (!e || !e.target || !listeningToStep) return;
+        if (!e || !e.target || !listeningNewShortkey) return;
 
         if (e.path && e.path.some(elm => elm === ui.stepsPopupElm)) return;
 
@@ -439,7 +485,6 @@ const shortkeys = (function () {
     }
 
     function handleKeydown(e) {
-        console.log(e);
         if (options.preventInInputs) {
             const tagName = e.path && e.path[0].tagName;
             if (tagName && ["input", "textarea"].includes(tagName.toLowerCase())) {
@@ -447,7 +492,7 @@ const shortkeys = (function () {
             }
         }
 
-        for (let {k, tr: target} of hostShortcuts) {
+        for (let {k, tr: target, ty: type, sc: script} of hostShortcuts) {
             let keys = k.split(" + ");
 
             if (
@@ -460,7 +505,11 @@ const shortkeys = (function () {
 
                 e.preventDefault();
 
-                callNextStep(target)
+                if (type === TYPES.click) {
+                    callNextStep(target)
+                } else if (type === TYPES.script) {
+                    addScriptToContent(script);
+                }
 
                 // break loop when reached the target short-key
                 break;
@@ -520,9 +569,9 @@ const shortkeys = (function () {
                         <strong class="label">Shortkey Title:</strong>
                         <input type="text" id="shortkey-title-input"
                             value="${shortkeyDefaultTitle}" maxlength="20"
-                            placeholder="Shortcut Name *">
+                            placeholder="Shortcut Title *">
                     </div>
-                    <div id="steps-popup-msg" class="issk-popup-msg"></div>
+                    <div id="popup-msg" class="issk-popup-msg"></div>
                     <div class="actions">
                         <button id="shortcut-cancel-btn" class="cancel">Cancel</button>
                         <button id="open-keys-modal">Set Shortcut Keys</button>
@@ -536,17 +585,17 @@ const shortkeys = (function () {
             ui.stepsPopupElm.remove();
         }
 
-        currentShortkeyTitle = `Shortcut ${hostShortcuts.length + 1}`;
-        ui.stepsPopupElm = createPopupElm(currentShortkeyTitle);
+        inProgressShortkeyTitle = `Shortcut ${hostShortcuts.length + 1}`;
+        ui.stepsPopupElm = createPopupElm(inProgressShortkeyTitle);
         ui.stepsPopupElmStepsWrapper = ui.stepsPopupElm.querySelector("#shortcut-steps");
-        ui.stepsPopupElmMsg = ui.stepsPopupElm.querySelector("#steps-popup-msg");
+        ui.stepsPopupElmMsg = ui.stepsPopupElm.querySelector("#popup-msg");
 
         const stepsPopupElmKeysOpenBtn = ui.stepsPopupElm.querySelector("#open-keys-modal");
         const stepsPopupElmCancelBtn = ui.stepsPopupElm.querySelector("#shortcut-cancel-btn");
         const stepsPopupElmTitleInput = ui.stepsPopupElm.querySelector("#shortkey-title-input");
 
         const handleNameInputChange = e => {
-            currentShortkeyTitle = e.target.value.replace(/[^a-zA-Z -_.]/g, "")
+            inProgressShortkeyTitle = e.target.value.replace(/[^a-zA-Z -_.]/g, "")
         }
 
         const handleAddBtnClick = (e) => {
@@ -556,7 +605,7 @@ const shortkeys = (function () {
                 return;
             }
 
-            if (!currentShortkeyTitle) {
+            if (!inProgressShortkeyTitle) {
                 ui.stepsPopupElmMsg.innerText = "Enter shortkey title."
                 return;
             }
@@ -575,6 +624,81 @@ const shortkeys = (function () {
         stepsPopupElmTitleInput.addEventListener("change", handleNameInputChange)
 
         document.body.appendChild(ui.stepsPopupElm)
+    }
+
+    function showScriptPopup() {
+
+        const createPopupElm = (defaultTitle = '') => {
+            let temp = document.createElement("template");
+            temp.innerHTML = `
+                <div class="issk issk-popup">
+                    <div class="issk-container">
+                        <strong class="label">Script:</strong>
+                        <textarea id="shortkey-script-input" rows="4"
+                            placeholder="Script here *"></textarea>
+                    </div>
+                    <div class="issk-container">
+                        <strong class="label">Shortkey Title:</strong>
+                        <input type="text" id="shortkey-title-input"
+                            value="${defaultTitle}" maxlength="20"
+                            placeholder="Shortcut Title *">
+                    </div>
+                    <div id="popup-msg" class="issk-popup-msg"></div>
+                    <div class="actions">
+                        <button id="shortcut-cancel-btn" class="cancel">Cancel</button>
+                        <button id="open-keys-modal">Set Shortcut Keys</button>
+                    </div>
+                </div>`;
+
+            return temp.content.firstElementChild;
+        };
+
+        if (ui.scriptPopupElm) {
+            ui.scriptPopupElm.remove();
+        }
+
+        inProgressShortkeyTitle = `Shortcut ${hostShortcuts.length + 1}`;
+        ui.scriptPopupElm = createPopupElm(inProgressShortkeyTitle);
+        ui.popupElmMsg = ui.scriptPopupElm.querySelector("#popup-msg");
+        const scriptTextarea = ui.scriptPopupElm.querySelector("#shortkey-script-input");
+
+        const scriptPopupElmKeysOpenBtn = ui.scriptPopupElm.querySelector("#open-keys-modal");
+        const scriptPopupElmCancelBtn = ui.scriptPopupElm.querySelector("#shortcut-cancel-btn");
+        const scriptPopupElmTitleInput = ui.scriptPopupElm.querySelector("#shortkey-title-input");
+
+        const handleTextAreaChange = e => targetScript = e.target.value.trim();
+
+        const handleNameInputChange = e => {
+            inProgressShortkeyTitle = e.target.value.replace(/[^a-zA-Z -_.]/g, "")
+        }
+
+        const handleAddBtnClick = e => {
+            ui.popupElmMsg.innerText = ""
+            if (!targetScript) {
+                ui.popupElmMsg.innerText = "Enter your script first."
+                return;
+            }
+
+            if (!inProgressShortkeyTitle) {
+                ui.popupElmMsg.innerText = "Enter shortkey title."
+                return;
+            }
+
+            // remove button listener
+            scriptTextarea.removeEventListener("change", handleTextAreaChange)
+            scriptPopupElmKeysOpenBtn.removeEventListener("click", handleAddBtnClick)
+            scriptPopupElmCancelBtn.removeEventListener("click", abortAdding)
+            scriptPopupElmTitleInput.removeEventListener("change", handleNameInputChange)
+
+            showKeysInputPopup()
+        }
+
+        scriptTextarea.addEventListener("change", handleTextAreaChange)
+        scriptPopupElmKeysOpenBtn.addEventListener("click", handleAddBtnClick)
+        scriptPopupElmCancelBtn.addEventListener("click", abortAdding)
+        scriptPopupElmTitleInput.addEventListener("change", handleNameInputChange)
+
+        document.body.appendChild(ui.scriptPopupElm)
     }
 
     function showKeysInputPopup() {
@@ -686,7 +810,7 @@ const shortkeys = (function () {
 
 
     return {
-        listening: listeningToStep,
+        listening: listeningNewShortkey,
         shortcuts: hostShortcuts,
         listen,
         addStep,

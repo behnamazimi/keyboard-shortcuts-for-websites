@@ -172,14 +172,22 @@
 .issk .label {
     all: initial;
     font-family: inherit;
-    font-size: 16px;
-    font-weight: 500;
+    font-size: 14px;
+    font-weight: bold;
     line-height: 1.25;
     display: inline-block;
     opacity: 0.7;
     margin-bottom: 5px;
-    border-bottom: 1px solid #888;
+    border-bottom: 1px solid rgba(136, 136, 136, 0.77);
     padding-bottom: 2px;
     padding-right: 16px;
     color: #555;
+}
+
+.issk textarea {
+    max-height: 250px;
+    background-color: #fff;
+    width: 100%;
+    max-width: 100%;
+    display: block;
 }
