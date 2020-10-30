@@ -39,11 +39,23 @@ hostsElm.onclick = (e) => {
 
 shortkeysElm.onclick = (e) => {
     // remove shortkey
-    if (e.target.classList.contains("delete-sk")) {
-        let shortkeyElm = e.target.closest(".shortkey-item");
-        if (!shortkeyElm) return;
+    let shortkeyElm = e.target.closest(".shortkey-item");
+    if (!shortkeyElm) return;
 
+    if (e.target.classList.contains("delete-sk")) {
         deleteShortkey(shortkeyElm);
+
+    } else if (e.target.classList.contains("copy-script")) {
+        const id = shortkeyElm.getAttribute("id")
+        const targetSk = (allData.shortcuts[selectedHost].shortcuts || []).filter(sk => sk.i === id);
+        if (targetSk && targetSk[0]) {
+            copyToClipboard(targetSk[0].sc);
+            e.target.innerText = "Copied"
+
+            setTimeout(() => {
+                e.target.innerText = "Copy Script"
+            }, 1000)
+        }
     }
 
 }
@@ -119,20 +131,24 @@ function createHostItemElement(host, count) {
     hostsElm.appendChild(createElm())
 }
 
-function createShortkeyItemElement({i: id, t: title, k: keys}) {
+function createShortkeyItemElement({i: id, t: title, k: keys, ty: type}) {
 
     const createElm = () => {
         let temp = document.createElement("template");
         temp.innerHTML = `
-                <li class="shortkey-item" id="${id}">
-                    <div class="sk-detail">
-                        <strong class="sk-name">${title}</strong>
+            <li class="shortkey-item" id="${id}">
+                <div class="sk-detail">
+                    <strong class="sk-name">${title}</strong>
+                    <div class="sk-footer">
+                        <span class="sk-type">${type === 0 ? "Click" : "Script"}</span>
                         <code class="sk-keys">${keys}</code>
                     </div>
-                    <div class="sk-actions">
-                        <button class="delete-sk small danger">Delete</button>
-                    </div>
-                </li>`;
+                </div>
+                <div class="sk-actions">
+                    ${type === 1 ? `<button class="copy-script outline small">Copy Script</button>&nbsp;` : ''}
+                    <button class="delete-sk small danger">Delete</button>
+                </div>
+            </li>`;
 
         return temp.content.firstElementChild;
     };
@@ -174,3 +190,22 @@ function sendGlobalMessage(body, cb) {
     chrome.runtime.sendMessage(body, cb);
 }
 
+function copyToClipboard(str) {
+    try {
+        if (!str) return false
+
+        const el = document.createElement('textarea');
+        el.value = str;
+        el.setAttribute('readonly', '');
+        el.style.position = 'absolute';
+        el.style.left = '-9999px';
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+
+        return true
+    } catch (e) {
+        return false
+    }
+}

@@ -18,6 +18,10 @@ body.issk {
     padding: 40px 16px 16px;
 }
 
+.popup a {
+    cursor: pointer;
+}
+
 .popup .header {
     position: fixed;
     top: 0;
@@ -32,10 +36,6 @@ body.issk {
     font-weight: 500;
     text-align: center;
     color: #bdc2c6;
-}
-
-.popup .header .options {
-    cursor: pointer;
 }
 
 .popup .header .options:hover {

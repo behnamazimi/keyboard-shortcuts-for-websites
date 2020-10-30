@@ -3,6 +3,7 @@
 let addClickShortcutBtn = document.getElementById('add-click-shortcut');
 let addScriptShortcutBtn = document.getElementById('add-script-shortcut');
 let openOptionsBtn = document.getElementById('open-options-btn');
+let openShortkeysBtn = document.getElementById('open-shortkeys-btn');
 let inSiteInfoWrapper = document.getElementById('in-site-info');
 let offOnSiteSwitch = document.getElementById('off-on-site');
 let offForAllSwitch = document.getElementById('off-for-all');
@@ -21,6 +22,11 @@ offForAllSwitch.onchange = function (e) {
 
 openOptionsBtn.onclick = function () {
     const optionsPageURL = chrome.extension.getURL("options/settings.html");
+    window.open(optionsPageURL);
+}
+
+openShortkeysBtn.onclick = function () {
+    const optionsPageURL = chrome.extension.getURL("options/list.html");
     window.open(optionsPageURL);
 }
 

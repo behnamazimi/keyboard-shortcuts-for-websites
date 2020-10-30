@@ -71,3 +71,21 @@
 #host-page #shortkeys .shortkey-item .sk-keys {
     opacity: 0.7;
 }
+
+#host-page #shortkeys .shortkey-item .sk-footer {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+#host-page #shortkeys .shortkey-item .sk-type {
+    opacity: 0.7;
+    font-weight: bold;
+    font-size: 13px;
+    text-transform: uppercase;
+    display: inline-block;
+    margin-right: 1rem;
+    min-width: 46px;
+    letter-spacing: 1px;
+    color: #04ea04;
+}
