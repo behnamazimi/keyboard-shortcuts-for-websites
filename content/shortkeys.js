@@ -213,10 +213,9 @@ const shortkeys = (function () {
     let options = {waitBetweenSteps: 1000, off: false, preventInInputs: false};
 
     let ui = {
-        stepsPopupElm: null,
-        scriptPopupElm: null,
-        stepsPopupElmStepsWrapper: null,
-        keysPopupElmKeysWrapper: null,
+        popupElm: null,
+        popupElmStepsWrapper: null,
+        popupElmKeysWrapper: null,
         preventPageReload: false,
     }
 
@@ -258,14 +257,8 @@ const shortkeys = (function () {
 
         deactivateKeysDetectionMode(handleKeysDetection);
 
-        if (ui.stepsPopupElm)
-            ui.stepsPopupElm.remove();
-
-        if (ui.scriptPopupElm)
-            ui.scriptPopupElm.remove();
-
-        if (ui.keysPopupElm)
-            ui.keysPopupElm.remove();
+        if (ui.popupElm)
+            ui.popupElm.remove();
 
     }
 
@@ -347,7 +340,7 @@ const shortkeys = (function () {
     }
 
     function addStepToPopup(step) {
-        if (!ui.stepsPopupElmStepsWrapper) return;
+        if (!ui.popupElmStepsWrapper) return;
 
         const createStepElm = (id, title, sub) => {
             let temp = document.createElement("template");
@@ -360,7 +353,7 @@ const shortkeys = (function () {
             return temp.content.firstElementChild;
         };
 
-        const noStepElm = ui.stepsPopupElmStepsWrapper.querySelector(".no-step");
+        const noStepElm = ui.popupElmStepsWrapper.querySelector(".no-step");
         if (noStepElm) noStepElm.remove();
 
         const stepElm = createStepElm(momentStepsCount, step.tx || "Unknown", `step ${momentStepsCount}`);
@@ -374,7 +367,7 @@ const shortkeys = (function () {
             })
         }
 
-        ui.stepsPopupElmStepsWrapper.appendChild(stepElm)
+        ui.popupElmStepsWrapper.appendChild(stepElm)
     }
 
     function fireElementEvents(element, options = {}) {
@@ -456,7 +449,7 @@ const shortkeys = (function () {
 
         if (!e || !e.target || !listeningNewShortkey) return;
 
-        if (e.path && e.path.some(elm => elm === ui.stepsPopupElm)) return;
+        if (e.path && e.path.some(elm => elm === ui.popupElm)) return;
 
         let target = e.target;
 
@@ -540,7 +533,7 @@ const shortkeys = (function () {
     function handleKeysDetection(keys) {
         currentKeys = keys;
 
-        ui.keysPopupElmKeysWrapper.innerHTML = utils.generateKeysString(keys);
+        ui.popupElmKeysWrapper.innerHTML = utils.generateKeysString(keys);
     }
 
     function onAdd(fn) {
@@ -581,32 +574,32 @@ const shortkeys = (function () {
             return temp.content.firstElementChild;
         };
 
-        if (ui.stepsPopupElm) {
-            ui.stepsPopupElm.remove();
+        if (ui.popupElm) {
+            ui.popupElm.remove();
         }
 
         inProgressShortkeyTitle = `Shortcut ${hostShortcuts.length + 1}`;
-        ui.stepsPopupElm = createPopupElm(inProgressShortkeyTitle);
-        ui.stepsPopupElmStepsWrapper = ui.stepsPopupElm.querySelector("#shortcut-steps");
-        ui.stepsPopupElmMsg = ui.stepsPopupElm.querySelector("#popup-msg");
+        ui.popupElm = createPopupElm(inProgressShortkeyTitle);
+        ui.popupElmStepsWrapper = ui.popupElm.querySelector("#shortcut-steps");
+        ui.popupElmMsg = ui.popupElm.querySelector("#popup-msg");
 
-        const stepsPopupElmKeysOpenBtn = ui.stepsPopupElm.querySelector("#open-keys-modal");
-        const stepsPopupElmCancelBtn = ui.stepsPopupElm.querySelector("#shortcut-cancel-btn");
-        const stepsPopupElmTitleInput = ui.stepsPopupElm.querySelector("#shortkey-title-input");
+        const popupElmKeysOpenBtn = ui.popupElm.querySelector("#open-keys-modal");
+        const popupElmCancelBtn = ui.popupElm.querySelector("#shortcut-cancel-btn");
+        const popupElmTitleInput = ui.popupElm.querySelector("#shortkey-title-input");
 
         const handleNameInputChange = e => {
             inProgressShortkeyTitle = e.target.value.replace(/[^a-zA-Z -_.]/g, "")
         }
 
         const handleAddBtnClick = (e) => {
-            ui.stepsPopupElmMsg.innerText = ""
+            ui.popupElmMsg.innerText = ""
             if (!headStep) {
-                ui.stepsPopupElmMsg.innerText = "No steps added."
+                ui.popupElmMsg.innerText = "No steps added."
                 return;
             }
 
             if (!inProgressShortkeyTitle) {
-                ui.stepsPopupElmMsg.innerText = "Enter shortkey title."
+                ui.popupElmMsg.innerText = "Enter shortkey title."
                 return;
             }
 
@@ -615,15 +608,15 @@ const shortkeys = (function () {
             showKeysInputPopup()
 
             // remove button listener
-            stepsPopupElmKeysOpenBtn.removeEventListener("click", handleAddBtnClick)
+            popupElmKeysOpenBtn.removeEventListener("click", handleAddBtnClick)
         }
 
-        stepsPopupElmKeysOpenBtn.addEventListener("click", handleAddBtnClick)
-        stepsPopupElmCancelBtn.addEventListener("click", abortAdding)
+        popupElmKeysOpenBtn.addEventListener("click", handleAddBtnClick)
+        popupElmCancelBtn.addEventListener("click", abortAdding)
 
-        stepsPopupElmTitleInput.addEventListener("change", handleNameInputChange)
+        popupElmTitleInput.addEventListener("change", handleNameInputChange)
 
-        document.body.appendChild(ui.stepsPopupElm)
+        document.body.appendChild(ui.popupElm)
     }
 
     function showScriptPopup() {
@@ -653,18 +646,18 @@ const shortkeys = (function () {
             return temp.content.firstElementChild;
         };
 
-        if (ui.scriptPopupElm) {
-            ui.scriptPopupElm.remove();
+        if (ui.popupElm) {
+            ui.popupElm.remove();
         }
 
         inProgressShortkeyTitle = `Shortcut ${hostShortcuts.length + 1}`;
-        ui.scriptPopupElm = createPopupElm(inProgressShortkeyTitle);
-        ui.popupElmMsg = ui.scriptPopupElm.querySelector("#popup-msg");
-        const scriptTextarea = ui.scriptPopupElm.querySelector("#shortkey-script-input");
+        ui.popupElm = createPopupElm(inProgressShortkeyTitle);
+        ui.popupElmMsg = ui.popupElm.querySelector("#popup-msg");
+        const scriptTextarea = ui.popupElm.querySelector("#shortkey-script-input");
 
-        const scriptPopupElmKeysOpenBtn = ui.scriptPopupElm.querySelector("#open-keys-modal");
-        const scriptPopupElmCancelBtn = ui.scriptPopupElm.querySelector("#shortcut-cancel-btn");
-        const scriptPopupElmTitleInput = ui.scriptPopupElm.querySelector("#shortkey-title-input");
+        const scriptPopupElmKeysOpenBtn = ui.popupElm.querySelector("#open-keys-modal");
+        const scriptPopupElmCancelBtn = ui.popupElm.querySelector("#shortcut-cancel-btn");
+        const scriptPopupElmTitleInput = ui.popupElm.querySelector("#shortkey-title-input");
 
         const handleTextAreaChange = e => targetScript = e.target.value.trim();
 
@@ -698,7 +691,7 @@ const shortkeys = (function () {
         scriptPopupElmCancelBtn.addEventListener("click", abortAdding)
         scriptPopupElmTitleInput.addEventListener("change", handleNameInputChange)
 
-        document.body.appendChild(ui.scriptPopupElm)
+        document.body.appendChild(ui.popupElm)
     }
 
     function showKeysInputPopup() {
@@ -726,44 +719,40 @@ const shortkeys = (function () {
         };
 
         // close steps popup
-        if (ui.stepsPopupElm) {
-            ui.stepsPopupElm.remove();
+        if (ui.popupElm) {
+            ui.popupElm.remove();
         }
 
-        if (ui.keysPopupElm) {
-            ui.keysPopupElm.remove();
-        }
+        ui.popupElm = createKeysInputElm();
+        ui.popupElmKeysWrapper = ui.popupElm.querySelector("#keys-pre");
 
-        ui.keysPopupElm = createKeysInputElm();
-        ui.keysPopupElmKeysWrapper = ui.keysPopupElm.querySelector("#keys-pre");
-
-        const keysPopupElmAddBtn = ui.keysPopupElm.querySelector("#shortcut-add-btn");
-        const popupElmCancelBtn = ui.keysPopupElm.querySelector("#shortcut-cancel-btn");
-        const keysPopupElmMsg = ui.keysPopupElm.querySelector("#keys-popup-msg");
+        const popupElmAddBtn = ui.popupElm.querySelector("#shortcut-add-btn");
+        const popupElmCancelBtn = ui.popupElm.querySelector("#shortcut-cancel-btn");
+        const popupElmMsg = ui.popupElm.querySelector("#keys-popup-msg");
 
         const handleAddBtnClick = () => {
-            keysPopupElmMsg.innerHTML = "";
+            popupElmMsg.innerHTML = "";
             if (!currentKeys) {
-                keysPopupElmMsg.innerHTML = "Determine the shortcut first."
+                popupElmMsg.innerHTML = "Determine the shortcut first."
                 return;
             }
 
             if (isKeysUsedBefore(currentKeys)) {
-                keysPopupElmMsg.innerHTML = "This shortkey used before."
+                popupElmMsg.innerHTML = "This shortkey used before."
                 return;
             }
 
             addShortcut(currentKeys)
 
             // remove button listener
-            keysPopupElmAddBtn.removeEventListener("click", handleAddBtnClick)
+            popupElmAddBtn.removeEventListener("click", handleAddBtnClick)
         }
 
-        keysPopupElmAddBtn.addEventListener("click", handleAddBtnClick)
+        popupElmAddBtn.addEventListener("click", handleAddBtnClick)
         popupElmCancelBtn.addEventListener("click", abortAdding)
 
-        document.body.appendChild(ui.keysPopupElm)
-        ui.keysPopupElm.focus();
+        document.body.appendChild(ui.popupElm)
+        ui.popupElm.focus();
 
         // detect shortcuts and set it
         activateKeysDetectionMode(handleKeysDetection);
