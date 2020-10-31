@@ -165,8 +165,8 @@ const utils = (function () {
         return step;
     }
 
-    function createNewShortcut({type, keys, title, target, stepCount, script} = {}) {
-        const shortcut = {
+    function createNewShortkey({type, keys, title, target, stepCount, script} = {}) {
+        const shortkey = {
             t: title,
             ty: type,
             i: `${new Date().getTime()}`,
@@ -174,27 +174,27 @@ const utils = (function () {
         }
 
         if (target !== null) {
-            shortcut.tr = target
-            shortcut.c = stepCount
+            shortkey.tr = target
+            shortkey.c = stepCount
         }
 
         if (script !== null)
-            shortcut.sc = script
+            shortkey.sc = script
 
-        return shortcut
+        return shortkey
     }
 
     return {
         generateKeysString,
         findTargetElm,
         createStep,
-        createNewShortcut,
+        createNewShortkey,
     }
 })();
 
 const shortkeys = (function () {
 
-    let hostShortcuts = [];
+    let hostShortkeys = [];
 
     const onAddListeners = [];
 
@@ -262,10 +262,10 @@ const shortkeys = (function () {
 
     }
 
-    function upHostShortcuts(shortcuts, globalOptions) {
-        // update shortcuts list
-        if (Array.isArray(shortcuts) && shortcuts.length > 0) {
-            hostShortcuts = shortcuts;
+    function upHostShortkeys(shortkeys, globalOptions) {
+        // update shortkeys list
+        if (Array.isArray(shortkeys) && shortkeys.length > 0) {
+            hostShortkeys = shortkeys;
         }
 
         // update global options
@@ -275,10 +275,10 @@ const shortkeys = (function () {
         window.removeEventListener("keydown", handleKeydown)
         window.addEventListener("keydown", handleKeydown)
 
-        if (options.off) downHostShortcuts();
+        if (options.off) downHostShortkeys();
     }
 
-    function downHostShortcuts() {
+    function downHostShortkeys() {
         console.log("down listeners...");
         window.removeEventListener("keydown", handleKeydown)
     }
@@ -298,7 +298,7 @@ const shortkeys = (function () {
         addStepToPopup(step);
     }
 
-    function addShortcut(keys) {
+    function addShortkey(keys) {
         if (!keys) return;
 
         if (isKeysUsedBefore(keys)) {
@@ -315,12 +315,12 @@ const shortkeys = (function () {
         }
 
         if (listeningNewShortkey) {
-            const newShortcut = utils.createNewShortcut(data);
+            const newShortkey = utils.createNewShortkey(data);
 
-            // push to shortcuts
-            hostShortcuts.push(newShortcut);
+            // push to shortkeys
+            hostShortkeys.push(newShortkey);
 
-            console.log("New shortcut added in tab local :)");
+            console.log("New shortkey added in tab local :)");
         }
 
         triggerOnAddEvent();
@@ -421,7 +421,7 @@ const shortkeys = (function () {
         if (!keysObj) return true;
 
         const keysStr = utils.generateKeysString(keysObj)
-        return hostShortcuts.some(item => item.k === keysStr);
+        return hostShortkeys.some(item => item.k === keysStr);
     }
 
     function preventLinksClick() {
@@ -485,7 +485,7 @@ const shortkeys = (function () {
             }
         }
 
-        for (let {k, tr: target, ty: type, sc: script} of hostShortcuts) {
+        for (let {k, tr: target, ty: type, sc: script} of hostShortkeys) {
             let keys = k.split(" + ");
 
             if (
@@ -543,7 +543,7 @@ const shortkeys = (function () {
 
     function triggerOnAddEvent() {
         for (let fn of onAddListeners) {
-            fn(hostShortcuts);
+            fn(hostShortkeys);
         }
     }
 
@@ -556,18 +556,18 @@ const shortkeys = (function () {
                 <div class="issk issk-popup">
                     <div class="issk-container">
                         <strong class="label">Action Steps:</strong>
-                        <div class="steps" id="shortcut-steps"><span class="no-step">Click on an action to add step</span></div>
+                        <div class="steps" id="shortkey-steps"><span class="no-step">Click on an action to add step</span></div>
                     </div>
                     <div class="issk-container">
                         <strong class="label">Shortkey Title:</strong>
                         <input type="text" id="shortkey-title-input"
                             value="${shortkeyDefaultTitle}" maxlength="20"
-                            placeholder="Shortcut Title *">
+                            placeholder="Shortkey Title *">
                     </div>
                     <div id="popup-msg" class="issk-popup-msg"></div>
                     <div class="actions">
-                        <button id="shortcut-cancel-btn" class="cancel">Cancel</button>
-                        <button id="open-keys-modal">Set Shortcut Keys</button>
+                        <button id="shortkey-cancel-btn" class="cancel">Cancel</button>
+                        <button id="open-keys-modal">Set Shortkey Keys</button>
                     </div>
                 </div>`;
 
@@ -578,13 +578,13 @@ const shortkeys = (function () {
             ui.popupElm.remove();
         }
 
-        inProgressShortkeyTitle = `Shortcut ${hostShortcuts.length + 1}`;
+        inProgressShortkeyTitle = `Shortkey ${hostShortkeys.length + 1}`;
         ui.popupElm = createPopupElm(inProgressShortkeyTitle);
-        ui.popupElmStepsWrapper = ui.popupElm.querySelector("#shortcut-steps");
+        ui.popupElmStepsWrapper = ui.popupElm.querySelector("#shortkey-steps");
         ui.popupElmMsg = ui.popupElm.querySelector("#popup-msg");
 
         const popupElmKeysOpenBtn = ui.popupElm.querySelector("#open-keys-modal");
-        const popupElmCancelBtn = ui.popupElm.querySelector("#shortcut-cancel-btn");
+        const popupElmCancelBtn = ui.popupElm.querySelector("#shortkey-cancel-btn");
         const popupElmTitleInput = ui.popupElm.querySelector("#shortkey-title-input");
 
         const handleNameInputChange = e => {
@@ -634,12 +634,12 @@ const shortkeys = (function () {
                         <strong class="label">Shortkey Title:</strong>
                         <input type="text" id="shortkey-title-input"
                             value="${defaultTitle}" maxlength="20"
-                            placeholder="Shortcut Title *">
+                            placeholder="Shortkey Title *">
                     </div>
                     <div id="popup-msg" class="issk-popup-msg"></div>
                     <div class="actions">
-                        <button id="shortcut-cancel-btn" class="cancel">Cancel</button>
-                        <button id="open-keys-modal">Set Shortcut Keys</button>
+                        <button id="shortkey-cancel-btn" class="cancel">Cancel</button>
+                        <button id="open-keys-modal">Set Shortkey Keys</button>
                     </div>
                 </div>`;
 
@@ -650,13 +650,13 @@ const shortkeys = (function () {
             ui.popupElm.remove();
         }
 
-        inProgressShortkeyTitle = `Shortcut ${hostShortcuts.length + 1}`;
+        inProgressShortkeyTitle = `Shortkey ${hostShortkeys.length + 1}`;
         ui.popupElm = createPopupElm(inProgressShortkeyTitle);
         ui.popupElmMsg = ui.popupElm.querySelector("#popup-msg");
         const scriptTextarea = ui.popupElm.querySelector("#shortkey-script-input");
 
         const scriptPopupElmKeysOpenBtn = ui.popupElm.querySelector("#open-keys-modal");
-        const scriptPopupElmCancelBtn = ui.popupElm.querySelector("#shortcut-cancel-btn");
+        const scriptPopupElmCancelBtn = ui.popupElm.querySelector("#shortkey-cancel-btn");
         const scriptPopupElmTitleInput = ui.popupElm.querySelector("#shortkey-title-input");
 
         const handleTextAreaChange = e => targetScript = e.target.value.trim();
@@ -701,7 +701,7 @@ const shortkeys = (function () {
                 <div class="issk issk-fixed-modal" tabindex="1">
                     <div class="issk-popup">
                         <div class="keys-container">
-                            <strong class="label">Shortcut for above steps:</strong>
+                            <strong class="label">Shortkey for above steps:</strong>
                             <pre class="keys-input" id="keys-pre">Press keys that you want...</pre>
                         </div>
                         <ul class="issk-popup-msg info">
@@ -709,8 +709,8 @@ const shortkeys = (function () {
                         </ul>
                         <div id="keys-popup-msg" class="issk-popup-msg"></div>
                         <div class="actions">
-                            <button id="shortcut-cancel-btn" class="cancel">Cancel</button>
-                            <button id="shortcut-add-btn">Add</button>
+                            <button id="shortkey-cancel-btn" class="cancel">Cancel</button>
+                            <button id="shortkey-add-btn">Add</button>
                         </div>
                     </div>
                 </div>`;
@@ -726,14 +726,14 @@ const shortkeys = (function () {
         ui.popupElm = createKeysInputElm();
         ui.popupElmKeysWrapper = ui.popupElm.querySelector("#keys-pre");
 
-        const popupElmAddBtn = ui.popupElm.querySelector("#shortcut-add-btn");
-        const popupElmCancelBtn = ui.popupElm.querySelector("#shortcut-cancel-btn");
+        const popupElmAddBtn = ui.popupElm.querySelector("#shortkey-add-btn");
+        const popupElmCancelBtn = ui.popupElm.querySelector("#shortkey-cancel-btn");
         const popupElmMsg = ui.popupElm.querySelector("#keys-popup-msg");
 
         const handleAddBtnClick = () => {
             popupElmMsg.innerHTML = "";
             if (!currentKeys) {
-                popupElmMsg.innerHTML = "Determine the shortcut first."
+                popupElmMsg.innerHTML = "Determine the shortkey first."
                 return;
             }
 
@@ -742,7 +742,7 @@ const shortkeys = (function () {
                 return;
             }
 
-            addShortcut(currentKeys)
+            addShortkey(currentKeys)
 
             // remove button listener
             popupElmAddBtn.removeEventListener("click", handleAddBtnClick)
@@ -754,7 +754,7 @@ const shortkeys = (function () {
         document.body.appendChild(ui.popupElm)
         ui.popupElm.focus();
 
-        // detect shortcuts and set it
+        // detect shortkeys and set it
         activateKeysDetectionMode(handleKeysDetection);
 
     }
@@ -794,17 +794,17 @@ const shortkeys = (function () {
     }
 
     function showSuccessToast(keys) {
-        showToast("New shortcut was added", keys)
+        showToast("New shortkey was added", keys)
     }
 
 
     return {
         listening: listeningNewShortkey,
-        shortcuts: hostShortcuts,
+        shortkeys: hostShortkeys,
         listen,
         addStep,
-        upHostShortcuts,
-        downHostShortcuts,
+        upHostShortkeys,
+        downHostShortkeys,
         onAdd,
         showSuccessToast,
     }

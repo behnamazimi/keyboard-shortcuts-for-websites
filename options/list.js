@@ -47,7 +47,7 @@ shortkeysElm.onclick = (e) => {
 
     } else if (e.target.classList.contains("copy-script")) {
         const id = shortkeyElm.getAttribute("id")
-        const targetSk = (allData.shortcuts[selectedHost].shortcuts || []).filter(sk => sk.i === id);
+        const targetSk = (allData.shortkeys[selectedHost].shortkeys || []).filter(sk => sk.i === id);
         if (targetSk && targetSk[0]) {
             copyToClipboard(targetSk[0].sc);
             e.target.innerText = "Copied"
@@ -77,9 +77,9 @@ function showHostDetails() {
 }
 
 function renderShortkeysList() {
-    const {shortcuts = {}} = allData;
+    const {shortkeys = {}} = allData;
 
-    let items = shortcuts[selectedHost].shortcuts || [];
+    let items = shortkeys[selectedHost].shortkeys || [];
 
     if (!items.length) return;
 
@@ -95,9 +95,9 @@ function renderShortkeysList() {
 }
 
 function renderHostsList() {
-    const {shortcuts = {}} = allData;
+    const {shortkeys = {}} = allData;
 
-    let items = Object.entries(shortcuts);
+    let items = Object.entries(shortkeys);
 
     if (searchTrend) {
         items = items.filter(([host]) => host.indexOf(searchTrend) > -1)
@@ -108,8 +108,8 @@ function renderHostsList() {
         hostsElm.innerHTML = 'There is not any hosts to show.';
     }
 
-    for (let [host, {shortcuts = []}] of items) {
-        createHostItemElement(host, shortcuts.length)
+    for (let [host, {shortkeys = []}] of items) {
+        createHostItemElement(host, shortkeys.length)
     }
 }
 
@@ -170,7 +170,7 @@ function deleteShortkey(shortkeyElm) {
     sendGlobalMessage({action: globalActions.DELETE_SHORTKEY, id, host: selectedHost}, (res) => {
         initListData();
         shortkeyElm.remove();
-        if (!res || !res.shortcuts || !res.shortcuts.length) {
+        if (!res || !res.shortkeys || !res.shortkeys.length) {
             closeHostPageBtn.click();
         }
     })

@@ -1,7 +1,7 @@
 'use strict';
 
-let addClickShortcutBtn = document.getElementById('add-click-shortcut');
-let addScriptShortcutBtn = document.getElementById('add-script-shortcut');
+let addClickShortkeyBtn = document.getElementById('add-click-shortkey');
+let addScriptShortkeyBtn = document.getElementById('add-script-shortkey');
 let openOptionsBtn = document.getElementById('open-options-btn');
 let openShortkeysBtn = document.getElementById('open-shortkeys-btn');
 let inSiteInfoWrapper = document.getElementById('in-site-info');
@@ -30,7 +30,7 @@ openShortkeysBtn.onclick = function () {
     window.open(optionsPageURL);
 }
 
-addClickShortcutBtn.onclick = function (element) {
+addClickShortkeyBtn.onclick = function (element) {
     window.close();
     // send message to content
     sendMessageToCurrentTab({action: contentActions.START_LISTENING, type: 0})
@@ -43,7 +43,7 @@ addClickShortcutBtn.onclick = function (element) {
     // });
 };
 
-addScriptShortcutBtn.onclick = function (element) {
+addScriptShortkeyBtn.onclick = function (element) {
     window.close();
     // send message to content
     sendMessageToCurrentTab({action: contentActions.START_LISTENING, type: 1})
@@ -58,11 +58,11 @@ function initPopup() {
         const {siteData, globalOptions} = response || {};
 
         if (siteData) {
-            const {shortcuts = []} = siteData;
+            const {shortkeys = []} = siteData;
             // update off status
             offOnSiteSwitch.checked = siteData.options && !!siteData.options.off
 
-            const len = shortcuts ? shortcuts.length : 0;
+            const len = shortkeys ? shortkeys.length : 0;
             if (len) {
                 const justOne = len === 1;
                 inSiteInfoWrapper.innerHTML = `<p><strong>${len}</strong> short-key${justOne ? "" : "s"} added to this site.</p>`

@@ -3,12 +3,12 @@
 // init tab
 initContent();
 
-shortkeys.onAdd((shortcuts) => {
-    console.log(shortcuts);
+shortkeys.onAdd((shortkeys) => {
+    console.log(shortkeys);
     sendGlobalMessage({
         action: globalActions.NEW_SHORTCUT,
         host: location.origin,
-        shortcuts,
+        shortkeys,
     });
 })
 
@@ -16,9 +16,9 @@ chrome.runtime.onMessage.addListener(function (data, details) {
     switch (data.action) {
         case globalActions.GLOBAL_OPTIONS_UPDATE:
         case contentActions.OPTION_UPDATE:
-            const {globalOptions = {}, options = {}, shortcuts = []} = data;
+            const {globalOptions = {}, options = {}, shortkeys = []} = data;
 
-            shortkeys.upHostShortcuts(shortcuts, {...globalOptions, ...options})
+            shortkeys.upHostShortkeys(shortkeys, {...globalOptions, ...options})
             break;
 
         case contentActions.START_LISTENING:
@@ -56,8 +56,8 @@ function initContent() {
 
         const options = siteData && siteData.options ? siteData.options : {};
 
-        console.log(siteData.shortcuts);
-        shortkeys.upHostShortcuts(siteData.shortcuts || [],
+        console.log(siteData.shortkeys);
+        shortkeys.upHostShortkeys(siteData.shortkeys || [],
             {...globalOptions, ...options})
     });
 }

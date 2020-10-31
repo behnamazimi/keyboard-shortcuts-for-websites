@@ -1,7 +1,7 @@
 {
   "name": "in-site Shortkeys",
   "version": "1.0",
-  "description": "Custom Shortcuts in your website!",
+  "description": "Custom Shortkeys in your website!",
   "permissions": [
     "tabs",
     "activeTab",

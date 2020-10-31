@@ -1,7 +1,7 @@
 'use strict';
 
 // TODO
-//  edit steps waiting for each shortcut
+//  edit steps waiting for each shortkey
 //  test on file protocol
 
 let host = null;
@@ -48,18 +48,18 @@ chrome.runtime.onMessage.addListener(function (data, details, sendResponse) {
             return true;
         case globalActions.NEW_SHORTCUT:
             setHost(data.host)
-            if (!Array.isArray(data.shortcuts)) return;
+            if (!Array.isArray(data.shortkeys)) return;
 
-            // the last item is the new shortcut
-            const shortcut = data.shortcuts[data.shortcuts.length - 1]
-            storeNewShortcut(shortcut)
+            // the last item is the new shortkey
+            const shortkey = data.shortkeys[data.shortkeys.length - 1]
+            storeNewShortkey(shortkey)
             break;
         case globalActions.HOST_OPTION_UPDATE:
             storeHostOption(data.options, siteData => {
                 sendMessageToCurrentTab({
                     action: contentActions.OPTION_UPDATE,
                     options: siteData.options,
-                    shortcuts: siteData.shortcuts,
+                    shortkeys: siteData.shortkeys,
                 });
             })
             break;
@@ -99,15 +99,15 @@ function parseAndSaveImportJson(str, cb) {
     }
 
     const data = JSON.parse(str);
-    let {globalOptions, shortcuts} = data || {};
+    let {globalOptions, shortkeys} = data || {};
 
     storeGlobalOptions(globalOptions, () => {
-        const shortcutsEntry = Object.entries(shortcuts)
+        const shortkeysEntry = Object.entries(shortkeys)
         let counter = 0;
-        for (let [host, hostData] of shortcutsEntry) {
+        for (let [host, hostData] of shortkeysEntry) {
             storeData(host, hostData, () => {
                 counter++;
-                if (counter === shortcutsEntry.length) {
+                if (counter === shortkeysEntry.length) {
                     if (cb && typeof cb === "function") cb(true)
                 }
             });
@@ -124,13 +124,13 @@ function isValidJsonString(str) {
     }
 }
 
-function getHostShortcuts(cb) {
+function getHostShortkeys(cb) {
     loadHostData((siteData = {}) => {
-        const shortcuts = siteData.shortcuts || [];
-        // do nothing if shortcuts is not an array
-        if (!Array.isArray(shortcuts)) return;
+        const shortkeys = siteData.shortkeys || [];
+        // do nothing if shortkeys is not an array
+        if (!Array.isArray(shortkeys)) return;
 
-        if (cb && typeof cb === "function") cb(shortcuts)
+        if (cb && typeof cb === "function") cb(shortkeys)
     });
 }
 
@@ -138,8 +138,8 @@ function removeShortkey(id, cb) {
     if (!id) return;
 
     loadHostData((hostData = {}) => {
-        const newSkList = (hostData.shortcuts || []).filter(sk => sk.i !== id);
-        const updatedData = {...hostData, shortcuts: newSkList}
+        const newSkList = (hostData.shortkeys || []).filter(sk => sk.i !== id);
+        const updatedData = {...hostData, shortkeys: newSkList}
 
         const key = getHostKey();
         storeData(key, updatedData, function () {
@@ -203,15 +203,15 @@ function storeHostOption(options = {}, cb) {
     });
 }
 
-function storeNewShortcut(shortcut) {
+function storeNewShortkey(shortkey) {
     loadHostData((siteData = {}) => {
 
-        const updatedData = {...siteData, shortcuts: [...(siteData.shortcuts || []), shortcut]}
+        const updatedData = {...siteData, shortkeys: [...(siteData.shortkeys || []), shortkey]}
         const key = getHostKey();
         storeData(key, updatedData, function () {
             sendMessageToCurrentTab({
                 action: contentActions.SHORTCUT_ADDED,
-                keys: shortcut.k
+                keys: shortkey.k
             })
         });
     });
@@ -235,10 +235,10 @@ function getAllData(cb) {
         if (cb && typeof cb === "function" && data) {
             const globalOptions = data.globalOptions;
 
-            const shortcuts = data;
-            delete shortcuts[getGlobalOptionsKey()]
+            const shortkeys = data;
+            delete shortkeys[getGlobalOptionsKey()]
 
-            cb({globalOptions, shortcuts})
+            cb({globalOptions, shortkeys})
         }
     });
 }

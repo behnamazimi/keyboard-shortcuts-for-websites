@@ -102,7 +102,7 @@ function initSettingsData() {
     clearDataConfirm.removeAttribute("checked");
 
     sendGlobalMessage({action: globalActions.GET_ALL_DATA}, (response) => {
-        const {globalOptions = {}, shortcuts = {}} = allData = response || {};
+        const {globalOptions = {}, shortkeys = {}} = allData = response || {};
         optionsForm.elements["waitBetweenSteps"].value = (globalOptions.waitBetweenSteps / 1000) || 0.5;
 
         if (globalOptions.off) {
@@ -117,8 +117,8 @@ function initSettingsData() {
             optionsForm.elements["preventInInputs"].removeAttribute("checked");
         }
 
-        const allHostsLen = Object.keys(shortcuts).length;
-        const allKeysLen = Object.entries(shortcuts).reduce((a, [_, b]) => a + (b.shortcuts || []).length, 0)
+        const allHostsLen = Object.keys(shortkeys).length;
+        const allKeysLen = Object.entries(shortkeys).reduce((a, [_, b]) => a + (b.shortkeys || []).length, 0)
         hostsCountElm.innerText = allHostsLen + "";
         shortkeysCountElm.innerText = allKeysLen + "";
     });
