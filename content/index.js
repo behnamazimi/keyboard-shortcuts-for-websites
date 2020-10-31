@@ -3,7 +3,7 @@
 // init tab
 initContent();
 
-shortkeys.onAdd((shortkeys) => {
+ShortKeys.onAdd((shortkeys) => {
     console.log(shortkeys);
     sendGlobalMessage({
         action: globalActions.NEW_SHORTCUT,
@@ -18,7 +18,7 @@ chrome.runtime.onMessage.addListener(function (data, details) {
         case contentActions.OPTION_UPDATE:
             const {globalOptions = {}, options = {}, shortkeys = []} = data;
 
-            shortkeys.upHostShortkeys(shortkeys, {...globalOptions, ...options})
+            ShortKeys.upHostShortkeys(shortkeys, {...globalOptions, ...options})
             break;
 
         case contentActions.START_LISTENING:
@@ -26,7 +26,7 @@ chrome.runtime.onMessage.addListener(function (data, details) {
             break;
 
         case contentActions.SHORTCUT_ADDED:
-            shortkeys.showSuccessToast(data.keys);
+            ShortKeys.showSuccessToast(data.keys);
             break;
 
         case contentActions.SHORTCUTS_UPDATED:
@@ -38,9 +38,9 @@ chrome.runtime.onMessage.addListener(function (data, details) {
 })
 
 function startListening(type) {
-    if (shortkeys.listening) return;
+    if (ShortKeys.listening) return;
 
-    shortkeys.listen(type);
+    ShortKeys.listen(type);
 }
 
 function sendGlobalMessage(body, cb) {
@@ -57,7 +57,7 @@ function initContent() {
         const options = siteData && siteData.options ? siteData.options : {};
 
         console.log(siteData.shortkeys);
-        shortkeys.upHostShortkeys(siteData.shortkeys || [],
+        ShortKeys.upHostShortkeys(siteData.shortkeys || [],
             {...globalOptions, ...options})
     });
 }

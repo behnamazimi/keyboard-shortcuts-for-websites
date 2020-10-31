@@ -170,7 +170,7 @@ const utils = (function () {
             t: title,
             ty: type,
             i: `${new Date().getTime()}`,
-            k: utils.generateKeysString(keys),
+            k: keys,
         }
 
         if (target !== null) {
@@ -184,15 +184,31 @@ const utils = (function () {
         return shortkey
     }
 
+    function parseArrayOfKeys(keysArr) {
+        let keys = {
+            ctrlKey: keysArr.includes("Control"),
+            shiftKey: keysArr.includes("Shift"),
+            altKey: keysArr.includes("Alt"),
+            metaKey: keysArr.includes("Meta"),
+            key: keysArr
+                .filter(k => !["Control", "Shift", "Alt", "Meta"].includes(k))
+                .map(k => k.toLowerCase())
+                .join(" + ").trim(),
+        }
+
+        return generateKeysString(keys)
+    }
+
     return {
         generateKeysString,
         findTargetElm,
         createStep,
         createNewShortkey,
+        parseArrayOfKeys,
     }
 })();
 
-const shortkeys = (function () {
+const ShortKeys = (function () {
 
     let hostShortkeys = [];
 
@@ -219,11 +235,11 @@ const shortkeys = (function () {
         preventPageReload: false,
     }
 
-    let lastKeyEvent = null;
-
     let currentKeys = null;
 
     let lastDomClick = null
+    let lastPressedKeys = [];
+    let cachedKeys = []
 
     function listen(type) {
         listeningNewShortkey = true;
@@ -251,15 +267,14 @@ const shortkeys = (function () {
         inProgressLinkedTargets = null;
         headStep = null;
         momentStepsCount = 0;
-        targetScript = null
+        targetScript = null;
+        lastPressedKeys = [];
 
         releaseLinksClick();
 
         deactivateKeysDetectionMode(handleKeysDetection);
 
-        if (ui.popupElm)
-            ui.popupElm.remove();
-
+        if (ui.popupElm) ui.popupElm.remove();
     }
 
     function upHostShortkeys(shortkeys, globalOptions) {
@@ -275,12 +290,16 @@ const shortkeys = (function () {
         window.removeEventListener("keydown", handleKeydown)
         window.addEventListener("keydown", handleKeydown)
 
+        window.removeEventListener("keyup", handleKeyup)
+        window.addEventListener("keyup", handleKeyup)
+
         if (options.off) downHostShortkeys();
     }
 
     function downHostShortkeys() {
         console.log("down listeners...");
         window.removeEventListener("keydown", handleKeydown)
+        window.removeEventListener("keyup", handleKeyup)
     }
 
     function addStep(targetElm) {
@@ -417,11 +436,10 @@ const shortkeys = (function () {
     }
 
     // BUILD IN UTILS
-    function isKeysUsedBefore(keysObj) {
-        if (!keysObj) return true;
+    function isKeysUsedBefore(keys) {
+        if (!keys) return true;
 
-        const keysStr = utils.generateKeysString(keysObj)
-        return hostShortkeys.some(item => item.k === keysStr);
+        return hostShortkeys.some(item => item.k === keys);
     }
 
     function preventLinksClick() {
@@ -478,6 +496,12 @@ const shortkeys = (function () {
     }
 
     function handleKeydown(e) {
+        cachedKeys.push(e.key);
+    }
+
+    function handleKeyup(e) {
+        if (!cachedKeys || !cachedKeys.length) return;
+
         if (options.preventInInputs) {
             const tagName = e.path && e.path[0].tagName;
             if (tagName && ["input", "textarea"].includes(tagName.toLowerCase())) {
@@ -485,17 +509,11 @@ const shortkeys = (function () {
             }
         }
 
-        for (let {k, tr: target, ty: type, sc: script} of hostShortkeys) {
-            let keys = k.split(" + ");
+        for (let {k: keys, tr: target, ty: type, sc: script} of hostShortkeys) {
 
-            if (
-                e.metaKey === (keys.includes("meta") || keys.includes("super") || keys.includes("window")) &&
-                e.ctrlKey === keys.includes("ctrl") &&
-                e.shiftKey === keys.includes("shift") &&
-                e.altKey === keys.includes("alt") &&
-                keys[keys.length - 1] === e.key.toLowerCase()
-            ) {
+            const keysStr = utils.parseArrayOfKeys(cachedKeys);
 
+            if (keysStr === keys) {
                 e.preventDefault();
 
                 if (type === TYPES.click) {
@@ -508,32 +526,31 @@ const shortkeys = (function () {
                 break;
             }
         }
+
+        cachedKeys = [];
     }
 
     function handleDetectionKeydown(e) {
         e.preventDefault();
-        lastKeyEvent = e;
+        lastPressedKeys.push(e.key);
     }
 
     function handleDetectionKeyup(cb, e) {
         e.preventDefault();
 
-        if (!lastKeyEvent) return;
+        if (!lastPressedKeys || !lastPressedKeys.length) return;
 
-        const {ctrlKey, shiftKey, altKey, metaKey, key} = lastKeyEvent;
+        let keys = utils.parseArrayOfKeys(lastPressedKeys)
 
-        let keys = {ctrlKey, shiftKey, altKey, metaKey, key: key.toLowerCase()}
-        lastKeyEvent = null;
+        lastPressedKeys = []
 
-        if (cb && typeof cb === "function") {
-            cb(keys)
-        }
+        if (cb && typeof cb === "function") cb(keys)
     }
 
     function handleKeysDetection(keys) {
         currentKeys = keys;
-
-        ui.popupElmKeysWrapper.innerHTML = utils.generateKeysString(keys);
+        console.log(keys);
+        ui.popupElmKeysWrapper.innerHTML = keys;
     }
 
     function onAdd(fn) {
