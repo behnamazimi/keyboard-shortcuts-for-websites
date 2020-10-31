@@ -61,6 +61,7 @@
 
 #settings-page .section-item {
     display: flex;
+    align-items: flex-start;
     flex-direction: column;
     margin-bottom: 1rem;
 }

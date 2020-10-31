@@ -31,7 +31,14 @@ importBtn.onclick = () => importFileInput.click();
 importFileInput.onchange = function (e) {
     let reader = new FileReader();
     reader.onload = function () {
-        console.log(reader.result);
+        sendGlobalMessage({action: globalActions.IMPORT_DATA, jsonStr: reader.result}, (res) => {
+            if (res) {
+                showToast("Data imported successfully.")
+                initSettingsData();
+            } else {
+                showToast("Selected content format is wrong. Be sure that you select the correct file.", "error")
+            }
+        })
     }
 
     reader.readAsText(this.files[0]);
@@ -123,7 +130,7 @@ function showToast(msg, status = '') {
 function createDownloadLink(text) {
     let link = document.createElement('a');
     link.target = "_blank"
-    link.download = `in-site-shortkeys.json`
+    link.download = `in-site-shortkeys.issk`
     let blob = new Blob([text], {type: 'application/json'});
     link.href = window.URL.createObjectURL(blob);
     link.click()

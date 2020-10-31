@@ -2,11 +2,7 @@
 
 // TODO
 //  edit steps waiting for each shortcut
-//  add shortcuts for scripts (global or in-site)
-//  check if its in input when keys pressed or not
 //  test on file protocol
-//  handle import data
-//  add number of steps to shortcut obj
 
 let host = null;
 
@@ -86,8 +82,47 @@ chrome.runtime.onMessage.addListener(function (data, details, sendResponse) {
                 sendMessageToAllTabs({action: contentActions.SHORTCUTS_UPDATED});
             })
             return true
+        case globalActions.IMPORT_DATA:
+            parseAndSaveImportJson(data.jsonStr, (res) => {
+                sendResponse(res);
+                sendMessageToAllTabs({action: contentActions.SHORTCUTS_UPDATED});
+            })
+            return true
     }
 })
+
+function parseAndSaveImportJson(str, cb) {
+
+    if (!isValidJsonString(str)) {
+        if (cb && typeof cb === "function") cb(false)
+        return;
+    }
+
+    const data = JSON.parse(str);
+    let {globalOptions, shortcuts} = data || {};
+
+    storeGlobalOptions(globalOptions, () => {
+        const shortcutsEntry = Object.entries(shortcuts)
+        let counter = 0;
+        for (let [host, hostData] of shortcutsEntry) {
+            storeData(host, hostData, () => {
+                counter++;
+                if (counter === shortcutsEntry.length) {
+                    if (cb && typeof cb === "function") cb(true)
+                }
+            });
+        }
+    })
+}
+
+function isValidJsonString(str) {
+    try {
+        JSON.parse(str)
+        return true;
+    } catch (e) {
+        return false
+    }
+}
 
 function getHostShortcuts(cb) {
     loadHostData((siteData = {}) => {
