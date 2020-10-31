@@ -244,8 +244,7 @@ function setHost(url) {
         const uO = new URL(url)
         host = uO.origin;
 
-        host = host.replace("http://", "")
-            .replace("https://", "")
+        host = host.replace(/^(?:https?:\/\/)?(?:www\.)?/i, "")
     } else {
         host = url
     }
