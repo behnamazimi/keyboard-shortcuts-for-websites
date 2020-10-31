@@ -15,7 +15,15 @@ initSettingsData();
 
 document.addEventListener("click", (e) => {
     if (e.target.classList.contains('section-title')) {
-        e.target.closest(".section").classList.toggle("open")
+        const section = e.target.closest(".section")
+        section.removeAttribute("style")
+
+        section.classList.toggle("open")
+        if (section.classList.contains("open")) {
+            setTimeout(() => {
+                section.style.maxHeight = section.clientHeight + "px"
+            }, 400)
+        }
     }
 }, true)
 

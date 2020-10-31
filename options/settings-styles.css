@@ -4,7 +4,7 @@
     padding-bottom: 4px;
     margin-bottom: 2rem;
     overflow: hidden;
-    transition: all 0.4s linear;
+    transition: all .4s linear;
     max-height: 28px;
     height: auto;
 }
@@ -14,8 +14,8 @@
 }
 
 #settings-page .section.open {
+    transition: all .8s linear;
     max-height: 1000px;
-    transition: all 0.4s linear;
 }
 
 #settings-page .section:before {
@@ -35,12 +35,12 @@
     margin-left: -20px;
     font-weight: bold;
     cursor: pointer;
-    background: #0f2a4c;
+    background: var(--color-main-light);
     padding: 0.25rem;
 }
 
 #settings-page .section-title:hover {
-    background: #13355f;
+    background: var(--color-main-dark);
 }
 
 #settings-page .section-title:after {
@@ -71,10 +71,11 @@
     width: 100%;
     box-sizing: border-box;
     padding: 0.5rem;
-    background: #ffffff;
-    border: 1px solid #ccc;
+    background: #ffffff40;
+    border: none;
     border-radius: 5px;
     max-width: 150px;
+    color: var(--color-text-light);
 }
 
 #settings-page .import-export-actions {

@@ -563,7 +563,7 @@ const shortkeys = (function () {
                 <div class="issk issk-popup">
                     <div class="issk-container">
                         <strong class="label">Action Steps:</strong>
-                        <div class="steps" id="shortcut-steps"><span class="no-step">Click on action to add step</span></div>
+                        <div class="steps" id="shortcut-steps"><span class="no-step">Click on an action to add step</span></div>
                     </div>
                     <div class="issk-container">
                         <strong class="label">Shortkey Title:</strong>
@@ -675,7 +675,7 @@ const shortkeys = (function () {
         const handleAddBtnClick = e => {
             ui.popupElmMsg.innerText = ""
             if (!targetScript) {
-                ui.popupElmMsg.innerText = "Enter your script first."
+                ui.popupElmMsg.innerText = "Enter the script first."
                 return;
             }
 

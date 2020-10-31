@@ -31,7 +31,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #0404044a;
+    background-color: var(--color-main);
 }
 
 .issk-fixed-modal .issk-popup {
@@ -56,13 +56,12 @@
     flex-direction: column;
     padding: 16px;
     box-sizing: border-box;
-    background-color: #f1f1f1;
-    box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, .18);
+    background-color: var(--color-main);
     border-radius: 5px;
     user-select: none;
-    border: 1px solid #059a4a;
     z-index: 99999;
     animation: shake 0.7s cubic-bezier(.36, .07, .19, .97) both;
+    box-shadow: 1px 1px 9px 4px var(--color-main);
 }
 
 .issk-popup .steps {
@@ -74,9 +73,11 @@
     justify-content: flex-start;
     flex-wrap: wrap;
     overflow: hidden;
+    color: var(--color-text-light);
 }
 
 .issk-popup .steps .no-step {
+    color: inherit;
     margin-bottom: 8px;
     font-size: 14px;
     opacity: 0.6;
@@ -91,6 +92,7 @@
     margin-bottom: 8px;
     text-align: left;
     font-family: inherit;
+    color: inherit;
 }
 
 .issk-popup .steps .step-text {
@@ -106,10 +108,11 @@
 }
 
 .issk-popup .steps .step-text:focus {
-    border-color: #ddd;
+    background: #84848461;
     outline: none;
-    background-color: #fff;
-    border-radius: 3px;
+    border-radius: 5px;
+    box-shadow: 0 0 1px 1px #ffffff94;
+    color: var(--color-text-light);
 }
 
 .issk-popup .steps .step-sub {
@@ -127,39 +130,37 @@
     margin-top: 0;
     margin-bottom: 5px;
     font-size: 14px;
-    background: #e5e5e5;
-    padding: 5px;
+    background: var(--color-main-light);
+    border-radius: 5px;
+    padding: 0.5rem;
+    text-align: center;
+    color: var(--color-text);
 }
 
 .issk-popup #shortkey-title-input {
     width: 100%;
-    box-sizing: border-box;
-    padding: 0.5rem;
-    background: #ffffff;
-    border: 1px solid #ccc;
-    border-radius: 5px;
 }
 
 .issk .issk-popup-msg {
     all: initial;
+    color: var(--color-text-light);
     font-family: inherit;
     line-height: 1.5;
     display: inline-block;
     font-size: 14px;
-    border-left: 3px solid #de0606;
+    border-left: 3px solid var(--color-danger);
     padding-left: 8px;
     opacity: 0.8;
-    background: #eaeaea;
 }
 
 .issk .issk-popup-msg.info {
-    border-color: #0066ff;
     list-style: none;
+    border-color: var(--color-info);
     margin-bottom: 0.5rem;
 }
 
 .issk .issk-popup-msg code {
-    color: #000;
+    color: var(--color-text-light);
     font-weight: bold;
 }
 
@@ -178,16 +179,15 @@
     display: inline-block;
     opacity: 0.7;
     margin-bottom: 5px;
-    border-bottom: 1px solid rgba(136, 136, 136, 0.77);
     padding-bottom: 2px;
     padding-right: 16px;
-    color: #555;
+    color: var(--color-text-light);
 }
 
 .issk textarea {
+    min-height: 100px;
     max-height: 250px;
-    background-color: #fff;
     width: 100%;
+    min-width: 100%;
     max-width: 100%;
-    display: block;
 }

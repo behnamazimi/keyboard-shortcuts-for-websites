@@ -142,7 +142,7 @@ function createShortkeyItemElement({i: id, t: title, k: keys, ty: type, c: steps
                     <div class="sk-footer">
                         <span class="sk-type">${type === 0 ? "Click" : "Script"}</span>
                         <code class="sk-keys">${keys}</code>
-                        ${type === 0 && stepsCount ? `<span class="sk-step">${stepsCount + ` step${stepsCount > 1 ? "s" : ""}`}</span>` : ''}
+                        ${type === 0 && stepsCount ? `<span class="sk-step">(${stepsCount + ` step${stepsCount > 1 ? "s" : ""}`})</span>` : ''}
                     </div>
                 </div>
                 <div class="sk-actions">

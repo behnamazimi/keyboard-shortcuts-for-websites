@@ -1,15 +1,9 @@
-.issk * {
-    box-sizing: border-box;
-    font-family: 'Roboto', Arial, sans-serif !important;
-}
-
 body.issk {
+    font-size: 16px;
     margin: 0;
     width: 320px;
     overflow: hidden;
-    color: #ffffff;
     cursor: default;
-    background: #122d4e;
     user-select: none;
 }
 
@@ -35,7 +29,7 @@ body.issk {
     font-size: 16px;
     font-weight: 500;
     text-align: center;
-    color: #bdc2c6;
+    color: var(--color-text-dark);
 }
 
 .popup .header .options:hover {
@@ -90,45 +84,23 @@ body.issk {
 }
 
 .custom-switch label {
-    all: initial;
-    position: relative;
     padding-left: 40px;
-    color: #efefef;
     font-size: 14px;
     font-weight: 500;
 }
 
 .custom-switch input[type="checkbox"] + label::before {
-    content: " ";
-    display: block;
     height: 16px;
     width: 32px;
-    border-radius: 9px;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    left: 0;
-    background: #e2e2e2;
 }
 
 .custom-switch input[type="checkbox"] + label::after {
-    content: " ";
-    display: block;
     height: 12px;
     width: 12px;
-    border-radius: 50%;
-    position: absolute;
-    top: 50%;
-    left: 2px;
-    transform: translateY(-50%);
-    background: #e82a2a;
-    transition: all 0.2s ease-in-out;
 }
 
 .custom-switch input[type="checkbox"]:checked + label::after {
     transform: translateY(-50%) translateX(16px);
-    transition: all 0.2s ease-in-out;
-    background-color: #32c28a;
 }
 
 #stats {
@@ -138,6 +110,6 @@ body.issk {
 }
 
 #stats a.view-shortkeys {
-    color: #fff;
+    color: var(--color-text);
     font-size: 14px;
 }

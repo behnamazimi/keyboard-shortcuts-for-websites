@@ -1,4 +1,19 @@
-.issk * {
+.issk {
+    --color-main: #122d4e;
+    --color-main-light: #13355f;
+    --color-main-dark: #0d233e;
+    --color-text: #d5d5d5;
+    --color-text-light: #fff;
+    --color-text-dark: #afafaf;
+    --color-success: #059a4a;
+    --color-success-light: #02ba02;
+    --color-success-dark: #048440;
+    --color-danger: #dc0505;
+    --color-danger-dark: #c10404;
+    --color-info: #0066ff;
+}
+
+.issk *:not(pre):not(code) {
     box-sizing: border-box;
     font-family: 'Roboto', Arial, sans-serif !important;
 }
@@ -7,21 +22,20 @@ body.issk {
     margin: 0 auto;
     max-width: 768px;
     font-size: 16px;
-    color: #d5d5d5;
+    color: var(--color-text);
     cursor: default;
-    background: #08203e;
+    background: var(--color-main);
     user-select: none;
     overflow-y: scroll;
 }
 
 body.issk a,
 body .issk a {
-    color: #d5d5d5;
+    color: var(--color-text);
 }
 
-body.issk a:hover,
-body .issk a:hover {
-    color: #fff;
+.issk a:hover {
+    color: var(--color-text-light);
 }
 
 .issk .page {
@@ -57,13 +71,28 @@ body .issk a:hover {
 .issk input[type="search"],
 .issk input[type="number"],
 .issk input[type="text"] {
-    width: 100%;
+    display: block;
     box-sizing: border-box;
     padding: 0.5rem;
-    background: #ffffff;
-    border: 1px solid #ccc;
+    background: #84848461;
+    border: none;
     border-radius: 5px;
-    max-width: 150px;
+    color: var(--color-text);
+    max-width: 100%;
+}
+
+.issk textarea::placeholder,
+.issk input::placeholder {
+    color: var(--color-text-dark);
+}
+
+.issk textarea:focus,
+.issk input[type="search"]:focus,
+.issk input[type="number"]:focus,
+.issk input[type="text"]:focus {
+    outline: none;
+    box-shadow: 0 0 1px 1px #ffffff94;
+    color: var(--color-text-light);
 }
 
 .issk button {
@@ -79,8 +108,8 @@ body .issk a:hover {
     white-space: nowrap;
     vertical-align: middle;
     border-radius: 6px;
-    color: #fff;
-    background-color: #059a4a;
+    color: var(--color-text-light);
+    background-color: var(--color-success);
     user-select: none;
     appearance: none;
     transition: all 0.2s;
@@ -89,7 +118,7 @@ body .issk a:hover {
 
 .issk button:not(:disabled):hover {
     cursor: pointer;
-    background-color: #048440;
+    background-color: var(--color-success-dark);
 }
 
 .issk button:disabled {
@@ -99,30 +128,30 @@ body .issk a:hover {
 
 .issk button.cancel {
     background: transparent;
-    color: #222;
+    color: var(--color-text);
     margin-right: 8px;
 }
 
 .issk button.cancel:hover {
-    background-color: #0000000f;
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .issk button.outline {
     background: transparent;
-    color: #d5d5d5;
-    border: 1px solid #d5d5d5;
+    color: var(--color-text);
+    border: 1px solid var(--color-text);
 }
 
 .issk button.outline:hover {
-    background-color: #d5d5d526;
+    background-color: rgba(255, 255, 255, 0.2);
 }
 
 .issk button.danger {
-    background: #dc0505;
+    background: var(--color-danger);
 }
 
 .issk button.danger:hover {
-    background-color: #c10404;
+    background-color: var(--color-danger-dark);
 }
 
 .issk button.small {
@@ -141,11 +170,11 @@ body .issk a:hover {
 
 .issk .custom-switch label {
     all: initial;
-    display: inline-block;
     position: relative;
+    display: inline-block;
     padding-left: 50px;
     margin-bottom: 0.25rem;
-    color: #d5d5d5;
+    color: var(--color-text);
     font-size: 16px;
     font-weight: 500;
 }
@@ -173,14 +202,14 @@ body .issk a:hover {
     top: 50%;
     left: 2px;
     transform: translateY(-50%);
-    background: #e82a2a;
+    background: var(--color-danger);
     transition: all 0.2s ease-in-out;
 }
 
 .issk .custom-switch input[type="checkbox"]:checked + label::after {
     transform: translateY(-50%) translateX(22px);
     transition: all 0.2s ease-in-out;
-    background-color: #32c28a;
+    background-color: var(--color-success-light);
 }
 
 .issk-toast {
@@ -189,8 +218,8 @@ body .issk a:hover {
     bottom: 16px;
     width: 280px;
     padding: 8px;
-    background-color: #059a4a;
-    color: #fff;
+    background-color: var(--color-success);
+    color: var(--color-text-light);
     border-radius: 5px;
     box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, .18);
     user-select: none;
@@ -202,7 +231,7 @@ body .issk a:hover {
 }
 
 .issk-toast.error {
-    background-color: #dc0505;
+    background-color: var(--color-danger);
 }
 
 .issk-toast.visible {
