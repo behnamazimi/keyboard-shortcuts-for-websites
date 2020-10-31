@@ -35,12 +35,12 @@
     margin-left: -20px;
     font-weight: bold;
     cursor: pointer;
-    background: var(--color-main-light);
+    background: var(--issk-color-main-light);
     padding: 0.25rem;
 }
 
 #settings-page .section-title:hover {
-    background: var(--color-main-dark);
+    background: var(--issk-color-main-dark);
 }
 
 #settings-page .section-title:after {
@@ -75,7 +75,7 @@
     border: none;
     border-radius: 5px;
     max-width: 150px;
-    color: var(--color-text-light);
+    color: var(--issk-color-text-light);
 }
 
 #settings-page .import-export-actions {

@@ -73,7 +73,7 @@
     justify-content: flex-start;
     align-items: center;
     line-height: 1;
-    color: var(--color-text-dark);
+    color: var(--issk-color-text-dark);
 }
 
 #host-page #shortkeys .shortkey-item .sk-keys {
@@ -90,7 +90,7 @@
     margin-right: 1rem;
     min-width: 46px;
     letter-spacing: 1px;
-    color: var(--color-success-light);
+    color: var(--issk-color-success-light);
 }
 
 #host-page #shortkeys .shortkey-item .sk-step {

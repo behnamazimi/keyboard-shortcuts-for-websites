@@ -31,7 +31,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: var(--color-main);
+    background-color: #00000075;
 }
 
 .issk-fixed-modal .issk-popup {
@@ -56,12 +56,12 @@
     flex-direction: column;
     padding: 16px;
     box-sizing: border-box;
-    background-color: var(--color-main);
+    background-color: var(--issk-color-main);
     border-radius: 5px;
     user-select: none;
     z-index: 99999;
     animation: shake 0.7s cubic-bezier(.36, .07, .19, .97) both;
-    box-shadow: 1px 1px 9px 4px var(--color-main);
+    box-shadow: 1px 1px 9px 4px rgba(18, 45, 78, 0.32);
 }
 
 .issk-popup .steps {
@@ -73,7 +73,7 @@
     justify-content: flex-start;
     flex-wrap: wrap;
     overflow: hidden;
-    color: var(--color-text-light);
+    color: var(--issk-color-text-light);
 }
 
 .issk-popup .steps .no-step {
@@ -112,7 +112,7 @@
     outline: none;
     border-radius: 5px;
     box-shadow: 0 0 1px 1px #ffffff94;
-    color: var(--color-text-light);
+    color: var(--issk-color-text-light);
 }
 
 .issk-popup .steps .step-sub {
@@ -130,11 +130,11 @@
     margin-top: 0;
     margin-bottom: 5px;
     font-size: 14px;
-    background: var(--color-main-light);
+    background: var(--issk-color-main-light);
     border-radius: 5px;
     padding: 0.5rem;
     text-align: center;
-    color: var(--color-text);
+    color: var(--issk-color-text);
 }
 
 .issk-popup #shortkey-title-input {
@@ -143,24 +143,24 @@
 
 .issk .issk-popup-msg {
     all: initial;
-    color: var(--color-text-light);
+    color: var(--issk-color-text-light);
     font-family: inherit;
     line-height: 1.5;
     display: inline-block;
     font-size: 14px;
-    border-left: 3px solid var(--color-danger);
+    border-left: 3px solid var(--issk-color-danger);
     padding-left: 8px;
     opacity: 0.8;
 }
 
 .issk .issk-popup-msg.info {
     list-style: none;
-    border-color: var(--color-info);
+    border-color: var(--issk-color-info);
     margin-bottom: 0.5rem;
 }
 
 .issk .issk-popup-msg code {
-    color: var(--color-text-light);
+    color: var(--issk-color-text-light);
     font-weight: bold;
 }
 
@@ -181,7 +181,7 @@
     margin-bottom: 5px;
     padding-bottom: 2px;
     padding-right: 16px;
-    color: var(--color-text-light);
+    color: var(--issk-color-text-light);
 }
 
 .issk textarea {
