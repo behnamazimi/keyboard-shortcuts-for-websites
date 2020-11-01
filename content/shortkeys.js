@@ -483,7 +483,7 @@ const ShortKeys = (function () {
             }
         }
 
-        shortkeys.addStep(target);
+        addStep(target);
     }
 
     function handleLinkTagClick(e) {
