@@ -27,6 +27,8 @@ const utils = (function () {
             // always use simple query as parents
             const [_pId, _pSimple] = generateStepElmQuery(parent);
             parentQ = _pId ? `#${_pId}` : _pSimple;
+
+            if (parentQ) parentQ += " >"
         }
 
         let id = null;
@@ -52,12 +54,6 @@ const utils = (function () {
             for (let [attr, value] of Object.entries(attributes)) {
                 switch (attr) {
                     case "id":
-                        break;
-                    case "class":
-                        const classesStr = value.split(" ").map(c => "." + c).join("").trim();
-                        const classes = value.split(" ").map(c => (c || '').trim());
-                        complexQuery += `[class*="${classes[0]}"]`;
-                        multiComplexQuery += `${classesStr}`;
                         break;
                     default:
                         complexQuery += `[${attr}="${value}"]`;
@@ -86,7 +82,7 @@ const utils = (function () {
         return Array.prototype.indexOf.call(parent.children, child) + 1;
     }
 
-    function findTargetElm(step) {
+    function findTargetElm(step, log) {
 
         if (!step) return null;
 
@@ -99,12 +95,15 @@ const utils = (function () {
         if (!elm) {
             if (document.querySelectorAll(simpleQuery).length === 1) {
                 elm = document.querySelector(simpleQuery)
+                console.log(log, "simpleQuery");
 
             } else if (document.querySelectorAll(complexQuery).length === 1) {
                 elm = document.querySelector(complexQuery)
+                console.log(log, "complexQuery");
 
-            } else {
+            } else if (document.querySelectorAll(multiComplexQuery).length === 1) {
                 elm = document.querySelector(multiComplexQuery)
+                console.log(log, "multiComplexQuery");
             }
         }
 
@@ -122,7 +121,7 @@ const utils = (function () {
 
         if (!targetElm || targetElm.nodeName === "#document") return step;
 
-        const validAttrs = ["id", "role", "tabindex", "type", "title", "class"]
+        const validAttrs = ["id", "role", "tabindex", "type", "title"]
 
         const rawAttrs = targetElm.attributes || [];
         const rawAttrsLen = rawAttrs.length;
@@ -143,21 +142,20 @@ const utils = (function () {
             .trim()
             .substr(0, 20);
 
-        if (text) step.tx = text;
+        if (text) {
+            step.tx = text;
+        }
 
         step.i = findIndexAsChild(targetElm)
 
         const [id, simpleQuery, complexQuery, multiComplexQuery] = generateStepElmQuery(step)
 
-        if (!id &&
-            (!targetElm.isEqualNode(findTargetElm(step)) || (
-                document.querySelectorAll(simpleQuery).length > 1 &&
-                document.querySelectorAll(complexQuery).length > 1
-            ))) {
-            step.pr = createStep(targetElm.parentNode)
+        if (!id) {
+            if (!targetElm.isEqualNode(findTargetElm(step))) {
+                step.pr = createStep(targetElm.parentNode)
+            }
         }
 
-        findTargetElm(step);
         return step;
     }
 

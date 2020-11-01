@@ -116,6 +116,37 @@ const ShortKeys = (function () {
         addStepToPopup(step);
     }
 
+    function addStepToPopup(step) {
+        if (!ui.popupElmStepsWrapper) return;
+
+        const createStepElm = (id, title, sub) => {
+            let temp = document.createElement("template");
+            temp.innerHTML = `
+                <div class="step">
+                    <strong class="step-text" contenteditable="true" id="step-${id}">${title}</strong>
+                    <span class="step-sub">${sub}</span>
+                </div>`;
+
+            return temp.content.firstElementChild;
+        };
+
+        const noStepElm = ui.popupElmStepsWrapper.querySelector(".no-step");
+        if (noStepElm) noStepElm.remove();
+
+        const stepElm = createStepElm(inProgressShortkey.stepsCount, step.tx || "Unknown", `step ${inProgressShortkey.stepsCount}`);
+        const stepTitleElm = stepElm.querySelector(`#step-${inProgressShortkey.stepsCount}`);
+
+        if (stepTitleElm) {
+            stepTitleElm.addEventListener("input", e => {
+                step.tx = e.target.textContent
+                    .replace(/[^a-zA-Z -_.]/g, "")
+                    .substr(0, 15)
+            })
+        }
+
+        ui.popupElmStepsWrapper.appendChild(stepElm)
+    }
+
     function addShortkey() {
         if (!inProgressShortkey.keys) return;
 
@@ -159,37 +190,6 @@ const ShortKeys = (function () {
         window.removeEventListener("keyup", handleDetectionKeyup.bind(this, cb))
     }
 
-    function addStepToPopup(step) {
-        if (!ui.popupElmStepsWrapper) return;
-
-        const createStepElm = (id, title, sub) => {
-            let temp = document.createElement("template");
-            temp.innerHTML = `
-                <div class="step">
-                    <strong class="step-text" contenteditable="true" id="step-${id}">${title}</strong>
-                    <span class="step-sub">${sub}</span>
-                </div>`;
-
-            return temp.content.firstElementChild;
-        };
-
-        const noStepElm = ui.popupElmStepsWrapper.querySelector(".no-step");
-        if (noStepElm) noStepElm.remove();
-
-        const stepElm = createStepElm(inProgressShortkey.stepsCount, step.tx || "Unknown", `step ${inProgressShortkey.stepsCount}`);
-        const stepTitleElm = stepElm.querySelector(`#step-${inProgressShortkey.stepsCount}`);
-
-        if (stepTitleElm) {
-            stepTitleElm.addEventListener("input", e => {
-                step.tx = e.target.textContent
-                    .replace(/[^a-zA-Z -_.]/g, "")
-                    .substr(0, 15)
-            })
-        }
-
-        ui.popupElmStepsWrapper.appendChild(stepElm)
-    }
-
     function fireElementEvents(element, options = {}) {
         if (!element) {
             showToast(
@@ -205,11 +205,12 @@ const ShortKeys = (function () {
         }
 
         const eventOptions = {
-            bubbles: true, view: window,
+            bubbles: true,
             ...options
         };
 
-        const validEvents = ["mouseup", "mousedown", "click"];
+        // const validEvents = ["mouseup", "mousedown", "click"];
+        const validEvents = ["mouseup"];
         for (let event of validEvents) {
             const ev = new MouseEvent(event, eventOptions)
             element.dispatchEvent(ev)
@@ -275,7 +276,7 @@ const ShortKeys = (function () {
         let target = e.target;
 
         if (e.path) {
-            const buttonIndex = e.path.findIndex(pe => pe.tagName === "BUTTON")
+            const buttonIndex = e.path.findIndex(pe => pe.tagName === "BUTTON" || pe.getAttribute("role") === "button")
             if (buttonIndex > -1) {
                 target = e.path[buttonIndex];
             }
@@ -354,7 +355,6 @@ const ShortKeys = (function () {
 
     function handleKeysDetection(keys) {
         inProgressShortkey.keys = keys;
-        console.log(keys);
         ui.popupElmKeysWrapper.innerHTML = keys;
     }
 
