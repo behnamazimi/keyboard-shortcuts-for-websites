@@ -204,13 +204,14 @@ const ShortKeys = (function () {
             return;
         }
 
+        const {x, y} = element.getBoundingClientRect();
+
         const eventOptions = {
-            bubbles: true,
+            bubbles: true, view: window, x, y,
             ...options
         };
 
-        // const validEvents = ["mouseup", "mousedown", "click"];
-        const validEvents = ["mouseup"];
+        const validEvents = ["mouseover", "mouseup", "mousedown", "click"];
         for (let event of validEvents) {
             const ev = new MouseEvent(event, eventOptions)
             element.dispatchEvent(ev)
@@ -276,7 +277,7 @@ const ShortKeys = (function () {
         let target = e.target;
 
         if (e.path) {
-            const buttonIndex = e.path.findIndex(pe => pe.tagName === "BUTTON" || pe.getAttribute("role") === "button")
+            const buttonIndex = e.path.findIndex(pe => pe.tagName === "BUTTON" || (pe.getAttribute && pe.getAttribute("role") === "button"))
             if (buttonIndex > -1) {
                 target = e.path[buttonIndex];
             }
