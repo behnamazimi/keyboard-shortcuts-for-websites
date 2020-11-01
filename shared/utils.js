@@ -245,6 +245,34 @@ const utils = (function () {
     }
 })();
 
+const messagingUtils = (function () {
+
+    function sendMessageToCurrentTab(body) {
+        chrome.tabs.query({currentWindow: true, active: true}, (tabs) => {
+            if (tabs && tabs[0])
+                chrome.tabs.sendMessage(tabs[0].id, body);
+        });
+    }
+
+    function sendMessageToAllTabs(body) {
+        chrome.tabs.query({}, function (tabs) {
+            for (let i = 0; i < tabs.length; ++i) {
+                chrome.tabs.sendMessage(tabs[i].id, body);
+            }
+        });
+    }
+
+    function sendGlobalMessage(body, cb) {
+        chrome.runtime.sendMessage(body, cb);
+    }
+
+    return {
+        sendMessageToCurrentTab,
+        sendMessageToAllTabs,
+        sendGlobalMessage,
+    }
+})();
+
 const storeUtils = (function () {
 
     function parseAndSaveImportJson(str, cb) {
@@ -417,34 +445,6 @@ const storeUtils = (function () {
         storeNewShortkey,
         getAllData,
         clearAllData,
-    }
-})();
-
-const messagingUtils = (function () {
-
-    function sendMessageToCurrentTab(body) {
-        chrome.tabs.query({currentWindow: true, active: true}, (tabs) => {
-            if (tabs && tabs[0])
-                chrome.tabs.sendMessage(tabs[0].id, body);
-        });
-    }
-
-    function sendMessageToAllTabs(body) {
-        chrome.tabs.query({}, function (tabs) {
-            for (let i = 0; i < tabs.length; ++i) {
-                chrome.tabs.sendMessage(tabs[i].id, body);
-            }
-        });
-    }
-
-    function sendGlobalMessage(body, cb) {
-        chrome.runtime.sendMessage(body, cb);
-    }
-
-    return {
-        sendMessageToCurrentTab,
-        sendMessageToAllTabs,
-        sendGlobalMessage,
     }
 })();
 
