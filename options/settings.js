@@ -28,8 +28,8 @@ document.addEventListener("click", (e) => {
 }, true)
 
 exportBtn.onclick = function (e) {
-    sendGlobalMessage({action: globalActions.GET_ALL_DATA}, (response) => {
-        createDownloadLink(JSON.stringify(response));
+    messagingUtils.sendGlobalMessage({action: globalActions.GET_ALL_DATA}, (response) => {
+        utils.createDownloadLink(JSON.stringify(response));
         showToast("Shortkeys exported.")
     });
 }
@@ -39,7 +39,7 @@ importBtn.onclick = () => importFileInput.click();
 importFileInput.onchange = function (e) {
     let reader = new FileReader();
     reader.onload = function () {
-        sendGlobalMessage({action: globalActions.IMPORT_DATA, jsonStr: reader.result}, (res) => {
+        messagingUtils.sendGlobalMessage({action: globalActions.IMPORT_DATA, jsonStr: reader.result}, (res) => {
             if (res) {
                 showToast("Data imported successfully.")
                 initSettingsData();
@@ -73,7 +73,7 @@ optionsForm.onsubmit = function (e) {
         }
     }
 
-    sendGlobalMessage({action: globalActions.GLOBAL_OPTIONS_UPDATE, options}, (response) => {
+    messagingUtils.sendGlobalMessage({action: globalActions.GLOBAL_OPTIONS_UPDATE, options}, (response) => {
         if (response) {
             showToast("Options updated.");
         }
@@ -89,7 +89,7 @@ clearDataConfirm.onchange = e => {
 }
 
 clearDataBtn.onclick = () => {
-    sendGlobalMessage({action: globalActions.CLEAT_DATA}, () => {
+    messagingUtils.sendGlobalMessage({action: globalActions.CLEAT_DATA}, () => {
         initSettingsData();
         showToast("Shortkeys cleared.");
 
@@ -101,7 +101,7 @@ clearDataBtn.onclick = () => {
 function initSettingsData() {
     clearDataConfirm.removeAttribute("checked");
 
-    sendGlobalMessage({action: globalActions.GET_ALL_DATA}, (response) => {
+    messagingUtils.sendGlobalMessage({action: globalActions.GET_ALL_DATA}, (response) => {
         const {globalOptions = {}, shortkeys = {}} = allData = response || {};
         optionsForm.elements["waitBetweenSteps"].value = (globalOptions.waitBetweenSteps / 1000) || 0.5;
 
@@ -135,17 +135,5 @@ function showToast(msg, status = '') {
     }, 3000)
 }
 
-function createDownloadLink(text) {
-    let link = document.createElement('a');
-    link.target = "_blank"
-    link.download = `in-site-shortkeys.issk`
-    let blob = new Blob([text], {type: 'application/json'});
-    link.href = window.URL.createObjectURL(blob);
-    link.click()
-    link.remove()
-}
 
-function sendGlobalMessage(body, cb) {
-    chrome.runtime.sendMessage(body, cb);
-}
 

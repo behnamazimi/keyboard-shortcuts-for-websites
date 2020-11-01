@@ -1,5 +1,5 @@
 {
-  "name": "in-site Shortkeys",
+  "name": "In-site Shortkeys",
   "version": "1.0",
   "description": "Custom Shortkeys in your website!",
   "permissions": [
@@ -11,12 +11,13 @@
   "options_page": "options/settings.html",
   "background": {
     "scripts": [
-      "constant.js",
-      "background.js"
+      "shared/constant.js",
+      "shared/utils.js",
+      "background/main.js"
     ],
     "persistent": false
   },
-  "page_action": {
+  "browser_action": {
     "matches": [
       "<all_urls>"
     ],
@@ -35,12 +36,13 @@
         "<all_urls>"
       ],
       "js": [
-        "constant.js",
+        "shared/constant.js",
+        "shared/utils.js",
         "content/shortkeys.js",
         "content/index.js"
       ],
       "css": [
-        "options/styles.css",
+        "shared/styles.css",
         "content/content-styles.css"
       ]
     }
@@ -51,14 +53,5 @@
     "48": "icons/48x48.png",
     "128": "icons/128x128.png"
   },
-  "manifest_version": 2,
-  "commands": {
-    "toggle-feature-foo": {
-      "suggested_key": {
-        "default": "Ctrl+Shift+Y",
-        "mac": "Command+Shift+Y"
-      },
-      "description": "Toggle feature foo"
-    }
-  }
+  "manifest_version": 2
 }

@@ -1,6 +1,11 @@
 'use strict';
 
+const {sendMessageToCurrentTab, sendGlobalMessage} = messagingUtils;
+
 // init tab
+
+chrome.runtime.onMessage.addListener(handleMessages)
+
 initContent();
 
 ShortKeys.onAdd((shortkeys) => {
@@ -12,7 +17,7 @@ ShortKeys.onAdd((shortkeys) => {
     });
 })
 
-chrome.runtime.onMessage.addListener(function (data, details) {
+function handleMessages(data, details) {
     switch (data.action) {
         case globalActions.GLOBAL_OPTIONS_UPDATE:
         case contentActions.OPTION_UPDATE:
@@ -32,19 +37,7 @@ chrome.runtime.onMessage.addListener(function (data, details) {
         case contentActions.SHORTCUTS_UPDATED:
             initContent()
             break;
-
     }
-
-})
-
-function startListening(type) {
-    if (ShortKeys.listening) return;
-
-    ShortKeys.listen(type);
-}
-
-function sendGlobalMessage(body, cb) {
-    chrome.runtime.sendMessage(body, cb);
 }
 
 function initContent() {
@@ -60,4 +53,10 @@ function initContent() {
         ShortKeys.upHostShortkeys(siteData.shortkeys || [],
             {...globalOptions, ...options})
     });
+}
+
+function startListening(type) {
+    if (ShortKeys.listening) return;
+
+    ShortKeys.listen(type);
 }

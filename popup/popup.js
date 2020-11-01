@@ -1,5 +1,7 @@
 'use strict';
 
+const {sendMessageToCurrentTab, sendGlobalMessage} = messagingUtils;
+
 let addClickShortkeyBtn = document.getElementById('add-click-shortkey');
 let addScriptShortkeyBtn = document.getElementById('add-script-shortkey');
 let openOptionsBtn = document.getElementById('open-options-btn');
@@ -77,12 +79,3 @@ function initPopup() {
     });
 }
 
-function sendMessageToCurrentTab(body) {
-    chrome.tabs.query({currentWindow: true, active: true}, (tabs) => {
-        chrome.tabs.sendMessage(tabs[0].id, body);
-    });
-}
-
-function sendGlobalMessage(body, cb) {
-    chrome.runtime.sendMessage(body, cb);
-}

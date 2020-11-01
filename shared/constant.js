@@ -1,5 +1,11 @@
 'use strict';
 
+// shortkey type
+const TYPES = {
+    click: 0,
+    script: 1
+}
+
 const globalActions = {
     INIT: "INIT",
     POPUP_INIT: "POPUP_INIT",
