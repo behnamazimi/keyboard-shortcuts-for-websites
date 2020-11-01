@@ -235,7 +235,6 @@ const utils = (function () {
     }
 
     return {
-        generateKeysString,
         findTargetElm,
         createStep,
         createNewShortkey,
@@ -356,7 +355,7 @@ const storeUtils = (function () {
             const updatedData = {...siteData, shortkeys: [...(siteData.shortkeys || []), shortkey]}
             const key = getHostKey();
             storeData(key, updatedData, function () {
-                sendMessageToCurrentTab({
+                messagingUtils.sendMessageToCurrentTab({
                     action: contentActions.SHORTCUT_ADDED,
                     keys: shortkey.k
                 })
@@ -410,20 +409,14 @@ const storeUtils = (function () {
 
     return {
         parseAndSaveImportJson,
-        getHostShortkeys,
         removeShortkey,
-        removeHost,
         loadHostData,
         storeGlobalOptions,
         loadGlobalOptions,
         storeHostOption,
         storeNewShortkey,
-        storeData,
-        loadData,
         getAllData,
-        removeData,
         clearAllData,
-        getGlobalOptionsKey,
     }
 })();
 
