@@ -55,11 +55,13 @@ body .issk a {
 }
 
 .issk small {
+    all: inherit;
     font-size: 14px;
     opacity: 0.5;
     font-weight: lighter;
     display: inline-block;
     margin-bottom: 0.25rem;
+    color: var(--issk-color-text);
 }
 
 .issk label {
@@ -210,6 +212,37 @@ body .issk a {
     transform: translateY(-50%) translateX(22px);
     transition: all 0.2s ease-in-out;
     background-color: var(--issk-color-success-light);
+}
+
+
+.issk .custom-switch.small {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.issk .custom-switch.small input[type="checkbox"] {
+    display: none;
+}
+
+.issk .custom-switch.small label {
+    padding-left: 40px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.issk .custom-switch.small input[type="checkbox"] + label::before {
+    height: 16px;
+    width: 32px;
+}
+
+.issk .custom-switch.small input[type="checkbox"] + label::after {
+    height: 12px;
+    width: 12px;
+}
+
+.issk .custom-switch.small input[type="checkbox"]:checked + label::after {
+    transform: translateY(-50%) translateX(16px);
 }
 
 .issk-toast {

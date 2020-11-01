@@ -73,36 +73,6 @@ body.issk {
     margin-bottom: 0.5rem;
 }
 
-.custom-switch {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.custom-switch input[type="checkbox"] {
-    display: none;
-}
-
-.custom-switch label {
-    padding-left: 40px;
-    font-size: 14px;
-    font-weight: 500;
-}
-
-.custom-switch input[type="checkbox"] + label::before {
-    height: 16px;
-    width: 32px;
-}
-
-.custom-switch input[type="checkbox"] + label::after {
-    height: 12px;
-    width: 12px;
-}
-
-.custom-switch input[type="checkbox"]:checked + label::after {
-    transform: translateY(-50%) translateX(16px);
-}
-
 #stats {
     display: flex;
     justify-content: space-between;

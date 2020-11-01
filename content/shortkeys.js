@@ -6,15 +6,19 @@ const ShortKeys = (function () {
 
     const onAddListeners = [];
 
-    let inProgressShortkeyType = null;
-    let inProgressShortkeyTitle = '';
-    let inProgressLinkedTargets = null;
-    let headStep = null;
-    let momentStepsCount = 0;
-
-    let targetScript = null;
-
     let listeningNewShortkey = false;
+    let inProgressShortkey = {
+        title: null,
+        type: null,
+        waiting: null,
+        headStep: null,
+        linkedSteps: null,
+        stepsCount: 0,
+        script: null,
+        pressedKeys: [],
+        keys: null,
+        shared: false,
+    };
 
     let isWebApp = true;
 
@@ -27,18 +31,15 @@ const ShortKeys = (function () {
         preventPageReload: false,
     }
 
-    let currentKeys = null;
-
     let lastDomClick = null
-    let lastPressedKeys = [];
     let cachedKeys = []
 
     function listen(type) {
         listeningNewShortkey = true;
-        inProgressLinkedTargets = null;
-        headStep = null;
+        inProgressShortkey.linkedSteps = null;
+        inProgressShortkey.headStep = null;
 
-        inProgressShortkeyType = type;
+        inProgressShortkey.type = type;
 
         if (type === TYPES.click) {
             showStepsPopup();
@@ -54,13 +55,19 @@ const ShortKeys = (function () {
 
     function abortAdding() {
 
-        inProgressShortkeyType = null
+        inProgressShortkey = {
+            title: null,
+            type: null,
+            waiting: null,
+            headStep: null,
+            linkedSteps: null,
+            stepsCount: 0,
+            script: null,
+            pressedKeys: [],
+            shared: false,
+        };
+
         listeningNewShortkey = false;
-        inProgressLinkedTargets = null;
-        headStep = null;
-        momentStepsCount = 0;
-        targetScript = null;
-        lastPressedKeys = [];
 
         releaseLinksClick();
 
@@ -98,31 +105,33 @@ const ShortKeys = (function () {
 
         const step = utils.createStep(targetElm)
 
-        if (!headStep) {
-            inProgressLinkedTargets = headStep = step;
+        if (!inProgressShortkey.headStep) {
+            inProgressShortkey.linkedSteps = inProgressShortkey.headStep = step;
         } else {
-            headStep = headStep.nx = step;
+            inProgressShortkey.headStep = inProgressShortkey.headStep.nx = step;
         }
 
-        momentStepsCount++;
+        inProgressShortkey.stepsCount++;
 
         addStepToPopup(step);
     }
 
-    function addShortkey(keys) {
-        if (!keys) return;
+    function addShortkey() {
+        if (!inProgressShortkey.keys) return;
 
-        if (isKeysUsedBefore(keys)) {
+        if (isKeysUsedBefore(inProgressShortkey.keys)) {
             throw new Error("Key used before")
         }
 
         const data = {
-            type: inProgressShortkeyType,
-            keys,
-            title: inProgressShortkeyTitle,
-            target: inProgressLinkedTargets,
-            stepCount: momentStepsCount,
-            script: targetScript
+            type: inProgressShortkey.type,
+            keys: inProgressShortkey.keys,
+            title: inProgressShortkey.title,
+            waiting: inProgressShortkey.waiting,
+            target: inProgressShortkey.linkedSteps,
+            stepCount: inProgressShortkey.stepsCount,
+            script: inProgressShortkey.script,
+            shared: inProgressShortkey.shared,
         }
 
         if (listeningNewShortkey) {
@@ -167,8 +176,8 @@ const ShortKeys = (function () {
         const noStepElm = ui.popupElmStepsWrapper.querySelector(".no-step");
         if (noStepElm) noStepElm.remove();
 
-        const stepElm = createStepElm(momentStepsCount, step.tx || "Unknown", `step ${momentStepsCount}`);
-        const stepTitleElm = stepElm.querySelector(`#step-${momentStepsCount}`);
+        const stepElm = createStepElm(inProgressShortkey.stepsCount, step.tx || "Unknown", `step ${inProgressShortkey.stepsCount}`);
+        const stepTitleElm = stepElm.querySelector(`#step-${inProgressShortkey.stepsCount}`);
 
         if (stepTitleElm) {
             stepTitleElm.addEventListener("input", e => {
@@ -208,16 +217,18 @@ const ShortKeys = (function () {
 
     }
 
-    function callNextStep(current) {
+    function callNextStep(current, waitingInMS) {
         if (!current) return;
 
         const elm = utils.findTargetElm(current);
 
         fireElementEvents(elm, null, current);
 
+        // set waiting time
+        waitingInMS = waitingInMS || options.waitBetweenSteps || 500;
         setTimeout(() => {
-            callNextStep(current.nx)
-        }, options.waitBetweenSteps || 500)
+            callNextStep(current.nx, waitingInMS)
+        }, waitingInMS)
     }
 
     function addScriptToContent(script) {
@@ -302,7 +313,7 @@ const ShortKeys = (function () {
             }
         }
 
-        for (let {k: keys, tr: target, ty: type, sc: script} of hostShortkeys) {
+        for (let {k: keys, tr: target, ty: type, sc: script, w: waiting} of hostShortkeys) {
 
             const keysStr = utils.parseArrayOfKeys(cachedKeys);
 
@@ -310,7 +321,7 @@ const ShortKeys = (function () {
                 e.preventDefault();
 
                 if (type === TYPES.click) {
-                    callNextStep(target)
+                    callNextStep(target, waiting)
                 } else if (type === TYPES.script) {
                     addScriptToContent(script);
                 }
@@ -325,24 +336,24 @@ const ShortKeys = (function () {
 
     function handleDetectionKeydown(e) {
         e.preventDefault();
-        if (lastPressedKeys && !lastPressedKeys.includes(e.key))
-            lastPressedKeys.push(e.key);
+        if (inProgressShortkey.pressedKeys && !inProgressShortkey.pressedKeys.includes(e.key))
+            inProgressShortkey.pressedKeys.push(e.key);
     }
 
     function handleDetectionKeyup(cb, e) {
         e.preventDefault();
 
-        if (!lastPressedKeys || !lastPressedKeys.length) return;
+        if (!inProgressShortkey.pressedKeys || !inProgressShortkey.pressedKeys.length) return;
 
-        let keys = utils.parseArrayOfKeys(lastPressedKeys)
+        let keys = utils.parseArrayOfKeys(inProgressShortkey.pressedKeys)
 
-        lastPressedKeys = []
+        inProgressShortkey.pressedKeys = []
 
         if (cb && typeof cb === "function") cb(keys)
     }
 
     function handleKeysDetection(keys) {
-        currentKeys = keys;
+        inProgressShortkey.keys = keys;
         console.log(keys);
         ui.popupElmKeysWrapper.innerHTML = keys;
     }
@@ -370,10 +381,16 @@ const ShortKeys = (function () {
                         <div class="steps" id="shortkey-steps"><span class="no-step">Click on an action to add step</span></div>
                     </div>
                     <div class="issk-container">
-                        <strong class="label">Shortkey Title:</strong>
+                        <strong class="label">Title:</strong>
                         <input type="text" id="shortkey-title-input"
                             value="${shortkeyDefaultTitle}" maxlength="20"
-                            placeholder="Shortkey Title *">
+                            placeholder="Title *">
+                    </div>
+                    <div class="issk-container">
+                        <strong class="label">Waiting Time Between Steps (sec):</strong>
+                        <input type="number" id="waiting-input"
+                            value="0" max="10" min="0" step="0.1"
+                            placeholder="Waiting time (optional)">
                     </div>
                     <div id="popup-msg" class="issk-popup-msg"></div>
                     <div class="actions">
@@ -389,27 +406,32 @@ const ShortKeys = (function () {
             ui.popupElm.remove();
         }
 
-        inProgressShortkeyTitle = `Shortkey ${hostShortkeys.length + 1}`;
-        ui.popupElm = createPopupElm(inProgressShortkeyTitle);
+        inProgressShortkey.title = `Shortkey ${hostShortkeys.length + 1}`;
+        ui.popupElm = createPopupElm(inProgressShortkey.title);
         ui.popupElmStepsWrapper = ui.popupElm.querySelector("#shortkey-steps");
         ui.popupElmMsg = ui.popupElm.querySelector("#popup-msg");
 
         const popupElmKeysOpenBtn = ui.popupElm.querySelector("#open-keys-modal");
         const popupElmCancelBtn = ui.popupElm.querySelector("#shortkey-cancel-btn");
         const popupElmTitleInput = ui.popupElm.querySelector("#shortkey-title-input");
+        const popupElmWaitingTimeInput = ui.popupElm.querySelector("#waiting-input");
 
         const handleNameInputChange = e => {
-            inProgressShortkeyTitle = e.target.value.replace(/[^a-zA-Z -_.]/g, "")
+            inProgressShortkey.title = e.target.value.replace(/[^a-zA-Z -_.]/g, "")
+        }
+
+        const handleWaitingInputChange = e => {
+            inProgressShortkey.waiting = Math.max(0, Math.min(10, +e.target.value)) * 1000
         }
 
         const handleAddBtnClick = (e) => {
             ui.popupElmMsg.innerText = ""
-            if (!headStep) {
+            if (!inProgressShortkey.headStep) {
                 ui.popupElmMsg.innerText = "No steps added."
                 return;
             }
 
-            if (!inProgressShortkeyTitle) {
+            if (!inProgressShortkey.title) {
                 ui.popupElmMsg.innerText = "Enter shortkey title."
                 return;
             }
@@ -427,6 +449,8 @@ const ShortKeys = (function () {
 
         popupElmTitleInput.addEventListener("change", handleNameInputChange)
 
+        popupElmWaitingTimeInput.addEventListener("change", handleWaitingInputChange)
+
         document.body.appendChild(ui.popupElm)
     }
 
@@ -442,10 +466,17 @@ const ShortKeys = (function () {
                             placeholder="Script here *"></textarea>
                     </div>
                     <div class="issk-container">
-                        <strong class="label">Shortkey Title:</strong>
+                        <strong class="label">Title:</strong>
                         <input type="text" id="shortkey-title-input"
                             value="${defaultTitle}" maxlength="20"
-                            placeholder="Shortkey Title *">
+                            placeholder="Title *">
+                    </div>
+                    <div class="issk-container">
+                        <div class="custom-switch small">
+                            <input type="checkbox" id="shared-shortkey-switch">
+                            <label for="shared-shortkey-switch"><span>Share with all sites</span></label>
+                        </div>
+                        <small>If save as shared shortkeys it will be accessible from all sites.</small>
                     </div>
                     <div id="popup-msg" class="issk-popup-msg"></div>
                     <div class="actions">
@@ -461,29 +492,30 @@ const ShortKeys = (function () {
             ui.popupElm.remove();
         }
 
-        inProgressShortkeyTitle = `Shortkey ${hostShortkeys.length + 1}`;
-        ui.popupElm = createPopupElm(inProgressShortkeyTitle);
+        inProgressShortkey.title = `Shortkey ${hostShortkeys.length + 1}`;
+        ui.popupElm = createPopupElm(inProgressShortkey.title);
         ui.popupElmMsg = ui.popupElm.querySelector("#popup-msg");
         const scriptTextarea = ui.popupElm.querySelector("#shortkey-script-input");
 
         const scriptPopupElmKeysOpenBtn = ui.popupElm.querySelector("#open-keys-modal");
         const scriptPopupElmCancelBtn = ui.popupElm.querySelector("#shortkey-cancel-btn");
         const scriptPopupElmTitleInput = ui.popupElm.querySelector("#shortkey-title-input");
+        const sharedSwitch = ui.popupElm.querySelector("#shared-shortkey-switch");
 
-        const handleTextAreaChange = e => targetScript = e.target.value.trim();
+        const handleTextAreaChange = e => inProgressShortkey.script = e.target.value.trim();
 
         const handleNameInputChange = e => {
-            inProgressShortkeyTitle = e.target.value.replace(/[^a-zA-Z -_.]/g, "")
+            inProgressShortkey.title = e.target.value.replace(/[^a-zA-Z -_.]/g, "")
         }
 
         const handleAddBtnClick = e => {
             ui.popupElmMsg.innerText = ""
-            if (!targetScript) {
+            if (!inProgressShortkey.script) {
                 ui.popupElmMsg.innerText = "Enter the script first."
                 return;
             }
 
-            if (!inProgressShortkeyTitle) {
+            if (!inProgressShortkey.title) {
                 ui.popupElmMsg.innerText = "Enter shortkey title."
                 return;
             }
@@ -497,10 +529,13 @@ const ShortKeys = (function () {
             showKeysInputPopup()
         }
 
+        const handleSaveAsSharedSwitchChange = e => inProgressShortkey.shared = e.target.checked;
+
         scriptTextarea.addEventListener("change", handleTextAreaChange)
         scriptPopupElmKeysOpenBtn.addEventListener("click", handleAddBtnClick)
         scriptPopupElmCancelBtn.addEventListener("click", abortAdding)
         scriptPopupElmTitleInput.addEventListener("change", handleNameInputChange)
+        sharedSwitch.addEventListener("change", handleSaveAsSharedSwitchChange)
 
         document.body.appendChild(ui.popupElm)
     }
@@ -543,17 +578,17 @@ const ShortKeys = (function () {
 
         const handleAddBtnClick = () => {
             popupElmMsg.innerHTML = "";
-            if (!currentKeys) {
+            if (!inProgressShortkey.keys) {
                 popupElmMsg.innerHTML = "Determine the shortkey first."
                 return;
             }
 
-            if (isKeysUsedBefore(currentKeys)) {
+            if (isKeysUsedBefore(inProgressShortkey.keys)) {
                 popupElmMsg.innerHTML = "This shortkey used before."
                 return;
             }
 
-            addShortkey(currentKeys)
+            addShortkey()
 
             // remove button listener
             popupElmAddBtn.removeEventListener("click", handleAddBtnClick)

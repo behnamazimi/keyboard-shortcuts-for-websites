@@ -1,6 +1,6 @@
 'use strict';
 
-const {sendMessageToCurrentTab, sendGlobalMessage} = messagingUtils;
+const {sendGlobalMessage} = messagingUtils;
 
 // init tab
 
@@ -42,16 +42,14 @@ function handleMessages(data, details) {
 
 function initContent() {
     sendGlobalMessage({action: globalActions.INIT, host: location.origin}, (data = {}) => {
-        const {siteData, globalOptions = {}} = data;
+        const {siteData = {}, globalOptions = {}, sharedShortkeys = []} = data;
 
-        if (globalOptions.off)
-            return;
+        if (globalOptions.off) return;
 
         const options = siteData && siteData.options ? siteData.options : {};
 
-        console.log(siteData.shortkeys);
-        ShortKeys.upHostShortkeys(siteData.shortkeys || [],
-            {...globalOptions, ...options})
+        const allKeys = [...(siteData.shortkeys || []), ...(sharedShortkeys || [])];
+        ShortKeys.upHostShortkeys(allKeys, {...globalOptions, ...options})
     });
 }
 

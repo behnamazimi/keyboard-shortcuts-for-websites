@@ -84,6 +84,10 @@ function renderShortkeysList() {
 
     let items = shortkeys[selectedHost].shortkeys || [];
 
+    if (selectedHost === storeUtils.sharedShortkeysKey) {
+        items = shortkeys[selectedHost] || []
+    }
+
     if (!items.length) return;
 
     shortkeysElm.innerHTML = '';
@@ -111,17 +115,23 @@ function renderHostsList() {
         hostsElm.innerHTML = 'There is not any hosts to show.';
     }
 
-    for (let [host, {shortkeys = []}] of items) {
-        createHostItemElement(host, shortkeys.length)
+    for (let [host, details] of items) {
+        // find out keys to get length
+        let sk = details.shortkeys || [];
+        if (host === storeUtils.sharedShortkeysKey)
+            sk = details || []
+
+        if (sk.length > 0)
+            createHostItemElement(host, sk.length, host === storeUtils.sharedShortkeysKey)
     }
 }
 
-function createHostItemElement(host, count) {
+function createHostItemElement(host, count, sharedItem) {
 
     const createElm = () => {
         let temp = document.createElement("template");
         temp.innerHTML = `
-                <li class="host-item" data-host="${host}">
+                <li class="host-item ${sharedItem ? "shared" : ""}" data-host="${host}">
                     <div class="host-detail">
                         <strong class="host-name">${host}</strong>
                         <span class="host-sk-count">${count} shortkeys</span>

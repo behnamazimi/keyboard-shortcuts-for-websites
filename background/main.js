@@ -1,9 +1,10 @@
 'use strict';
-// TODO
-//  edit steps waiting for each shortkey
-//  test on file protocol
-
-let host = null;
+// TODO: edit steps waiting for each shortkey
+// TODO: test on file protocol
+// TODO: write a document
+// TODO: add move to buttons to popups
+// TODO: test on google keep
+// TODO: test on spotify
 
 // update host on tab change
 chrome.runtime.onMessage.addListener(handleMessages)
@@ -13,11 +14,13 @@ chrome.tabs.onActivated.addListener(handleTabChange);
 function handleMessages(data, details, sendResponse) {
     switch (data.action) {
         case globalActions.INIT:
-            setHost(data.host)
-            storeUtils.loadGlobalOptions((globalOptions) => {
-                storeUtils.loadHostData((siteData = {}) => {
-                    sendResponse({siteData, globalOptions});
-                })
+            storeUtils.setHost(data.host);
+            storeUtils.getAllData((allData) => {
+                sendResponse({
+                    siteData: allData.shortkeys[storeUtils.host],
+                    globalOptions: allData.globalOptions,
+                    sharedShortkeys: allData.shortkeys[storeUtils.sharedShortkeysKey]
+                });
             })
             return true;
         case globalActions.POPUP_INIT:
@@ -29,7 +32,7 @@ function handleMessages(data, details, sendResponse) {
             })
             return true;
         case globalActions.NEW_SHORTCUT:
-            setHost(data.host)
+            storeUtils.setHost(data.host)
             if (!Array.isArray(data.shortkeys)) return;
 
             // the last item is the new shortkey
@@ -58,7 +61,7 @@ function handleMessages(data, details, sendResponse) {
             storeUtils.clearAllData(() => sendResponse())
             return true
         case globalActions.DELETE_SHORTKEY:
-            setHost(data.host)
+            storeUtils.setHost(data.host)
             storeUtils.removeShortkey(data.id, (res) => {
                 sendResponse(res);
                 messagingUtils.sendMessageToAllTabs({action: contentActions.SHORTCUTS_UPDATED});
@@ -76,27 +79,8 @@ function handleMessages(data, details, sendResponse) {
 
 function handleTabChange(activeInfo) {
     chrome.tabs.get(activeInfo.tabId, ({url}) => {
-        setHost(url)
+        storeUtils.setHost(url)
     })
-}
-
-function setHost(url) {
-    if (!url) return;
-
-    if (url.indexOf("http") > -1) {
-        const uO = new URL(url)
-        host = uO.origin;
-
-        host = host.replace(/^(?:https?:\/\/)?(?:www\.)?/i, "")
-    } else {
-        host = url
-    }
-
-    return host;
-}
-
-function getHostKey() {
-    return host;
 }
 
 // chrome.runtime.sendMessage({greeting: "optionsPageURL"}, function (response) {

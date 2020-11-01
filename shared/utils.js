@@ -161,13 +161,16 @@ const utils = (function () {
         return step;
     }
 
-    function createNewShortkey({type, keys, title, target, stepCount, script} = {}) {
+    function createNewShortkey({type, keys, title, target, stepCount, script, waiting, shared} = {}) {
         const shortkey = {
+            i: `${new Date().getTime()}`,
             t: title,
             ty: type,
-            i: `${new Date().getTime()}`,
             k: keys,
+            sh: !!shared,
         }
+
+        if (waiting) shortkey.w = waiting;
 
         if (target !== null) {
             shortkey.tr = target
@@ -275,6 +278,8 @@ const messagingUtils = (function () {
 
 const storeUtils = (function () {
 
+    let host = null;
+
     function parseAndSaveImportJson(str, cb) {
 
         if (!utils.isValidJsonString(str)) {
@@ -316,7 +321,7 @@ const storeUtils = (function () {
             const newSkList = (hostData.shortkeys || []).filter(sk => sk.i !== id);
             const updatedData = {...hostData, shortkeys: newSkList}
 
-            const key = getHostKey();
+            const key = getHost();
             storeData(key, updatedData, function () {
                 if (newSkList.length === 0 && !updatedData.globalOptions) {
                     removeHost(() => {
@@ -341,7 +346,16 @@ const storeUtils = (function () {
     function loadHostData(cb) {
         if (!host) return;
 
-        const key = getHostKey();
+        const key = getHost();
+
+        chrome.storage.sync.get([key], function (data) {
+            if (cb && typeof cb === "function")
+                cb(data[key])
+        });
+    }
+
+    function loadSharedShortkeys(cb) {
+        const key = getSharedShortkeysKey();
 
         chrome.storage.sync.get([key], function (data) {
             if (cb && typeof cb === "function")
@@ -370,7 +384,7 @@ const storeUtils = (function () {
         loadHostData((siteData = {}) => {
 
             const updatedData = {...siteData, options}
-            const key = getHostKey();
+            const key = getHost();
             storeData(key, updatedData, function () {
                 if (cb && typeof cb === "function") cb(updatedData)
             });
@@ -378,17 +392,34 @@ const storeUtils = (function () {
     }
 
     function storeNewShortkey(shortkey) {
-        loadHostData((siteData = {}) => {
+        const isGlobal = !!shortkey.sh;
+        if (isGlobal) {
+            // save as shared shortkey
+            loadSharedShortkeys(sharedShortkeys => {
+                const key = getSharedShortkeysKey();
+                const updatedShortkeys = [...(sharedShortkeys || []), shortkey]
+                storeData(key, updatedShortkeys, function () {
+                    messagingUtils.sendMessageToAllTabs({
+                        action: contentActions.SHORTCUT_ADDED,
+                        keys: shortkey.k
+                    })
+                });
+            })
 
-            const updatedData = {...siteData, shortkeys: [...(siteData.shortkeys || []), shortkey]}
-            const key = getHostKey();
-            storeData(key, updatedData, function () {
-                messagingUtils.sendMessageToCurrentTab({
-                    action: contentActions.SHORTCUT_ADDED,
-                    keys: shortkey.k
-                })
+        } else {
+            // save as host shortkey
+            loadHostData((siteData = {}) => {
+
+                const updatedData = {...siteData, shortkeys: [...(siteData.shortkeys || []), shortkey]}
+                const key = getHost();
+                storeData(key, updatedData, function () {
+                    messagingUtils.sendMessageToCurrentTab({
+                        action: contentActions.SHORTCUT_ADDED,
+                        keys: shortkey.k
+                    })
+                });
             });
-        });
+        }
     }
 
     function storeData(key, data, cb) {
@@ -431,8 +462,31 @@ const storeUtils = (function () {
         });
     }
 
+    function setHost(url) {
+        if (!url) return;
+
+        if (url.indexOf("http") > -1) {
+            const uO = new URL(url)
+            host = uO.origin;
+
+            host = host.replace(/^(?:https?:\/\/)?(?:www\.)?/i, "")
+        } else {
+            host = url
+        }
+
+        return host;
+    }
+
     function getGlobalOptionsKey() {
         return "globalOptions";
+    }
+
+    function getSharedShortkeysKey() {
+        return "shared-shortkeys";
+    }
+
+    function getHost() {
+        return host;
     }
 
     return {
@@ -445,6 +499,14 @@ const storeUtils = (function () {
         storeNewShortkey,
         getAllData,
         clearAllData,
+        setHost,
+        getHost,
+        get host() {
+            return getHost()
+        },
+        get sharedShortkeysKey() {
+            return getSharedShortkeysKey()
+        },
     }
 })();
 

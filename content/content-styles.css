@@ -137,7 +137,7 @@
     color: var(--issk-color-text);
 }
 
-.issk-popup #shortkey-title-input {
+.issk-popup input {
     width: 100%;
 }
 
@@ -160,6 +160,8 @@
 }
 
 .issk .issk-popup-msg code {
+    all: inherit;
+    display: inline-block;
     color: var(--issk-color-text-light);
     font-weight: bold;
 }
