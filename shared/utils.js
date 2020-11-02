@@ -82,7 +82,7 @@ const utils = (function () {
         return Array.prototype.indexOf.call(parent.children, child) + 1;
     }
 
-    function findTargetElm(step, log) {
+    function findTargetElm(step) {
 
         if (!step) return null;
 
@@ -95,19 +95,19 @@ const utils = (function () {
         if (!elm) {
             if (document.querySelectorAll(simpleQuery).length === 1) {
                 elm = document.querySelector(simpleQuery)
-                console.log(log, "simpleQuery");
+                // console.log(log, "simpleQuery");
 
             } else if (document.querySelectorAll(complexQuery).length === 1) {
                 elm = document.querySelector(complexQuery)
-                console.log(log, "complexQuery");
+                // console.log(log, "complexQuery");
 
             } else if (document.querySelectorAll(multiComplexQuery).length === 1) {
                 elm = document.querySelector(multiComplexQuery)
-                console.log(log, "multiComplexQuery");
+                // console.log(log, "multiComplexQuery");
             }
         }
 
-        if (!elm) console.log({id, simpleQuery, complexQuery, multiComplexQuery})
+        // if (!elm) console.log({id, simpleQuery, complexQuery, multiComplexQuery})
         return elm
     }
 
