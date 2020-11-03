@@ -263,9 +263,9 @@ const ShortKeys = (function () {
 
     // EVENT HANDLERS
     function handleDocClick(e) {
-        if (performance.now() - lastDomClick < 300) {
+        if (performance.now() - lastDomClick < 500) {
             e.preventDefault();
-            return;
+            return false;
         }
 
         lastDomClick = performance.now();
