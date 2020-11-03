@@ -189,7 +189,7 @@ const utils = (function () {
             metaKey: keysArr.includes("Meta"),
             key: keysArr
                 .filter(k => !["Control", "Shift", "Alt", "Meta"].includes(k))
-                .map(k => k.toLowerCase())
+                .map(k => k && k.toLowerCase())
                 .join(" + ").trim(),
         }
 
