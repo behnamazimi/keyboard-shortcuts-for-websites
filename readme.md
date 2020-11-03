@@ -17,4 +17,4 @@ You can determine any combination of keys. Here are some examples of possibiliti
 
 
 **Notice:**
-- You can't override some of the browser-reserved keyboard shortcuts. e.g `ctrl + t`, `ctrl + n`, `ctrl + shift + n`, `ctrl + w`, `ctrl + shift + n` and a few other keys.
+- You can't override some browser-reserved keyboard shortcuts. e.g `ctrl + t`, `ctrl + n`, `ctrl + shift + n`, `ctrl + w`, `ctrl + shift + n` and a few other keys.
