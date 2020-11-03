@@ -337,14 +337,14 @@ const ShortKeys = (function () {
     }
 
     function handleDetectionKeydown(e) {
-        e.preventDefault();
         if (inProgressShortkey.pressedKeys && !inProgressShortkey.pressedKeys.includes(e.key))
             inProgressShortkey.pressedKeys.push(e.key);
+
+        e.preventDefault();
+        return false;
     }
 
     function handleDetectionKeyup(cb, e) {
-        e.preventDefault();
-
         if (!inProgressShortkey.pressedKeys || !inProgressShortkey.pressedKeys.length) return;
 
         let keys = utils.parseArrayOfKeys(inProgressShortkey.pressedKeys)
@@ -352,6 +352,9 @@ const ShortKeys = (function () {
         inProgressShortkey.pressedKeys = []
 
         if (cb && typeof cb === "function") cb(keys)
+        
+        e.preventDefault();
+        return false;
     }
 
     function handleKeysDetection(keys) {
