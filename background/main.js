@@ -82,9 +82,27 @@ function handleMessages(data, details, sendResponse) {
 function handleTabChange(activeInfo) {
     chrome.tabs.get(activeInfo.tabId, ({url}) => {
         if (url.startsWith("file://")) {
-            chrome.browserAction.setPopup({popup: 'popup/not-allowed.html'});
+            chrome.browserAction.disable(activeInfo.tabId);
+            chrome.browserAction.setIcon({
+                tabId: activeInfo.tabId,
+                path: {
+                    "16": "icons/d_16x16.png",
+                    "32": "icons/d_32x32.png",
+                    "48": "icons/d_48x48.png",
+                    "128": "icons/d_128x128.png"
+                }
+            });
         } else {
-            chrome.browserAction.setPopup({popup: 'popup/popup.html'});
+            chrome.browserAction.enable(activeInfo.tabId);
+            chrome.browserAction.setIcon({
+                tabId: activeInfo.tabId,
+                path: {
+                    "16": "icons/16x16.png",
+                    "32": "icons/32x32.png",
+                    "48": "icons/48x48.png",
+                    "128": "icons/128x128.png"
+                }
+            });
             storeUtils.setHost(url)
 
             updateBadgeStatus();
