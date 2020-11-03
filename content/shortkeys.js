@@ -352,7 +352,7 @@ const ShortKeys = (function () {
         inProgressShortkey.pressedKeys = []
 
         if (cb && typeof cb === "function") cb(keys)
-        
+
         e.preventDefault();
         return false;
     }
@@ -380,6 +380,36 @@ const ShortKeys = (function () {
             let temp = document.createElement("template");
             temp.innerHTML = `
                 <div class="issk issk-popup">
+                    <div class="issk-container popup-move" id="popup-move">
+                        <button data-pos="left">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="19" y1="12" x2="5" y2="12"></line>
+                                <polyline points="12 19 5 12 12 5"></polyline>
+                            </svg>
+                        </button>
+                        <button data-pos="bottom">
+                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <polyline points="19 12 12 19 5 12"></polyline>
+                            </svg>
+                        </button>
+                        <button data-pos="top">
+                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="19" x2="12" y2="5"></line>
+                                <polyline points="5 12 12 5 19 12"></polyline>
+                            </svg>
+                        </button>
+                        <button data-pos="right">
+                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </button>
+                    </div>
                     <div class="issk-container">
                         <strong class="label">Action Steps:</strong>
                         <div class="steps" id="shortkey-steps"><span class="no-step">Click on an action to add step</span></div>
@@ -419,6 +449,7 @@ const ShortKeys = (function () {
         const popupElmCancelBtn = ui.popupElm.querySelector("#shortkey-cancel-btn");
         const popupElmTitleInput = ui.popupElm.querySelector("#shortkey-title-input");
         const popupElmWaitingTimeInput = ui.popupElm.querySelector("#waiting-input");
+        const popupMove = ui.popupElm.querySelector("#popup-move");
 
         const handleNameInputChange = e => {
             inProgressShortkey.title = e.target.value.replace(/[^a-zA-Z -_.]/g, "")
@@ -448,12 +479,39 @@ const ShortKeys = (function () {
             popupElmKeysOpenBtn.removeEventListener("click", handleAddBtnClick)
         }
 
+        const handlePopupMove = (e) => {
+            if (e.target.tagName === "BUTTON") {
+                const pos = e.target.getAttribute("data-pos");
+
+                switch (pos) {
+                    case "left":
+                        ui.popupElm.style.left = "16px"
+                        ui.popupElm.style.right = "unset"
+                        break;
+                    case "right":
+                        ui.popupElm.style.right = "16px"
+                        ui.popupElm.style.left = "unset"
+                        break;
+                    case "top":
+                        ui.popupElm.style.top = "16px"
+                        ui.popupElm.style.bottom = "unset"
+                        break;
+                    case "bottom":
+                        ui.popupElm.style.bottom = "16px"
+                        ui.popupElm.style.top = "unset"
+                        break;
+                }
+            }
+        }
+
         popupElmKeysOpenBtn.addEventListener("click", handleAddBtnClick)
         popupElmCancelBtn.addEventListener("click", abortAdding)
 
         popupElmTitleInput.addEventListener("change", handleNameInputChange)
 
         popupElmWaitingTimeInput.addEventListener("change", handleWaitingInputChange)
+
+        popupMove.addEventListener("click", handlePopupMove)
 
         document.body.appendChild(ui.popupElm)
     }
