@@ -246,6 +246,144 @@ const utils = (function () {
     }
 })();
 
+const uiUtils = (function () {
+
+    function createStepsPopupElm(shortkeyDefaultTitle = '') {
+        let temp = document.createElement("template");
+        temp.innerHTML = `
+                <div class="issk issk-popup">
+                    <div class="issk-container popup-move" id="popup-move">
+                        <button data-pos="left">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="19" y1="12" x2="5" y2="12"></line>
+                                <polyline points="12 19 5 12 12 5"></polyline>
+                            </svg>
+                        </button>
+                        <button data-pos="bottom">
+                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <polyline points="19 12 12 19 5 12"></polyline>
+                            </svg>
+                        </button>
+                        <button data-pos="top">
+                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="19" x2="12" y2="5"></line>
+                                <polyline points="5 12 12 5 19 12"></polyline>
+                            </svg>
+                        </button>
+                        <button data-pos="right">
+                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="issk-container">
+                        <strong class="label">Action Steps:</strong>
+                        <div class="steps" id="shortkey-steps"><span class="no-step">Click on an action to add step</span></div>
+                    </div>
+                    <div class="issk-container">
+                        <strong class="label">Title:</strong>
+                        <input type="text" id="shortkey-title-input"
+                            value="${shortkeyDefaultTitle}" maxlength="20"
+                            placeholder="Title *">
+                    </div>
+                    <div class="issk-container">
+                        <strong class="label">Waiting Time Between Steps (sec):</strong>
+                        <input type="number" id="waiting-input"
+                            value="0" max="10" min="0" step="0.1"
+                            placeholder="Waiting time (optional)">
+                    </div>
+                    <div id="popup-msg" class="issk-popup-msg"></div>
+                    <div class="actions">
+                        <button id="shortkey-cancel-btn" class="cancel">Cancel</button>
+                        <button id="open-keys-modal">Set Shortkey Keys</button>
+                    </div>
+                </div>`;
+
+        return temp.content.firstElementChild;
+    }
+
+    function createScriptPopupElm(defaultTitle = '') {
+        let temp = document.createElement("template");
+        temp.innerHTML = `
+            <div class="issk issk-popup">
+                    <div class="issk-container">
+                        <strong class="label">Script:</strong>
+                        <textarea id="shortkey-script-input" rows="4"
+                            placeholder="Script here *"></textarea>
+                    </div>
+                    <div class="issk-container">
+                        <strong class="label">Title:</strong>
+                        <input type="text" id="shortkey-title-input"
+                            value="${defaultTitle}" maxlength="20"
+                            placeholder="Title *">
+                    </div>
+                    <div class="issk-container">
+                        <div class="custom-switch small">
+                            <input type="checkbox" id="shared-shortkey-switch">
+                            <label for="shared-shortkey-switch"><span>Share with all sites</span></label>
+                        </div>
+                        <small>If save as shared shortkeys it will be accessible from all sites.</small>
+                    </div>
+                    <div id="popup-msg" class="issk-popup-msg"></div>
+                    <div class="actions">
+                        <button id="shortkey-cancel-btn" class="cancel">Cancel</button>
+                        <button id="open-keys-modal">Set Shortkey Keys</button>
+                    </div>
+                </div>`;
+
+        return temp.content.firstElementChild;
+    }
+
+    function createKeysDefinePopupElm() {
+        let temp = document.createElement("template");
+        temp.innerHTML = `
+            <div class="issk issk-fixed-modal" tabindex="1">
+                <div class="issk-popup">
+                    <div class="keys-container">
+                        <strong class="label">Shortkey for above steps:</strong>
+                        <pre class="keys-input" id="keys-pre">Press keys that you want...</pre>
+                    </div>
+                    <ul class="issk-popup-msg info">
+                        <li><code>ctrl + t</code> and <code>ctrl + w</code> are reserved by your browser.</li>
+                    </ul>
+                    <div id="keys-popup-msg" class="issk-popup-msg"></div>
+                    <div class="actions">
+                        <button id="shortkey-cancel-btn" class="cancel">Cancel</button>
+                        <button id="shortkey-add-btn">Add</button>
+                    </div>
+                </div>
+            </div>`;
+
+        return temp.content.firstElementChild;
+    }
+
+    function createToastElm(msg, pre) {
+        let temp = document.createElement("template");
+        temp.innerHTML = `
+            <div class="issk-toast">
+                <div class="issk-container">
+                    <p class="issk-p">${msg}</p>
+                    ${pre ? `<pre class="issk-pre">${pre}</pre>` : ''}
+                </div>
+            </div>`;
+
+        return temp.content.firstElementChild;
+    }
+
+    return {
+        createStepsPopupElm,
+        createScriptPopupElm,
+        createKeysDefinePopupElm,
+        createToastElm,
+    }
+})();
+
 const messagingUtils = (function () {
 
     function sendMessageToCurrentTab(body) {
@@ -507,5 +645,6 @@ const storeUtils = (function () {
         },
     }
 })();
+
 
 
