@@ -1,7 +1,5 @@
 'use strict';
-// TODO: test on file protocol
 // TODO: write a document
-// TODO: add move to buttons to popups
 // TODO: test on google keep
 // TODO: test on spotify
 // TODO: view site shortkeys on content

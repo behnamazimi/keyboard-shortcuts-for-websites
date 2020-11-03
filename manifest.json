@@ -1,14 +1,11 @@
 {
   "name": "In-site Shortkeys",
   "version": "1.0",
-  "description": "Custom Shortkeys in your website!",
+  "description": "Keyboard shortcuts for actions of websites you use frequently",
   "permissions": [
-    "tabs",
     "activeTab",
-    "declarativeContent",
     "storage"
   ],
-  "options_page": "options/settings.html",
   "background": {
     "matches": [
       "http://*/*",
@@ -21,6 +18,7 @@
     ],
     "persistent": false
   },
+  "options_page": "options/settings.html",
   "browser_action": {
     "matches": [
       "http://*/*",
