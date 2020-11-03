@@ -559,7 +559,7 @@ const ShortKeys = (function () {
             ui.successToastElm.remove();
         }
 
-        ui.successToastElm = uiUtils.createToastElm();
+        ui.successToastElm = uiUtils.createToastElm(msg, pre);
         ui.successToastElm.classList.add("visible")
         if (error) ui.successToastElm.classList.add("error")
 

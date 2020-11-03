@@ -302,11 +302,14 @@ body .issk a {
     grid-template-areas: ". top ." "left . right" ". bottom .";
     z-index: 1;
     opacity: 0.4;
+    transform: scale(0.5);
+    transform-origin: top right;
     transition: all 0.3s ease;
 }
 
 #popup-move:hover {
     opacity: 1;
+    transform: scale(1);
 }
 
 #popup-move button {
