@@ -143,7 +143,7 @@
 
 .issk .issk-popup-msg {
     all: initial;
-    color: var(--issk-color-text-light);
+    color: var(--issk-color-text);
     font-family: inherit;
     line-height: 1.5;
     display: inline-block;
@@ -160,7 +160,8 @@
 }
 
 .issk .issk-popup-msg code {
-    all: inherit;
+    all: initial;
+    font-family: monospace;
     display: inline-block;
     color: var(--issk-color-text-light);
     font-weight: bold;

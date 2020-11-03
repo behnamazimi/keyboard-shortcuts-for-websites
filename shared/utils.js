@@ -349,9 +349,9 @@ const uiUtils = (function () {
                         <strong class="label">Shortkey for above steps:</strong>
                         <pre class="keys-input" id="keys-pre">Press keys that you want...</pre>
                     </div>
-                    <ul class="issk-popup-msg info">
-                        <li><code>ctrl + t</code> and <code>ctrl + w</code> are reserved by your browser.</li>
-                    </ul>
+                    <div class="issk-popup-msg info">
+                        Browser-reserved shortkeys cannot be overridden.
+                    </div>
                     <div id="keys-popup-msg" class="issk-popup-msg"></div>
                     <div class="actions">
                         <button id="shortkey-cancel-btn" class="cancel">Cancel</button>
