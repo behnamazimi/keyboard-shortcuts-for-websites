@@ -10,6 +10,10 @@
   ],
   "options_page": "options/settings.html",
   "background": {
+    "matches": [
+      "http://*/*",
+      "https://*/*"
+    ],
     "scripts": [
       "shared/constant.js",
       "shared/utils.js",
@@ -19,7 +23,8 @@
   },
   "browser_action": {
     "matches": [
-      "<all_urls>"
+      "http://*/*",
+      "https://*/*"
     ],
     "default_popup": "popup/popup.html",
     "default_icon": {
@@ -33,7 +38,8 @@
     {
       "run_at": "document_start",
       "matches": [
-        "<all_urls>"
+        "http://*/*",
+        "https://*/*"
       ],
       "js": [
         "shared/constant.js",

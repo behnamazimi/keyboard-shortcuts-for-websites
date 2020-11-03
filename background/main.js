@@ -1,10 +1,10 @@
 'use strict';
-// TODO: edit steps waiting for each shortkey
 // TODO: test on file protocol
 // TODO: write a document
 // TODO: add move to buttons to popups
 // TODO: test on google keep
 // TODO: test on spotify
+// TODO: view site shortkeys on content
 
 // update host on tab change
 chrome.runtime.onMessage.addListener(handleMessages)
@@ -46,11 +46,13 @@ function handleMessages(data, details, sendResponse) {
                     options: siteData.options,
                     shortkeys: siteData.shortkeys,
                 });
+                updateBadgeStatus()
             })
             break;
         case globalActions.GLOBAL_OPTIONS_UPDATE:
             storeUtils.storeGlobalOptions(data.options, (globalOptions) => {
                 messagingUtils.sendMessageToAllTabs({action: contentActions.OPTION_UPDATE, globalOptions});
+                updateBadgeStatus();
                 sendResponse(globalOptions)
             })
             return true;
@@ -79,7 +81,29 @@ function handleMessages(data, details, sendResponse) {
 
 function handleTabChange(activeInfo) {
     chrome.tabs.get(activeInfo.tabId, ({url}) => {
-        storeUtils.setHost(url)
+        if (url.startsWith("file://")) {
+            chrome.browserAction.setPopup({popup: 'popup/not-allowed.html'});
+        } else {
+            chrome.browserAction.setPopup({popup: 'popup/popup.html'});
+            storeUtils.setHost(url)
+
+            updateBadgeStatus();
+        }
+    })
+}
+
+function updateBadgeStatus() {
+    storeUtils.loadGlobalOptions((globalOptions = {}) => {
+        storeUtils.loadHostData((hostData = {}) => {
+
+            const isOff = (hostData.options && !!hostData.options.off) || !!globalOptions.off
+            if (isOff) {
+                chrome.browserAction.setBadgeText({text: 'off'});
+                chrome.browserAction.setBadgeBackgroundColor({color: '#f14545'});
+            } else {
+                chrome.browserAction.setBadgeText({text: ''});
+            }
+        })
     })
 }
 
