@@ -83,3 +83,10 @@ body.issk {
     color: var(--issk-color-text);
     font-size: 14px;
 }
+
+.popup .not-allowed {
+    all: initial;
+    font-size: 14px;
+    color: var(--issk-color-text);
+    margin: 0.5rem 0 0;
+}
