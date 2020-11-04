@@ -87,25 +87,25 @@ function handleTabActivation(tabInfo) {
 }
 
 function updateExtStatusInTab(tabId, url) {
-    const isAllowed = url && url.startsWith && url.startsWith("http");
+    if (tabId && url) {
+        const isAllowed = url.startsWith && url.startsWith("http");
+        let iconPath = {
+            "16": `icons/${isAllowed ? "" : "d_"}16x16.png`,
+            "32": `icons/${isAllowed ? "" : "d_"}32x32.png`,
+            "48": `icons/${isAllowed ? "" : "d_"}48x48.png`,
+            "128": `icons/${isAllowed ? "" : "d_"}128x128.png`
+        }
 
-    let iconPath = {
-        "16": `icons/${isAllowed ? "" : "d_"}16x16.png`,
-        "32": `icons/${isAllowed ? "" : "d_"}32x32.png`,
-        "48": `icons/${isAllowed ? "" : "d_"}48x48.png`,
-        "128": `icons/${isAllowed ? "" : "d_"}128x128.png`
+        if (isAllowed) {
+            storeUtils.setHost(url)
+            chrome.browserAction.enable(tabId);
+        } else {
+            chrome.browserAction.disable(tabId);
+        }
+
+        // update icon
+        chrome.browserAction.setIcon({tabId: tabId, path: iconPath});
     }
-
-    if (isAllowed) {
-        storeUtils.setHost(url)
-        chrome.browserAction.enable(tabId);
-    } else {
-        chrome.browserAction.disable(tabId);
-    }
-
-    // update icon
-    chrome.browserAction.setIcon({tabId: tabId, path: iconPath});
-
 
     storeUtils.loadGlobalOptions((globalOptions = {}) => {
         storeUtils.loadHostData((hostData = {}) => {
