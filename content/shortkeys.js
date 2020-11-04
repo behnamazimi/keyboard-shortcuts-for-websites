@@ -301,12 +301,14 @@ const ShortKeys = (function () {
     }
 
     function handleKeydown(e) {
+        if (listeningNewShortkey) return;
+
         if (cachedKeys && !cachedKeys.includes(e.key))
             cachedKeys.push(e.key);
     }
 
     function handleKeyup(e) {
-        if (!cachedKeys || !cachedKeys.length) return;
+        if (listeningNewShortkey || !cachedKeys || !cachedKeys.length) return;
 
         if (options.preventInInputs) {
             const tagName = e.path && e.path[0].tagName;
