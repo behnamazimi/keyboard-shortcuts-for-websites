@@ -3,6 +3,7 @@
   "version": "1.0",
   "description": "Keyboard shortcuts for actions of websites you use frequently",
   "permissions": [
+    "tabs",
     "activeTab",
     "storage"
   ],
