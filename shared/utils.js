@@ -121,7 +121,7 @@ const utils = (function () {
 
         if (!targetElm || targetElm.nodeName === "#document") return step;
 
-        const validAttrs = ["id", "role", "tabindex", "type", "title"]
+        const validAttrs = ["id", "role", "type", "title"]
 
         const rawAttrs = targetElm.attributes || [];
         const rawAttrsLen = rawAttrs.length;
