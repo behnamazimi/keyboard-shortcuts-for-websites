@@ -1,6 +1,5 @@
 'use strict';
-// TODO: write a document
-// TODO: test on google keep
+// TODO: write a document and add its page
 // TODO: test on spotify
 // TODO: view site shortkeys on content
 

@@ -9,6 +9,7 @@ let openShortkeysBtn = document.getElementById('open-shortkeys-btn');
 let inSiteInfoWrapper = document.getElementById('in-site-info');
 let offOnSiteSwitch = document.getElementById('off-on-site');
 let offForAllSwitch = document.getElementById('off-for-all');
+let openDocumentsLink = document.getElementById('open-documents');
 
 initPopup();
 
@@ -29,6 +30,11 @@ openOptionsBtn.onclick = function () {
 
 openShortkeysBtn.onclick = function () {
     const optionsPageURL = chrome.extension.getURL("options/list.html");
+    window.open(optionsPageURL);
+}
+
+openDocumentsLink.onclick = function () {
+    const optionsPageURL = chrome.extension.getURL("options/documents.html");
     window.open(optionsPageURL);
 }
 

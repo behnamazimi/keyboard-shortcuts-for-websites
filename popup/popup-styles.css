@@ -90,3 +90,9 @@ body.issk {
     color: var(--issk-color-text);
     margin: 0.5rem 0 0;
 }
+
+#open-documents {
+    display: inline-block;
+    font-size: 14px;
+    margin-top: 0.5rem;
+}
