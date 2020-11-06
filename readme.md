@@ -1,23 +1,29 @@
 # In-site Shortkeys
 
 With **In-site Shortkeys**, you can define custom keyboard shortcuts for certain actions of websites you use frequently.
-It listens to your clicks and catches each click as a step and after determining your action steps you can set keys and 
-save it, so you could execute the steps whenever with those keys.
-
-Also, it's possible to define shortcuts for executing scripts too. to do it, you just click on the 
-**Add Script Shortkey** button. 
+Also, it's possible to define shortcuts for executing scripts and, you can share script shortkeys with other sites.  
 
 You can export your custom shortkeys and share it with your friend or your teammate.
 
-You can determine any combination of keys. Here are some examples of possibilities:
-
-- `k`
+For the shortcut, you can specify any key combination. Here are some examples of possibilities:
 - `ctrl + shift + e`
 - `alt + ctrl + shift + u`
-- `a + b`
-- `1 + 2 + 3`
 - `shift + %`
+- `a + b`
+- `1 + 2 + k`
+- `p`
 
+### How It Works
+There is two type of shortkeys, **click shortkey** and **script shortkey**. 
+When you want to add a **click shortkey** it will listen to your clicks and keep each click as a step then you need to 
+determine any combination of keys as shortcut to your steps, so you could execute the steps whenever with that shortcut.
+
+There is not any steps for **script shortkeys** and its easy. You just need to write/copy your code in the specified field
+then assign a shortkey to your code. Your code will add to the site and execute when the keys triggered.
 
 **Notice:**
-- You can't override some browser-reserved keyboard shortcuts. e.g `ctrl + t`, `ctrl + n`, `ctrl + shift + n`, `ctrl + w`, `ctrl + shift + n` and a few other keys.
+- It works only on websites.
+- Shortkeys would trigger just when the focus is on the site itself.
+- You need to trigger shortkeys on which page you define otherwise it will not find the target elements of its steps.
+- You can't override some browser-reserved keyboard shortcuts. e.g `ctrl + t`, `ctrl + n`, `ctrl + shift + n`,
+ `ctrl + w`, `ctrl + shift + n` and a few other keys.
