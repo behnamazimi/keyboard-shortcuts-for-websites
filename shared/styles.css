@@ -29,6 +29,10 @@ body.issk {
     overflow-y: scroll;
 }
 
+body.issk.docs {
+    line-height: 24px;
+}
+
 body.issk a,
 body .issk a {
     color: var(--issk-color-text);
@@ -342,4 +346,16 @@ body .issk a {
 
 #popup-move button[data-pos="right"] {
     grid-area: right;
+}
+
+.ref-links {
+    display: flex;
+    flex-direction: column;
+}
+
+.ref-links > * {
+    font-weight: bold;
+    display: inline-block;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
 }
