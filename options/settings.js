@@ -52,10 +52,8 @@ importFileInput.onchange = function (e) {
     reader.readAsText(this.files[0]);
 }
 
-optionsForm.onsubmit = function (e) {
-    e.preventDefault();
-
-    const formData = new FormData(e.target);
+optionsForm.onchange = function (e) {
+    const formData = new FormData(this);
 
     let options = {
         off: false,
