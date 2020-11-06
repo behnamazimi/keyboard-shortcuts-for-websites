@@ -628,6 +628,7 @@ const storeUtils = (function () {
     return {
         parseAndSaveImportJson,
         removeShortkey,
+        removeHost,
         loadHostData,
         storeGlobalOptions,
         loadGlobalOptions,

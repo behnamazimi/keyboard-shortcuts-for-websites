@@ -67,6 +67,13 @@ function handleMessages(data, details, sendResponse) {
                 messagingUtils.sendMessageToAllTabs({action: contentActions.SHORTCUTS_UPDATED});
             })
             return true
+        case globalActions.DELETE_HOST:
+            storeUtils.setHost(data.host)
+            storeUtils.removeHost((res) => {
+                sendResponse(res);
+                messagingUtils.sendMessageToAllTabs({action: contentActions.SHORTCUTS_UPDATED});
+            })
+            return true
         case globalActions.IMPORT_DATA:
             storeUtils.parseAndSaveImportJson(data.jsonStr, (res) => {
                 sendResponse(res);

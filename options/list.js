@@ -37,7 +37,12 @@ hostsElm.onclick = (e) => {
     selectedHost = hostElm.getAttribute("data-host")
     if (!selectedHost) return;
 
-    showHostDetails()
+    if (e.target.getAttribute("data-action") === "delete") {
+        deleteSelectedHost(hostElm)
+
+    } else {
+        showHostDetails()
+    }
 }
 
 shortkeysElm.onclick = (e) => {
@@ -134,7 +139,12 @@ function createHostItemElement(host, count, sharedItem) {
                 <li class="host-item ${sharedItem ? "shared" : ""}" data-host="${host}">
                     <div class="host-detail">
                         <strong class="host-name">${host}</strong>
-                        <span class="host-sk-count">${count} shortkeys</span>
+                        <div>
+                            <span class="host-sk-count">${count} shortkeys</span>
+                            <div class="item-actions">
+                                <button data-action="delete" class="small danger">Delete</button>
+                            </div>
+                        </div>
                     </div>
                 </li>`;
 
@@ -168,6 +178,17 @@ function createShortkeyItemElement({i: id, t: title, k: keys, ty: type, c: steps
     };
 
     shortkeysElm.appendChild(createElm())
+}
+
+function deleteSelectedHost(hostElm) {
+    if (!selectedHost || !hostElm) return;
+
+    sendGlobalMessage({action: globalActions.DELETE_HOST, host: selectedHost}, (res) => {
+        if (res) {
+            initListData();
+            hostElm.remove();
+        }
+    })
 }
 
 function deleteShortkey(shortkeyElm) {
