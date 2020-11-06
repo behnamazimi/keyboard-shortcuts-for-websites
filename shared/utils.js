@@ -235,6 +235,13 @@ const utils = (function () {
         }
     }
 
+    function getOriginOfURL(url) {
+        if (!url) return null;
+
+        const uO = new URL(url)
+        return uO.origin.replace(/^(?:https?:\/\/)?(?:www\.)?/i, "")
+    }
+
     return {
         findTargetElm,
         createStep,
@@ -243,6 +250,7 @@ const utils = (function () {
         isValidJsonString,
         createDownloadLink,
         copyToClipboard,
+        getOriginOfURL,
     }
 })();
 
@@ -602,10 +610,7 @@ const storeUtils = (function () {
         if (!url) return;
 
         if (url.indexOf("http") > -1) {
-            const uO = new URL(url)
-            host = uO.origin;
-
-            host = host.replace(/^(?:https?:\/\/)?(?:www\.)?/i, "")
+            host = utils.getOriginOfURL(url)
         } else {
             host = url
         }

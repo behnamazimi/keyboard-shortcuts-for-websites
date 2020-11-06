@@ -29,8 +29,12 @@ openOptionsBtn.onclick = function () {
 }
 
 openShortkeysBtn.onclick = function () {
-    const optionsPageURL = chrome.extension.getURL("options/list.html");
-    window.open(optionsPageURL);
+    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+        const activeTab = tabs ? tabs[0] : {};
+        const targetHost = utils.getOriginOfURL(activeTab.url)
+        const optionsPageURL = chrome.extension.getURL(`options/list.html?host=${targetHost}`);
+        window.open(optionsPageURL);
+    });
 }
 
 openDocumentsLink.onclick = function () {

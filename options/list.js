@@ -3,6 +3,9 @@
 const {copyToClipboard} = utils;
 const {sendGlobalMessage} = messagingUtils;
 
+const urlParams = new URLSearchParams(location.search)
+let urlHost = urlParams.get("host")
+
 let allData = null;
 let selectedHost = null;
 let searchTrend = '';
@@ -22,6 +25,13 @@ function initListData() {
         allData = response || {};
 
         renderHostsList();
+
+        // open passed host page only once
+        if (urlHost) {
+            selectedHost = urlHost;
+            showHostDetails();
+            urlHost = null
+        }
     });
 }
 
