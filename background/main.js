@@ -87,31 +87,34 @@ function handleMessages(data, details, sendResponse) {
 function handleTabActivation(tabInfo) {
     const tabId = tabInfo.tabId || tabInfo.id;
 
-    chrome.tabs.get(tabId, ({url}) => {
+    chrome.tabs.get(tabId, ({url} = {}) => {
         updateExtStatusInTab(tabId, url)
     })
 }
 
 function updateExtStatusInTab(tabId, url) {
-    if (tabId && url) {
-        const isAllowed = url.startsWith && url.startsWith("http");
-        let iconPath = {
-            "16": `icons/${isAllowed ? "" : "d_"}16x16.png`,
-            "32": `icons/${isAllowed ? "" : "d_"}32x32.png`,
-            "48": `icons/${isAllowed ? "" : "d_"}48x48.png`,
-            "128": `icons/${isAllowed ? "" : "d_"}128x128.png`
-        }
+    if (!tabId) return;
 
-        if (isAllowed) {
-            storeUtils.setHost(url)
-            chrome.browserAction.enable(tabId);
-        } else {
-            chrome.browserAction.disable(tabId);
-        }
-
-        // update icon
-        chrome.browserAction.setIcon({tabId: tabId, path: iconPath});
+    const isAllowed = !!url && url.startsWith && url.startsWith("http");
+    let iconPath = {
+        "16": `icons/${isAllowed ? "" : "d_"}16x16.png`,
+        "32": `icons/${isAllowed ? "" : "d_"}32x32.png`,
+        "48": `icons/${isAllowed ? "" : "d_"}48x48.png`,
+        "128": `icons/${isAllowed ? "" : "d_"}128x128.png`
     }
+
+    if (isAllowed) {
+        storeUtils.setHost(url)
+        chrome.browserAction.enable(tabId);
+    } else {
+        setTimeout(() => {
+            chrome.browserAction.disable(tabId);
+        }, 10)
+    }
+
+    // update icon
+    chrome.browserAction.setIcon({tabId: tabId, path: iconPath});
+
 
     storeUtils.loadGlobalOptions((globalOptions = {}) => {
         storeUtils.loadHostData((hostData = {}) => {
