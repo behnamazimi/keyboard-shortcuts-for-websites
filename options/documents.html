@@ -8,30 +8,48 @@
 </head>
 <body class="issk">
 <div class="issk-container">
-    <article>
+    <article class="markdown-body entry-content container-lg" itemprop="text">
         <h1>In-site Shortkeys</h1>
         <p>With <strong>In-site Shortkeys</strong>, you can define custom keyboard shortcuts for certain actions of
             websites you use frequently.
-            It listens to your clicks and catches each click as a step and after determining your action steps you can
-            set keys and
-            save it, so you could execute the steps whenever with those keys.</p>
-        <p>Also, it's possible to define shortcuts for executing scripts too. to do it, you just click on the
-            <strong>Add Script Shortkey</strong> button.</p>
+            Also, it's possible to define shortcuts for executing scripts and, you can share script shortkeys with other
+            sites.</p>
         <p>You can export your custom shortkeys and share it with your friend or your teammate.</p>
-        <p>You can determine any combination of keys. Here are some examples of possibilities:</p>
+        <p>For the shortcut, you can specify any key combination. Here are some examples of possibilities:</p>
         <ul>
-            <li><code>k</code></li>
             <li><code>ctrl + shift + e</code></li>
             <li><code>alt + ctrl + shift + u</code></li>
-            <li><code>a + b</code></li>
-            <li><code>1 + 2 + 3</code></li>
             <li><code>shift + %</code></li>
+            <li><code>a + b</code></li>
+            <li><code>1 + 2 + k</code></li>
+            <li><code>p</code></li>
         </ul>
+        <h3><a id="user-content-how-it-works" class="anchor" aria-hidden="true" href="#how-it-works">
+            <svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16"
+                 aria-hidden="true">
+                <path fill-rule="evenodd"
+                      d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path>
+            </svg>
+        </a>How It Works
+        </h3>
+        <p>There is two type of shortkeys, <strong>click shortkey</strong> and <strong>script shortkey</strong>.
+            When you want to add a <strong>click shortkey</strong> it will listen to your clicks and keep each click as
+            a step then you need to
+            determine any combination of keys as shortcut to your steps, so you could execute the steps whenever with
+            that shortcut.</p>
+        <p>There is not any steps for <strong>script shortkeys</strong> and its easy. You just need to write/copy your
+            code in the specified field
+            then assign a shortkey to your code. Your code will add to the site and execute when the keys triggered.</p>
         <p><strong>Notice:</strong></p>
         <ul>
+            <li>It works only on websites.</li>
+            <li>Shortkeys would trigger just when the focus is on the site itself.</li>
+            <li>You need to trigger shortkeys on which page you define otherwise it will not find the target elements of
+                its steps.
+            </li>
             <li>You can't override some browser-reserved keyboard shortcuts. e.g <code>ctrl + t</code>, <code>ctrl +
-                n</code>, <code>ctrl + shift + n</code>, <code>ctrl + w</code>, <code>ctrl + shift + n</code> and a few
-                other keys.
+                n</code>, <code>ctrl + shift + n</code>,
+                <code>ctrl + w</code>, <code>ctrl + shift + n</code> and a few other keys.
             </li>
         </ul>
     </article>
