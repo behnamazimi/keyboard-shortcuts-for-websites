@@ -34,21 +34,18 @@ const utils = (function () {
         let id = null;
         let simpleQuery = `${parentQ} ${tag}`;
         let complexQuery = `${parentQ} ${tag}`;
-        let multiComplexQuery = `${parentQ} ${tag}`;
 
         if (attributes.id) {
             id = attributes.id;
 
             simpleQuery += `#${attributes.id}`;
             complexQuery += `#${attributes.id}`;
-            multiComplexQuery += `#${attributes.id}`;
 
         } else {
             // add nth-child if index is bigger than 0
             if (tag && !!step.i) {
                 simpleQuery += `:nth-child(${step.i})`
                 complexQuery += `:nth-child(${step.i})`
-                multiComplexQuery += `:nth-child(${step.i})`
             }
 
             for (let [attr, value] of Object.entries(attributes)) {
@@ -68,11 +65,8 @@ const utils = (function () {
         complexQuery = complexQuery.replace(/\.\./, ".")
             .replace(/#:/g, "#\\:")
             .trim();
-        multiComplexQuery = multiComplexQuery.replace(/\.\./, ".")
-            .replace(/#:/g, "#\\:")
-            .trim();
 
-        return [id, simpleQuery, complexQuery, multiComplexQuery]
+        return [id, simpleQuery, complexQuery]
     }
 
     function findIndexAsChild(child) {
@@ -88,7 +82,7 @@ const utils = (function () {
 
         let elm;
 
-        const [id, simpleQuery, complexQuery, multiComplexQuery] = generateStepElmQuery(step);
+        const [id, simpleQuery, complexQuery] = generateStepElmQuery(step);
 
         if (id) elm = document.getElementById(id);
 
@@ -101,13 +95,10 @@ const utils = (function () {
                 elm = document.querySelector(complexQuery)
                 // console.log(log, "complexQuery");
 
-            } else if (document.querySelectorAll(multiComplexQuery).length === 1) {
-                elm = document.querySelector(multiComplexQuery)
-                // console.log(log, "multiComplexQuery");
             }
         }
 
-        // if (!elm) console.log({id, simpleQuery, complexQuery, multiComplexQuery})
+        if (!elm) console.log({id, simpleQuery, complexQuery})
         return elm
     }
 
@@ -148,12 +139,13 @@ const utils = (function () {
 
         step.i = findIndexAsChild(targetElm)
 
-        const [id, simpleQuery, complexQuery, multiComplexQuery] = generateStepElmQuery(step)
+        const [id, simpleQuery, complexQuery] = generateStepElmQuery(step)
 
-        if (!id) {
-            if (!targetElm.isEqualNode(findTargetElm(step))) {
-                step.pr = createStep(targetElm.parentNode)
-            }
+        if (!(
+            (id || document.querySelectorAll(complexQuery).length === 1)
+            && targetElm.isEqualNode(findTargetElm(step))
+        )) {
+            step.pr = createStep(targetElm.parentNode)
         }
 
         return step;
