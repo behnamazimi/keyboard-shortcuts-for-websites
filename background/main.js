@@ -10,9 +10,11 @@ chrome.tabs.onActivated.addListener(handleTabActivation);
 
 
 function handleMessages(data, details, sendResponse) {
+    if (data.host)
+        storeUtils.setHost(data.host);
+
     switch (data.action) {
         case globalActions.INIT:
-            storeUtils.setHost(data.host);
             storeUtils.getAllData((allData) => {
                 sendResponse({
                     siteData: allData.shortkeys[storeUtils.host],
@@ -23,14 +25,14 @@ function handleMessages(data, details, sendResponse) {
             return true;
         case globalActions.POPUP_INIT:
             // get site data and global options
-            storeUtils.loadGlobalOptions((globalOptions) => {
-                storeUtils.loadHostData((siteData = {}) => {
-                    sendResponse({siteData, globalOptions});
-                })
+            storeUtils.getAllData(({globalOptions, shortkeys}) => {
+                const siteData = shortkeys[storeUtils.host];
+                const sharedKeys = shortkeys[storeUtils.sharedShortkeysKey];
+
+                sendResponse({siteData, globalOptions, sharedKeys});
             })
             return true;
         case globalActions.NEW_SHORTCUT:
-            storeUtils.setHost(data.host)
             if (!Array.isArray(data.shortkeys)) return;
 
             // the last item is the new shortkey
@@ -61,14 +63,12 @@ function handleMessages(data, details, sendResponse) {
             storeUtils.clearAllData(() => sendResponse())
             return true
         case globalActions.DELETE_SHORTKEY:
-            storeUtils.setHost(data.host)
             storeUtils.removeShortkey(data.id, (res) => {
                 sendResponse(res);
                 messagingUtils.sendMessageToAllTabs({action: contentActions.SHORTCUTS_UPDATED});
             })
             return true
         case globalActions.DELETE_HOST:
-            storeUtils.setHost(data.host)
             storeUtils.removeHost((res) => {
                 sendResponse(res);
                 messagingUtils.sendMessageToAllTabs({action: contentActions.SHORTCUTS_UPDATED});
@@ -129,29 +129,3 @@ function updateExtStatusInTab(tabId, url) {
         })
     })
 }
-
-// chrome.runtime.sendMessage({greeting: "optionsPageURL"}, function (response) {
-//     console.log(response);
-// });
-
-// // A function to use as callback
-// function doStuffWithDom(domContent) {
-//     console.log('I received the following DOM content:\n' + domContent);
-// }
-//
-// When the browser-action button is clicked...
-
-// chrome.browserAction.onClicked.addListener(function (tab) {
-//     console.log(tab);
-//     // ...check the URL of the active tab against our pattern and...
-//     // ...if it matches, send a message specifying a callback too
-//     // chrome.tabs.sendMessage(tab.id, {text: 'report_back'}, doStuffWithDom);
-// });
-
-// chrome.runtime.onInstalled.addListener(function () {
-//     console.log("installed");
-// });
-
-// chrome.management.getAll((res) => {
-//     console.log(res);
-// })
