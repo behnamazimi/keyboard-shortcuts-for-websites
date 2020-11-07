@@ -137,6 +137,14 @@ const utils = (function () {
             step.tx = text;
         }
 
+        if (step.tg === "input") {
+            const inputText = targetElm.getAttribute("title")
+                || targetElm.getAttribute("name")
+                || targetElm.getAttribute("placeholder")
+            if (inputText)
+                step.tx = inputText;
+        }
+
         step.i = findIndexAsChild(targetElm)
 
         const [id, simpleQuery, complexQuery] = generateStepElmQuery(step)
@@ -301,7 +309,7 @@ const uiUtils = (function () {
                     <div id="popup-msg" class="issk-popup-msg"></div>
                     <div class="actions">
                         <button id="shortkey-cancel-btn" class="cancel">Cancel</button>
-                        <button id="open-keys-modal">Set Shortkey Keys</button>
+                        <button id="open-keys-modal">Set Keys</button>
                     </div>
                 </div>`;
 
@@ -333,7 +341,7 @@ const uiUtils = (function () {
                     <div id="popup-msg" class="issk-popup-msg"></div>
                     <div class="actions">
                         <button id="shortkey-cancel-btn" class="cancel">Cancel</button>
-                        <button id="open-keys-modal">Set Shortkey Keys</button>
+                        <button id="open-keys-modal">Set Keys</button>
                     </div>
                 </div>`;
 

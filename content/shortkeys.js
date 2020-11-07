@@ -261,6 +261,23 @@ const ShortKeys = (function () {
             })
     }
 
+    function findTargetShortkey() {
+        if (!cachedKeys) return null;
+
+        let targetShortkey = null;
+        for (let shortkey of hostShortkeys) {
+
+            const keysStr = utils.parseArrayOfKeys(cachedKeys);
+            if (keysStr === shortkey.k) {
+                // break loop when reached the target short-key
+                targetShortkey = shortkey;
+                break;
+            }
+        }
+
+        return targetShortkey
+    }
+
     // EVENT HANDLERS
     function handleDocClick(e) {
         if (performance.now() - lastDomClick < 500) {
@@ -280,6 +297,11 @@ const ShortKeys = (function () {
             const buttonIndex = e.path.findIndex(pe => pe.tagName === "BUTTON" || (pe.getAttribute && pe.getAttribute("role") === "button"))
             if (buttonIndex > -1) {
                 target = e.path[buttonIndex];
+            }
+
+            const inputIndex = e.path.findIndex(pe => pe.tagName === "INPUT")
+            if (inputIndex > -1) {
+                target = e.path[inputIndex];
             }
 
             const aIndex = e.path.findIndex(pe => pe.tagName === "A")
@@ -305,6 +327,12 @@ const ShortKeys = (function () {
 
         if (cachedKeys && !cachedKeys.includes(e.key))
             cachedKeys.push(e.key);
+
+        // prevent default action if keys matched
+        if (findTargetShortkey() !== null) {
+            e.preventDefault();
+            return false;
+        }
     }
 
     function handleKeyup(e) {
@@ -317,25 +345,23 @@ const ShortKeys = (function () {
             }
         }
 
-        for (let {k: keys, tr: target, ty: type, sc: script, w: waiting} of hostShortkeys) {
+        let targetShortkey = findTargetShortkey();
 
-            const keysStr = utils.parseArrayOfKeys(cachedKeys);
+        // reset pressed keys
+        cachedKeys = [];
 
-            if (keysStr === keys) {
-                e.preventDefault();
-
-                if (type === TYPES.click) {
-                    callNextStep(target, waiting)
-                } else if (type === TYPES.script) {
-                    addScriptToContent(script);
-                }
-
-                // break loop when reached the target short-key
-                break;
+        if (targetShortkey !== null) {
+            const {tr: target, ty: type, sc: script, w: waiting} = targetShortkey;
+            if (type === TYPES.click) {
+                callNextStep(target, waiting)
+            } else if (type === TYPES.script) {
+                addScriptToContent(script);
             }
+
+            e.preventDefault();
+            return false;
         }
 
-        cachedKeys = [];
     }
 
     function handleDetectionKeydown(e) {
