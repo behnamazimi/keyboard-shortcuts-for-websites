@@ -27,3 +27,4 @@ then assign a shortkey to your code. Your code will add to the site and execute 
 - You need to trigger shortkeys on which page you define otherwise it will not find the target elements of its steps.
 - You can't override some browser-reserved keyboard shortcuts. e.g `ctrl + t`, `ctrl + n`, `ctrl + shift + n`,
  `ctrl + w`, `ctrl + shift + n` and a few other keys.
+- Unfortunately it may not work on some sites right now, but we will continue to improve features and fix bugs.
