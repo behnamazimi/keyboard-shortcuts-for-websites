@@ -642,7 +642,6 @@ const storeUtils = (function () {
         getAllData,
         clearAllData,
         setHost,
-        getHost,
         get host() {
             return getHost()
         },

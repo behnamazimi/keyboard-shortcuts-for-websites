@@ -611,9 +611,7 @@ const ShortKeys = (function () {
         listening: listeningNewShortkey,
         shortkeys: hostShortkeys,
         listen,
-        addStep,
         upHostShortkeys,
-        downHostShortkeys,
         onAdd,
         showSuccessToast,
     }
