@@ -127,6 +127,7 @@
 }
 
 .issk-popup .keys-container pre {
+    all: initial;
     margin-top: 0;
     margin-bottom: 5px;
     font-size: 14px;
@@ -135,6 +136,9 @@
     padding: 0.5rem;
     text-align: center;
     color: var(--issk-color-text);
+    display: block;
+    box-sizing: border-box;
+    font-family: monospace;
 }
 
 .issk-popup input {
