@@ -76,7 +76,7 @@ body.issk {
 #stats {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: baseline;
 }
 
 #stats a.view-shortkeys {
