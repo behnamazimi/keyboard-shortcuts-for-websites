@@ -29,5 +29,5 @@ then assign a shortkey to your code. Your code will add to the site and execute 
  `ctrl + w`, `ctrl + shift + n` and a few other keys. 
 
 
-Because of the special event handling in some sites in-site shortkeys may not work properly, 
+Because of the special event handling in some sites In-site Shortkeys may not work properly, 
 but we will continue to improve features and fix bugs.
