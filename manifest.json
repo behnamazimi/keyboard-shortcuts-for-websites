@@ -1,6 +1,6 @@
 {
   "name": "In-site Shortkeys",
-  "version": "1.1",
+  "version": "1.2",
   "description": "Keyboard shortcuts for actions of websites you use frequently",
   "permissions": [
     "tabs",
