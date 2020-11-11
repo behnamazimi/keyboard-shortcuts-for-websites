@@ -64,24 +64,24 @@ chrome.runtime.onMessage.addListener(function (data, sender, sendResponse) {
 
 function initPopup(host) {
     sendGlobalMessage({action: globalActions.POPUP_INIT, host}, (response) => {
-        const {siteData, globalOptions, sharedKeys = []} = response || {};
+        const {siteData = {}, globalOptions, sharedKeys = []} = response || {};
 
-        if (siteData) {
-            const {shortkeys = []} = siteData;
-            // update off status
-            offOnSiteSwitch.checked = siteData.options && !!siteData.options.off
+        const {shortkeys = []} = siteData;
+        // update off status
+        offOnSiteSwitch.checked = siteData.options && !!siteData.options.off
 
-            const len = shortkeys ? shortkeys.length : 0;
-            let info = ''
-            if (len) {
-                const justOne = (len === 1);
-                info = `<p><strong>${len}</strong> short-key${justOne ? "" : "s"} found for this site.</p>`
-            }
-            if (sharedKeys.length)
-                info += `<p><strong>${sharedKeys.length}</strong> shared short-keys found.</p>`;
-
-            inSiteInfoWrapper.innerHTML = info;
+        const len = shortkeys ? shortkeys.length : 0;
+        let info = ''
+        if (len) {
+            const justOne = (len === 1);
+            info = `<p><strong>${len}</strong> short-key${justOne ? "" : "s"} found for this site.</p>`
         }
+        if (sharedKeys.length) {
+            const justOne = (sharedKeys.length === 1);
+            info += `<p><strong>${sharedKeys.length}</strong> shared short-key${justOne ? "" : "s"} found.</p>`;
+        }
+
+        inSiteInfoWrapper.innerHTML = info;
 
         // global options
         if (globalOptions) {

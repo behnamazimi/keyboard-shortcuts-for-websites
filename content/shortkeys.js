@@ -1,5 +1,3 @@
-// https://github.com/webextension-toolbox/webextension-toolbox
-
 const ShortKeys = (function () {
 
     let hostShortkeys = [];
@@ -85,7 +83,6 @@ const ShortKeys = (function () {
         // update global options
         if (globalOptions) options = {...options, ...globalOptions};
 
-        console.log("init listeners...");
         window.removeEventListener("keydown", handleKeydown)
         window.addEventListener("keydown", handleKeydown)
 
@@ -96,7 +93,6 @@ const ShortKeys = (function () {
     }
 
     function downHostShortkeys() {
-        console.log("down listeners...");
         window.removeEventListener("keydown", handleKeydown)
         window.removeEventListener("keyup", handleKeyup)
     }
@@ -211,7 +207,7 @@ const ShortKeys = (function () {
             ...options
         };
 
-        const validEvents = ["mouseover", "mouseup", "mousedown", "click"];
+        const validEvents = ["mouseover", "mousedown", "mouseup", "click"];
         for (let event of validEvents) {
             const ev = new MouseEvent(event, eventOptions)
             element.dispatchEvent(ev)
@@ -347,8 +343,10 @@ const ShortKeys = (function () {
 
         let targetShortkey = findTargetShortkey();
 
-        // reset pressed keys
-        cachedKeys = [];
+        // remove up keys from cachedKeys
+        const keyIndex = cachedKeys.indexOf(e.key)
+        if (keyIndex !== -1)
+            cachedKeys.splice(keyIndex, 1)
 
         if (targetShortkey !== null) {
             const {tr: target, ty: type, sc: script, w: waiting} = targetShortkey;

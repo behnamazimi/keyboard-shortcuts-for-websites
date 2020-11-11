@@ -5,6 +5,7 @@ let optionsForm = document.getElementById('options-form');
 let toastElm = document.getElementById('issk-toast');
 let hostsCountElm = document.getElementById('hosts-count');
 let shortkeysCountElm = document.getElementById('shortkeys-count');
+let sharedKeysCountElm = document.getElementById('shared-keys-count');
 let exportBtn = document.getElementById('export-btn');
 let importBtn = document.getElementById('import-btn');
 let importFileInput = document.getElementById('import-file-input');
@@ -52,7 +53,7 @@ importFileInput.onchange = function (e) {
     reader.readAsText(this.files[0]);
 }
 
-optionsForm.onchange = function (e) {
+optionsForm.oninput = function () {
     const formData = new FormData(this);
 
     let options = {
@@ -117,8 +118,10 @@ function initSettingsData() {
 
         const allHostsLen = Object.keys(shortkeys).length;
         const allKeysLen = Object.entries(shortkeys).reduce((a, [_, b]) => a + (b.shortkeys || []).length, 0)
+        const sharedKeysLen = (shortkeys[storeUtils.sharedShortkeysKey] || []).length;
         hostsCountElm.innerText = allHostsLen + "";
         shortkeysCountElm.innerText = allKeysLen + "";
+        sharedKeysCountElm.innerText = sharedKeysLen + ""
     });
 }
 
@@ -132,6 +135,3 @@ function showToast(msg, status = '') {
         if (status) toastElm.classList.remove(status)
     }, 3000)
 }
-
-
-

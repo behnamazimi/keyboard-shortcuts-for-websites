@@ -40,22 +40,21 @@ const utils = (function () {
 
             simpleQuery += `#${attributes.id}`;
             complexQuery += `#${attributes.id}`;
+        }
 
-        } else {
-            // add nth-child if index is bigger than 0
-            if (tag && !!step.i) {
-                simpleQuery += `:nth-child(${step.i})`
-                complexQuery += `:nth-child(${step.i})`
-            }
+        // add nth-child if index is bigger than 0
+        if (tag && !!step.i) {
+            simpleQuery += `:nth-child(${step.i})`
+            complexQuery += `:nth-child(${step.i})`
+        }
 
-            for (let [attr, value] of Object.entries(attributes)) {
-                switch (attr) {
-                    case "id":
-                        break;
-                    default:
-                        complexQuery += `[${attr}="${value}"]`;
-                        break;
-                }
+        for (let [attr, value] of Object.entries(attributes)) {
+            switch (attr) {
+                case "id":
+                    break;
+                default:
+                    complexQuery += `[${attr}="${value}"]`;
+                    break;
             }
         }
 
@@ -84,7 +83,9 @@ const utils = (function () {
 
         const [id, simpleQuery, complexQuery] = generateStepElmQuery(step);
 
-        if (id) elm = document.getElementById(id);
+        if (id && document.querySelectorAll(`#${id}`).length === 1) {
+            elm = document.getElementById(id);
+        }
 
         if (!elm) {
             if (document.querySelectorAll(simpleQuery).length === 1) {
@@ -118,13 +119,14 @@ const utils = (function () {
         const rawAttrsLen = rawAttrs.length;
 
         // set attribute (a) property
-        if (!!rawAttrsLen) step.a = {};
+        if (!!rawAttrsLen) {
+            step.a = {};
+            for (let i = 0; i < rawAttrsLen; i++) {
+                const attrName = rawAttrs[i].nodeName;
+                if (!validAttrs.includes(attrName)) continue;
 
-        for (let i = 0; i < rawAttrsLen; i++) {
-            const attrName = rawAttrs[i].nodeName;
-            if (!validAttrs.includes(attrName)) continue;
-
-            step.a[attrName] = (targetElm.getAttribute(attrName) || '').trim()
+                step.a[attrName] = (targetElm.getAttribute(attrName) || '').trim()
+            }
         }
 
         step.tg = targetElm.tagName.toLowerCase();
@@ -147,12 +149,15 @@ const utils = (function () {
 
         step.i = findIndexAsChild(targetElm)
 
-        const [id, simpleQuery, complexQuery] = generateStepElmQuery(step)
+        const [id, _, complexQuery] = generateStepElmQuery(step)
 
-        if (!(
-            (id || document.querySelectorAll(complexQuery).length === 1)
-            && targetElm.isEqualNode(findTargetElm(step))
-        )) {
+        const hasUniqueId = id && document.querySelectorAll(`#${id}`).length === 1;
+        const hasUniqueComplexQ = document.querySelectorAll(complexQuery).length === 1;
+        const isEqualNode = targetElm.isEqualNode(findTargetElm(step));
+
+        const needParentStep = (!hasUniqueId && !hasUniqueComplexQ) || !isEqualNode;
+
+        if (needParentStep) {
             step.pr = createStep(targetElm.parentNode)
         }
 

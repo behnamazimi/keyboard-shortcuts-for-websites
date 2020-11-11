@@ -1,12 +1,11 @@
 'use strict';
-// TODO: write a document and add its page
-// TODO: test on spotify
 // TODO: view site shortkeys on content
 
 // update host on tab change
 chrome.runtime.onMessage.addListener(handleMessages)
 
 chrome.tabs.onActivated.addListener(handleTabActivation);
+chrome.tabs.onUpdated.addListener(handleTabUpdate);
 
 
 function handleMessages(data, details, sendResponse) {
@@ -46,14 +45,18 @@ function handleMessages(data, details, sendResponse) {
                     options: siteData.options,
                     shortkeys: siteData.shortkeys,
                 });
-                updateExtStatusInTab()
+                getActiveTabInfo((tabInfo = {}) => {
+                    updateExtStatusInTab(tabInfo.id, tabInfo.url)
+                })
             })
             break;
         case globalActions.GLOBAL_OPTIONS_UPDATE:
             storeUtils.storeGlobalOptions(data.options, (globalOptions) => {
                 messagingUtils.sendMessageToAllTabs({action: contentActions.OPTION_UPDATE, globalOptions});
-                updateExtStatusInTab();
                 sendResponse(globalOptions)
+                getActiveTabInfo((tabInfo = {}) => {
+                    updateExtStatusInTab(tabInfo.id, tabInfo.url)
+                })
             })
             return true;
         case globalActions.GET_ALL_DATA:
@@ -86,10 +89,14 @@ function handleMessages(data, details, sendResponse) {
 
 function handleTabActivation(tabInfo) {
     const tabId = tabInfo.tabId || tabInfo.id;
-
     chrome.tabs.get(tabId, ({url} = {}) => {
         updateExtStatusInTab(tabId, url)
     })
+}
+
+function handleTabUpdate(tabId, {status}) {
+    if (status === "complete")
+        handleTabActivation({tabId})
 }
 
 function updateExtStatusInTab(tabId, url) {
@@ -115,17 +122,29 @@ function updateExtStatusInTab(tabId, url) {
     // update icon
     chrome.browserAction.setIcon({tabId: tabId, path: iconPath});
 
+    // reset badge
+    chrome.browserAction.setBadgeBackgroundColor({color: '#472590'});
+    chrome.browserAction.setBadgeText({text: ''});
 
-    storeUtils.loadGlobalOptions((globalOptions = {}) => {
-        storeUtils.loadHostData((hostData = {}) => {
+    storeUtils.getAllData(({globalOptions = {}, shortkeys = []} = {}) => {
+        const hostData = shortkeys[storeUtils.host] || {};
+        const sharedKeys = shortkeys[storeUtils.sharedShortkeysKey] || [];
+        const allKeys = [...sharedKeys, ...(hostData.shortkeys || [])]
 
-            const isOff = (hostData.options && !!hostData.options.off) || !!globalOptions.off
-            if (isOff) {
-                chrome.browserAction.setBadgeText({text: 'off'});
-                chrome.browserAction.setBadgeBackgroundColor({color: '#f14545'});
-            } else {
-                chrome.browserAction.setBadgeText({text: ''});
-            }
-        })
+        const isOff = (hostData.options && !!hostData.options.off) || !!globalOptions.off
+        if (isOff) {
+            chrome.browserAction.setBadgeText({text: 'off'});
+            chrome.browserAction.setBadgeBackgroundColor({color: '#f14545'});
+
+        } else {
+            chrome.browserAction.setBadgeText({text: isAllowed && allKeys.length ? allKeys.length.toString() : ''});
+        }
     })
+}
+
+function getActiveTabInfo(cb) {
+    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+        const activeTab = tabs ? tabs[0] : {};
+        cb && typeof cb === "function" && cb(activeTab)
+    });
 }
