@@ -13,6 +13,9 @@ For the shortcut, you can specify any key combination. Here are some examples of
 - `1 + 2 + k`
 - `p`
 
+Keys determination is order sensitive, it means the same pressed keys in different orders is completely
+ different. e.g `a + b + c` is not same as `c + b + a`.
+ 
 ### How It Works
 There is two type of shortkeys, **click shortkey** and **script shortkey**. 
 When you want to add a **click shortkey** it will listen to your clicks and keep each click as a step then you need to 
