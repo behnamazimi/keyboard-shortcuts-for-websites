@@ -261,7 +261,7 @@ const utils = (function () {
 
 const uiUtils = (function () {
 
-    function createStepsPopupElm(shortkeyDefaultTitle = '') {
+    function createStepsPopupElm(shortkeyDefaultTitle = '', defaultWaiting = 0) {
         let temp = document.createElement("template");
         temp.innerHTML = `
                 <div class="issk issk-popup">
@@ -308,7 +308,7 @@ const uiUtils = (function () {
                     <div class="issk-container">
                         <strong class="label">Waiting Time Between Steps (sec):</strong>
                         <input type="number" id="waiting-input"
-                            value="0" max="10" min="0" step="0.1"
+                            value="${defaultWaiting}" max="10" min="0" step="0.1"
                             placeholder="Waiting time (optional)">
                     </div>
                     <div id="popup-msg" class="issk-popup-msg"></div>

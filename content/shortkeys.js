@@ -20,7 +20,7 @@ const ShortKeys = (function () {
 
     let isWebApp = true;
 
-    let options = {waitBetweenSteps: 1000, off: false, preventInInputs: false};
+    let options = {waitBetweenSteps: 500, off: false, preventInInputs: false};
 
     let ui = {
         popupElm: null,
@@ -407,7 +407,7 @@ const ShortKeys = (function () {
         }
 
         inProgressShortkey.title = `Shortkey ${hostShortkeys.length + 1}`;
-        ui.popupElm = uiUtils.createStepsPopupElm(inProgressShortkey.title);
+        ui.popupElm = uiUtils.createStepsPopupElm(inProgressShortkey.title, options.waitBetweenSteps / 1000);
         ui.popupElmStepsWrapper = ui.popupElm.querySelector("#shortkey-steps");
         ui.popupElmMsg = ui.popupElm.querySelector("#popup-msg");
 
