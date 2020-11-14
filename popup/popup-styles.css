@@ -32,6 +32,28 @@ body.issk {
     color: var(--issk-color-text-dark);
 }
 
+.popup .header .brand {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-left: 30px;
+    color: var(--issk-color-text-light);
+}
+
+.popup .header .brand img {
+    position: absolute;
+    left: 0;
+    width: 24px;
+    margin-right: 0.25rem;
+    border-radius: 3px;
+}
+
+.popup .header .options {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .popup .header .options:hover {
     font-weight: 500;
 }
@@ -69,8 +91,21 @@ body.issk {
     box-sizing: border-box;
 }
 
+.issk button.add-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
 #add-click-shortkey {
     margin-bottom: 0.5rem;
+}
+
+.issk .add-btn svg {
+    position: absolute;
+    left: 0px;
+    margin-left: 1rem;
 }
 
 #stats {
@@ -91,8 +126,21 @@ body.issk {
     margin: 0.5rem 0 0;
 }
 
-#open-documents {
-    display: inline-block;
+
+.popup .footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     font-size: 14px;
     margin-top: 0.5rem;
+}
+
+.popup .footer a {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.popup .footer a svg {
+    margin-right: 0.2rem;
 }
