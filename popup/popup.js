@@ -58,10 +58,6 @@ addScriptShortkeyBtn.onclick = function (element) {
     sendMessageToCurrentTab({action: contentActions.START_LISTENING, type: 1})
 };
 
-chrome.runtime.onMessage.addListener(function (data, sender, sendResponse) {
-
-});
-
 function initPopup(host) {
     sendGlobalMessage({action: globalActions.POPUP_INIT, host}, (response) => {
         const {siteData = {}, globalOptions, sharedKeys = []} = response || {};
@@ -71,7 +67,7 @@ function initPopup(host) {
         offOnSiteSwitch.checked = siteData.options && !!siteData.options.off
 
         const len = shortkeys ? shortkeys.length : 0;
-        let info = ''
+        let info = '<p>No shortkeys added before. </p>'
         if (len) {
             const justOne = (len === 1);
             info = `<p><strong>${len}</strong> short-key${justOne ? "" : "s"} found for this site.</p>`
