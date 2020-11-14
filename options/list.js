@@ -27,7 +27,7 @@ function initListData() {
         renderHostsList();
 
         // open passed host page only once
-        if (urlHost) {
+        if (urlHost && allData.shortkeys && allData.shortkeys[urlHost]) {
             selectedHost = urlHost;
             showHostDetails();
             urlHost = null
