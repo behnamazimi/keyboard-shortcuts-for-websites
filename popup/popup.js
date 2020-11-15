@@ -9,7 +9,6 @@ let openShortkeysBtn = document.getElementById('open-shortkeys-btn');
 let inSiteInfoWrapper = document.getElementById('in-site-info');
 let offOnSiteSwitch = document.getElementById('off-on-site');
 let offForAllSwitch = document.getElementById('off-for-all');
-let openDocumentsLink = document.getElementById('open-documents');
 
 // find active tab and init popup
 getActiveTabInfo((activeTab) => {
@@ -39,11 +38,6 @@ openShortkeysBtn.onclick = function () {
         const optionsPageURL = chrome.extension.getURL(`options/list.html?host=${targetHost}`);
         window.open(optionsPageURL);
     });
-}
-
-openDocumentsLink.onclick = function () {
-    const optionsPageURL = chrome.extension.getURL("options/documents.html");
-    window.open(optionsPageURL);
 }
 
 addClickShortkeyBtn.onclick = function (element) {
