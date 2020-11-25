@@ -1,5 +1,7 @@
 # In-site Shortkeys
 
+**[Chrome Web Store](https://chrome.google.com/webstore/detail/in-site-shortkeys/dgigbgdgmhhncfgaidcbmafkcmagkool)**
+
 With **In-site Shortkeys**, you can define custom keyboard shortcuts for certain actions of websites you use frequently.
 Also, it's possible to define shortcuts for executing scripts and, you can share script shortkeys with other sites.  
 
