@@ -27,7 +27,7 @@ offForAllSwitch.onchange = function (e) {
 }
 
 openOptionsBtn.onclick = function () {
-    const optionsPageURL = chrome.extension.getURL("options/settings.html");
+    const optionsPageURL = chrome.runtime.getURL("options/settings.html");
     window.open(optionsPageURL);
 }
 
@@ -35,7 +35,7 @@ openShortkeysBtn.onclick = function () {
     chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
         const activeTab = tabs ? tabs[0] : {};
         const targetHost = utils.getOriginOfURL(activeTab.url)
-        const optionsPageURL = chrome.extension.getURL(`options/list.html?host=${targetHost}`);
+        const optionsPageURL = chrome.runtime.getURL(`options/list.html?host=${targetHost}`);
         window.open(optionsPageURL);
     });
 }
