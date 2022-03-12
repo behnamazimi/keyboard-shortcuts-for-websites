@@ -21,131 +21,131 @@ initListData();
 
 function initListData() {
 
-    sendGlobalMessage({action: globalActions.GET_ALL_DATA}, (response) => {
-        allData = response || {};
+  sendGlobalMessage({action: globalActions.GET_ALL_DATA}, (response) => {
+    allData = response || {};
 
-        renderHostsList();
+    renderHostsList();
 
-        // open passed host page only once
-        if (urlHost && allData.shortkeys && allData.shortkeys[urlHost]) {
-            selectedHost = urlHost;
-            showHostDetails();
-            urlHost = null
-        }
-    });
+    // open passed host page only once
+    if (urlHost && allData.shortkeys && allData.shortkeys[urlHost]) {
+      selectedHost = urlHost;
+      showHostDetails();
+      urlHost = null
+    }
+  });
 }
 
 searchInput.oninput = function (e) {
-    searchTrend = e.target.value;
-    renderHostsList();
+  searchTrend = e.target.value;
+  renderHostsList();
 }
 
 hostsElm.onclick = (e) => {
-    let hostElm = e.target.closest(".host-item");
-    if (!hostElm) return;
+  let hostElm = e.target.closest(".host-item");
+  if (!hostElm) return;
 
-    selectedHost = hostElm.getAttribute("data-host")
-    if (!selectedHost) return;
+  selectedHost = hostElm.getAttribute("data-host")
+  if (!selectedHost) return;
 
-    if (e.target.getAttribute("data-action") === "delete") {
-        deleteSelectedHost(hostElm)
+  if (e.target.getAttribute("data-action") === "delete") {
+    deleteSelectedHost(hostElm)
 
-    } else {
-        showHostDetails()
-    }
+  } else {
+    showHostDetails()
+  }
 }
 
 shortkeysElm.onclick = (e) => {
-    // remove shortkey
-    let shortkeyElm = e.target.closest(".shortkey-item");
-    if (!shortkeyElm) return;
+  // remove shortkey
+  let shortkeyElm = e.target.closest(".shortkey-item");
+  if (!shortkeyElm) return;
 
-    if (e.target.classList.contains("delete-sk")) {
-        deleteShortkey(shortkeyElm);
+  if (e.target.classList.contains("delete-sk")) {
+    deleteShortkey(shortkeyElm);
 
-    } else if (e.target.classList.contains("copy-script")) {
-        const id = shortkeyElm.getAttribute("id")
-        const targetSk = (allData.shortkeys[selectedHost].shortkeys || []).filter(sk => sk.i === id);
-        if (targetSk && targetSk[0]) {
-            copyToClipboard(targetSk[0].sc);
-            e.target.innerText = "Copied"
+  } else if (e.target.classList.contains("copy-script")) {
+    const id = shortkeyElm.getAttribute("id")
+    const targetSk = (allData.shortkeys[selectedHost].shortkeys || []).filter(sk => sk.i === id);
+    if (targetSk && targetSk[0]) {
+      copyToClipboard(targetSk[0].sc);
+      e.target.innerText = "Copied"
 
-            setTimeout(() => {
-                e.target.innerText = "Copy Script"
-            }, 1000)
-        }
+      setTimeout(() => {
+        e.target.innerText = "Copy Script"
+      }, 1000)
     }
+  }
 
 }
 
 closeHostPageBtn.onclick = function () {
-    selectedHost = null;
-    listPage.classList.toggle("open")
-    hostPage.classList.toggle("open")
+  selectedHost = null;
+  listPage.classList.toggle("open")
+  hostPage.classList.toggle("open")
 }
 
 function showHostDetails() {
-    if (!selectedHost) return;
+  if (!selectedHost) return;
 
-    listPage.classList.toggle("open")
-    hostPage.classList.toggle("open")
+  listPage.classList.toggle("open")
+  hostPage.classList.toggle("open")
 
-    document.getElementById("c-host-name").innerText = selectedHost;
-    renderShortkeysList();
+  document.getElementById("c-host-name").innerText = selectedHost;
+  renderShortkeysList();
 }
 
 function renderShortkeysList() {
-    const {shortkeys = {}} = allData;
+  const {shortkeys = {}} = allData;
 
-    let items = shortkeys[selectedHost].shortkeys || [];
+  let items = shortkeys[selectedHost].shortkeys || [];
 
-    if (selectedHost === storeUtils.sharedShortkeysKey) {
-        items = shortkeys[selectedHost] || []
-    }
+  if (selectedHost === storeUtils.sharedShortkeysKey) {
+    items = shortkeys[selectedHost] || []
+  }
 
-    if (!items.length) return;
+  if (!items.length) return;
 
-    shortkeysElm.innerHTML = '';
-    if (!items.length) {
-        shortkeysElm.innerHTML = 'There is not any shortkeys to show.';
-    }
+  shortkeysElm.innerHTML = '';
+  if (!items.length) {
+    shortkeysElm.innerHTML = 'There is not any shortkeys to show.';
+  }
 
-    for (let sk of items) {
-        console.log(sk);
-        createShortkeyItemElement(sk)
-    }
+  for (let sk of items) {
+    console.log(sk);
+    createShortkeyItemElement(sk)
+  }
 }
 
 function renderHostsList() {
-    const {shortkeys = {}} = allData;
+  const {shortkeys = {}} = allData;
 
-    let items = Object.entries(shortkeys);
+  let items = Object.entries(shortkeys);
 
-    if (searchTrend) {
-        items = items.filter(([host]) => host.indexOf(searchTrend) > -1)
-    }
+  if (searchTrend) {
+    items = items.filter(([host]) => host.indexOf(searchTrend) > -1)
+  }
 
-    hostsElm.innerHTML = '';
-    if (!items.length) {
-        hostsElm.innerHTML = 'There is not any hosts to show.';
-    }
+  hostsElm.innerHTML = '';
+  if (!items.length) {
+    hostsElm.innerHTML = 'There is not any hosts to show.';
+  }
 
-    for (let [host, details] of items) {
-        // find out keys to get length
-        let sk = details.shortkeys || [];
-        if (host === storeUtils.sharedShortkeysKey)
-            sk = details || []
+  for (let [host, details] of items) {
+    // find out keys to get length
+    let sk = details.shortkeys || [];
+    if (host === storeUtils.sharedShortkeysKey)
+      sk = details || []
 
-        if (sk.length > 0)
-            createHostItemElement(host, sk.length, host === storeUtils.sharedShortkeysKey)
-    }
+    if (sk.length > 0)
+      createHostItemElement(host, sk.length, host === storeUtils.sharedShortkeysKey)
+  }
 }
 
 function createHostItemElement(host, count, sharedItem) {
 
-    const createElm = () => {
-        let temp = document.createElement("template");
-        temp.innerHTML = `
+  const createElm = () => {
+    let temp = document.createElement("template");
+    temp.innerHTML = `
                 <li class="host-item ${sharedItem ? "shared" : ""}" data-host="${host}">
                     <div class="host-detail">
                         <strong class="host-name">${host}</strong>
@@ -158,17 +158,17 @@ function createHostItemElement(host, count, sharedItem) {
                     </div>
                 </li>`;
 
-        return temp.content.firstElementChild;
-    };
+    return temp.content.firstElementChild;
+  };
 
-    hostsElm.appendChild(createElm())
+  hostsElm.appendChild(createElm())
 }
 
 function createShortkeyItemElement({i: id, t: title, k: keys, ty: type, c: stepsCount}) {
 
-    const createElm = () => {
-        let temp = document.createElement("template");
-        temp.innerHTML = `
+  const createElm = () => {
+    let temp = document.createElement("template");
+    temp.innerHTML = `
             <li class="shortkey-item" id="${id}">
                 <div class="sk-detail">
                     <strong class="sk-name">${title}</strong>
@@ -184,51 +184,51 @@ function createShortkeyItemElement({i: id, t: title, k: keys, ty: type, c: steps
                 </div>
             </li>`;
 
-        return temp.content.firstElementChild;
-    };
+    return temp.content.firstElementChild;
+  };
 
-    shortkeysElm.appendChild(createElm())
+  shortkeysElm.appendChild(createElm())
 }
 
 function deleteSelectedHost(hostElm) {
-    if (!selectedHost || !hostElm) return;
+  if (!selectedHost || !hostElm) return;
 
-    sendGlobalMessage({action: globalActions.DELETE_HOST, host: selectedHost}, (res) => {
-        if (res) {
-            initListData();
-            hostElm.remove();
-        }
-    })
+  sendGlobalMessage({action: globalActions.DELETE_HOST, host: selectedHost}, (res) => {
+    if (res) {
+      initListData();
+      hostElm.remove();
+    }
+  })
 }
 
 function deleteShortkey(shortkeyElm) {
 
-    const id = shortkeyElm.getAttribute("id")
-    if (!id) return;
+  const id = shortkeyElm.getAttribute("id")
+  if (!id) return;
 
-    if (!id || !selectedHost) {
-        showToast("Cannot find target shortkey", "error")
-        return
+  if (!id || !selectedHost) {
+    showToast("Cannot find target shortkey", "error")
+    return
+  }
+
+  sendGlobalMessage({action: globalActions.DELETE_SHORTKEY, id, host: selectedHost}, (res) => {
+    initListData();
+    shortkeyElm.remove();
+    if (!res || !res.shortkeys || !res.shortkeys.length) {
+      closeHostPageBtn.click();
     }
-
-    sendGlobalMessage({action: globalActions.DELETE_SHORTKEY, id, host: selectedHost}, (res) => {
-        initListData();
-        shortkeyElm.remove();
-        if (!res || !res.shortkeys || !res.shortkeys.length) {
-            closeHostPageBtn.click();
-        }
-    })
+  })
 }
 
 function showToast(msg, status = '') {
-    optionsToast.querySelector("p").innerText = msg;
-    optionsToast.classList.add("visible")
-    if (status) optionsToast.classList.add(status)
+  optionsToast.querySelector("p").innerText = msg;
+  optionsToast.classList.add("visible")
+  if (status) optionsToast.classList.add(status)
 
-    setTimeout(() => {
-        optionsToast.classList.remove("visible")
-        if (status) optionsToast.classList.remove(status)
-    }, 3000)
+  setTimeout(() => {
+    optionsToast.classList.remove("visible")
+    if (status) optionsToast.classList.remove(status)
+  }, 3000)
 }
 
 
