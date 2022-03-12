@@ -1,5 +1,10 @@
 'use strict';
-// TODO: view site shortkeys on content
+
+try {
+    importScripts("shared/constant.js", "shared/utils.js");
+} catch (e) {
+    console.log(e);
+}
 
 // update host on tab change
 chrome.runtime.onMessage.addListener(handleMessages)
@@ -112,19 +117,19 @@ function updateExtStatusInTab(tabId, url) {
 
     if (isAllowed) {
         storeUtils.setHost(url)
-        chrome.browserAction.enable(tabId);
+        chrome.action.enable(tabId);
     } else {
         setTimeout(() => {
-            chrome.browserAction.disable(tabId);
+            chrome.action.disable(tabId);
         }, 10)
     }
 
     // update icon
-    chrome.browserAction.setIcon({tabId: tabId, path: iconPath});
+    chrome.action.setIcon({tabId: tabId, path: iconPath});
 
     // reset badge
-    chrome.browserAction.setBadgeBackgroundColor({color: '#472590'});
-    chrome.browserAction.setBadgeText({text: ''});
+    chrome.action.setBadgeBackgroundColor({color: '#472590'});
+    chrome.action.setBadgeText({text: ''});
 
     storeUtils.getAllData(({globalOptions = {}, shortkeys = []} = {}) => {
         const hostData = shortkeys[storeUtils.host] || {};
@@ -133,11 +138,11 @@ function updateExtStatusInTab(tabId, url) {
 
         const isOff = (hostData.options && !!hostData.options.off) || !!globalOptions.off
         if (isOff) {
-            chrome.browserAction.setBadgeText({text: 'off'});
-            chrome.browserAction.setBadgeBackgroundColor({color: '#f14545'});
+            chrome.action.setBadgeText({text: 'off'});
+            chrome.action.setBadgeBackgroundColor({color: '#f14545'});
 
         } else {
-            chrome.browserAction.setBadgeText({text: isAllowed && allKeys.length ? allKeys.length.toString() : ''});
+            chrome.action.setBadgeText({text: isAllowed && allKeys.length ? allKeys.length.toString() : ''});
         }
     })
 }

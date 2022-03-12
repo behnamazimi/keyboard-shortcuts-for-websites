@@ -1,6 +1,6 @@
 {
   "name": "In-site Shortkeys",
-  "version": "1.4",
+  "version": "1.5",
   "description": "Keyboard shortcuts for actions of websites you use frequently",
   "permissions": [
     "tabs",
@@ -8,19 +8,14 @@
     "storage"
   ],
   "background": {
-    "matches": [
-      "http://*/*",
-      "https://*/*"
-    ],
-    "scripts": [
-      "shared/constant.js",
-      "shared/utils.js",
-      "background/main.js"
-    ],
-    "persistent": false
+    "service_worker": "background.js"
   },
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
   "options_page": "options/settings.html",
-  "browser_action": {
+  "action": {
     "matches": [
       "http://*/*",
       "https://*/*"
@@ -58,5 +53,5 @@
     "48": "icons/48x48.png",
     "128": "icons/128x128.png"
   },
-  "manifest_version": 2
+  "manifest_version": 3
 }
