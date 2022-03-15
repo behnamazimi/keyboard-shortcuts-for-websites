@@ -321,13 +321,6 @@ const ShortKeys = (function () {
   function handleKeydown(e) {
     if (listeningNewShortkey) return;
 
-    if (e.path[0]) {
-      const nodeName = e.path[0].nodeName.toLowerCase()
-      if (nodeName === "input" || nodeName === "textarea") {
-        return
-      }
-    }
-
     if (cachedKeys && !cachedKeys.includes(e.key))
       cachedKeys.push(e.key);
 
