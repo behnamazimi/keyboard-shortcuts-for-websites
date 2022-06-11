@@ -16,6 +16,7 @@ const Shortcuts = (function () {
     pressedKeys: [],
     keys: null,
     shared: false,
+    preventOnInput: false,
   };
 
   let isWebApp = true;
@@ -61,6 +62,7 @@ const Shortcuts = (function () {
       script: null,
       pressedKeys: [],
       shared: false,
+      preventOnInput: false,
     };
 
     listeningNewShortcut = false;
@@ -157,6 +159,7 @@ const Shortcuts = (function () {
       stepCount: inProgressShortcut.stepsCount,
       script: inProgressShortcut.script,
       shared: inProgressShortcut.shared,
+      preventOnInput: inProgressShortcut.preventOnInput,
     }
 
     if (listeningNewShortcut) {
@@ -480,9 +483,14 @@ const Shortcuts = (function () {
     ui.popupElm = uiUtils.createKeysDefinePopupElm();
     ui.popupElmKeysWrapper = ui.popupElm.querySelector("#keys-pre");
 
+    const popupElmPreventOnInput = ui.popupElm.querySelector("#prevent-on-input");
     const popupElmAddBtn = ui.popupElm.querySelector("#shortcut-add-btn");
     const popupElmCancelBtn = ui.popupElm.querySelector("#shortcut-cancel-btn");
     const popupElmMsg = ui.popupElm.querySelector("#keys-popup-msg");
+
+    const handlePreventInputChange = (e) => {
+      inProgressShortcut.preventOnInput = e.target.checked
+    }
 
     const handleAddBtnClick = () => {
       popupElmMsg.innerHTML = "";
@@ -502,6 +510,7 @@ const Shortcuts = (function () {
       popupElmAddBtn.removeEventListener("click", handleAddBtnClick)
     }
 
+    popupElmPreventOnInput.addEventListener("change", handlePreventInputChange)
     popupElmAddBtn.addEventListener("click", handleAddBtnClick)
     popupElmCancelBtn.addEventListener("click", abortAdding)
 

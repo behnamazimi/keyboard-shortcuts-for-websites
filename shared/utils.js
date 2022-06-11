@@ -173,6 +173,8 @@ const utils = (function () {
       sh: !!shared,
     }
 
+    if (preventOnInput) shortcut.pi = preventOnInput
+
     if (waiting) shortcut.w = waiting;
 
     if (target !== null) {
@@ -334,6 +336,13 @@ const uiUtils = (function () {
                         Browser-reserved shortcuts cannot be overridden.
                     </div>
                     <div id="keys-popup-msg" class="issk-popup-msg"></div>
+                    <div class="issk-container">
+                      <br>
+                      <div class="custom-switch small">
+                          <input type="checkbox" id="prevent-on-input">
+                          <label for="prevent-on-input"><span>Prevent when focused on an input</span></label>
+                      </div>
+                    </div>
                     <div class="actions">
                         <button id="shortcut-cancel-btn" class="cancel">Cancel</button>
                         <button id="shortcut-add-btn">Add</button>
