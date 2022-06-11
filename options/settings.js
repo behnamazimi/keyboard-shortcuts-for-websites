@@ -4,7 +4,7 @@ let allData = null;
 let optionsForm = document.getElementById('options-form');
 let toastElm = document.getElementById('issk-toast');
 let hostsCountElm = document.getElementById('hosts-count');
-let shortkeysCountElm = document.getElementById('shortkeys-count');
+let shortkeysCountElm = document.getElementById('shortcuts-count');
 let sharedKeysCountElm = document.getElementById('shared-keys-count');
 let exportBtn = document.getElementById('export-btn');
 let importBtn = document.getElementById('import-btn');
@@ -31,7 +31,7 @@ document.addEventListener("click", (e) => {
 exportBtn.onclick = function (e) {
   messagingUtils.sendGlobalMessage({action: globalActions.GET_ALL_DATA}, (response) => {
     utils.createDownloadLink(JSON.stringify(response));
-    showToast("Shortkeys exported.")
+    showToast("Shortcuts exported.")
   });
 }
 
@@ -90,7 +90,7 @@ clearDataConfirm.onchange = e => {
 clearDataBtn.onclick = () => {
   messagingUtils.sendGlobalMessage({action: globalActions.CLEAT_DATA}, () => {
     initSettingsData();
-    showToast("Shortkeys cleared.");
+    showToast("Shortcuts cleared.");
 
     clearDataBtn.setAttribute("disabled", "true")
     clearDataConfirm.checked = false;
@@ -101,7 +101,7 @@ function initSettingsData() {
   clearDataConfirm.removeAttribute("checked");
 
   messagingUtils.sendGlobalMessage({action: globalActions.GET_ALL_DATA}, (response) => {
-    const {globalOptions = {}, shortkeys = {}} = allData = response || {};
+    const {globalOptions = {}, shortcuts = {}} = allData = response || {};
     optionsForm.elements["waitBetweenSteps"].value = (globalOptions.waitBetweenSteps / 1000) || 0.5;
 
     if (globalOptions.off) {
@@ -116,9 +116,9 @@ function initSettingsData() {
       optionsForm.elements["preventInInputs"].removeAttribute("checked");
     }
 
-    const allHostsLen = Object.keys(shortkeys).length;
-    const allKeysLen = Object.entries(shortkeys).reduce((a, [_, b]) => a + (b.shortkeys || []).length, 0)
-    const sharedKeysLen = (shortkeys[storeUtils.sharedShortkeysKey] || []).length;
+    const allHostsLen = Object.keys(shortcuts).length;
+    const allKeysLen = Object.entries(shortcuts).reduce((a, [_, b]) => a + (b.shortcuts || []).length, 0)
+    const sharedKeysLen = (shortcuts[storeUtils.sharedShortcutsKey] || []).length;
     hostsCountElm.innerText = allHostsLen + "";
     shortkeysCountElm.innerText = allKeysLen + "";
     sharedKeysCountElm.innerText = sharedKeysLen + ""

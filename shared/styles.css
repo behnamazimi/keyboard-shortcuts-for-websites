@@ -209,14 +209,14 @@ body .issk a {
     top: 50%;
     left: 2px;
     transform: translateY(-50%);
-    background: var(--issk-color-danger);
+    background: var(--issk-color-main-light);
     transition: all 0.2s ease-in-out;
 }
 
 .issk .custom-switch input[type="checkbox"]:checked + label::after {
     transform: translateY(-50%) translateX(22px);
     transition: all 0.2s ease-in-out;
-    background-color: var(--issk-color-success-light);
+    background-color: var(--issk-color-success);
 }
 
 

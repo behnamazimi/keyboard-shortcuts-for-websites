@@ -164,8 +164,8 @@ const utils = (function () {
     return step;
   }
 
-  function createNewShortkey({type, keys, title, target, stepCount, script, waiting, shared} = {}) {
-    const shortkey = {
+  function createNewShortcut({type, keys, title, target, stepCount, script, waiting, shared} = {}) {
+    const shortcut = {
       i: `${new Date().getTime()}`,
       t: title,
       ty: type,
@@ -173,17 +173,17 @@ const utils = (function () {
       sh: !!shared,
     }
 
-    if (waiting) shortkey.w = waiting;
+    if (waiting) shortcut.w = waiting;
 
     if (target !== null) {
-      shortkey.tr = target
-      shortkey.c = stepCount
+      shortcut.tr = target
+      shortcut.c = stepCount
     }
 
     if (script !== null)
-      shortkey.sc = script
+      shortcut.sc = script
 
-    return shortkey
+    return shortcut
   }
 
   function parseArrayOfKeys(keysArr) {
@@ -213,7 +213,7 @@ const utils = (function () {
   function createDownloadLink(text) {
     let link = document.createElement('a');
     link.target = "_blank"
-    link.download = `in-site-shortkeys.issk`
+    link.download = `in-site-shortcuts.issk`
     let blob = new Blob([text], {type: 'application/json'});
     link.href = window.URL.createObjectURL(blob);
     link.click()
@@ -250,7 +250,7 @@ const utils = (function () {
   return {
     findTargetElm,
     createStep,
-    createNewShortkey,
+    createNewShortcut,
     parseArrayOfKeys,
     isValidJsonString,
     createDownloadLink,
@@ -297,11 +297,11 @@ const uiUtils = (function () {
                     </div>
                     <div class="issk-container">
                         <strong class="label">Action Steps:</strong>
-                        <div class="steps" id="shortkey-steps"><span class="no-step">Click on an action to add step</span></div>
+                        <div class="steps" id="shortcut-steps"><span class="no-step">Click on an action to add step</span></div>
                     </div>
                     <div class="issk-container">
                         <strong class="label">Title:</strong>
-                        <input type="text" id="shortkey-title-input"
+                        <input type="text" id="shortcut-title-input"
                             value="${shortkeyDefaultTitle}" maxlength="20"
                             placeholder="Title *">
                     </div>
@@ -313,7 +313,7 @@ const uiUtils = (function () {
                     </div>
                     <div id="popup-msg" class="issk-popup-msg"></div>
                     <div class="actions">
-                        <button id="shortkey-cancel-btn" class="cancel">Cancel</button>
+                        <button id="shortcut-cancel-btn" class="cancel">Cancel</button>
                         <button id="open-keys-modal">Set Keys</button>
                     </div>
                 </div>`;
@@ -327,25 +327,25 @@ const uiUtils = (function () {
             <div class="issk issk-popup">
                     <div class="issk-container">
                         <strong class="label">Script:</strong>
-                        <textarea id="shortkey-script-input" rows="4"
+                        <textarea id="shortcut-script-input" rows="4"
                             placeholder="Script here *"></textarea>
                     </div>
                     <div class="issk-container">
                         <strong class="label">Title:</strong>
-                        <input type="text" id="shortkey-title-input"
+                        <input type="text" id="shortcut-title-input"
                             value="${defaultTitle}" maxlength="20"
                             placeholder="Title *">
                     </div>
                     <div class="issk-container">
                         <div class="custom-switch small">
-                            <input type="checkbox" id="shared-shortkey-switch">
-                            <label for="shared-shortkey-switch"><span>Share with all sites</span></label>
+                            <input type="checkbox" id="shared-shortcut-switch">
+                            <label for="shared-shortcut-switch"><span>Share with all sites</span></label>
                         </div>
-                        <small>If save as shared shortkeys it will be accessible from all sites.</small>
+                        <small>If save as shared shortcuts it will be accessible from all sites.</small>
                     </div>
                     <div id="popup-msg" class="issk-popup-msg"></div>
                     <div class="actions">
-                        <button id="shortkey-cancel-btn" class="cancel">Cancel</button>
+                        <button id="shortcut-cancel-btn" class="cancel">Cancel</button>
                         <button id="open-keys-modal">Set Keys</button>
                     </div>
                 </div>`;
@@ -359,16 +359,16 @@ const uiUtils = (function () {
             <div class="issk issk-fixed-modal" tabindex="1">
                 <div class="issk-popup">
                     <div class="keys-container">
-                        <strong class="label">Shortkey for above steps:</strong>
+                        <strong class="label">Shortcut for above steps:</strong>
                         <pre class="keys-input" id="keys-pre">Press keys that you want...</pre>
                     </div>
                     <div class="issk-popup-msg info">
-                        Browser-reserved shortkeys cannot be overridden.
+                        Browser-reserved shortcuts cannot be overridden.
                     </div>
                     <div id="keys-popup-msg" class="issk-popup-msg"></div>
                     <div class="actions">
-                        <button id="shortkey-cancel-btn" class="cancel">Cancel</button>
-                        <button id="shortkey-add-btn">Add</button>
+                        <button id="shortcut-cancel-btn" class="cancel">Cancel</button>
+                        <button id="shortcut-add-btn">Add</button>
                     </div>
                 </div>
             </div>`;
@@ -437,10 +437,10 @@ const storeUtils = (function () {
     }
 
     const data = JSON.parse(str);
-    let {globalOptions, shortkeys} = data || {};
+    let {globalOptions, shortcuts} = data || {};
 
     storeGlobalOptions(globalOptions, () => {
-      const shortkeysEntry = Object.entries(shortkeys)
+      const shortkeysEntry = Object.entries(shortcuts)
       let counter = 0;
       for (let [host, hostData] of shortkeysEntry) {
         storeData(host, hostData, () => {
@@ -453,22 +453,22 @@ const storeUtils = (function () {
     })
   }
 
-  function getHostShortkeys(cb) {
+  function getHostShortcuts(cb) {
     loadHostData((siteData = {}) => {
-      const shortkeys = siteData.shortkeys || [];
-      // do nothing if shortkeys is not an array
-      if (!Array.isArray(shortkeys)) return;
+      const shortcuts = siteData.shortcuts || [];
+      // do nothing if shortcuts is not an array
+      if (!Array.isArray(shortcuts)) return;
 
-      if (cb && typeof cb === "function") cb(shortkeys)
+      if (cb && typeof cb === "function") cb(shortcuts)
     });
   }
 
-  function removeShortkey(id, cb) {
+  function removeShortcut(id, cb) {
     if (!id) return;
 
     loadHostData((hostData = {}) => {
-      const newSkList = (hostData.shortkeys || []).filter(sk => sk.i !== id);
-      const updatedData = {...hostData, shortkeys: newSkList}
+      const newSkList = (hostData.shortcuts || []).filter(sk => sk.i !== id);
+      const updatedData = {...hostData, shortcuts: newSkList}
 
       const key = getHost();
       storeData(key, updatedData, function () {
@@ -503,8 +503,8 @@ const storeUtils = (function () {
     });
   }
 
-  function loadSharedShortkeys(cb) {
-    const key = getSharedShortkeysKey();
+  function loadSharedShortcuts(cb) {
+    const key = getSharedShortcutsKey();
 
     chrome.storage.sync.get([key], function (data) {
       if (cb && typeof cb === "function")
@@ -540,31 +540,31 @@ const storeUtils = (function () {
     });
   }
 
-  function storeNewShortkey(shortkey) {
-    const isGlobal = !!shortkey.sh;
+  function storeNewShortcut(shortcut) {
+    const isGlobal = !!shortcut.sh;
     if (isGlobal) {
-      // save as shared shortkey
-      loadSharedShortkeys(sharedShortkeys => {
-        const key = getSharedShortkeysKey();
-        const updatedShortkeys = [...(sharedShortkeys || []), shortkey]
-        storeData(key, updatedShortkeys, function () {
+      // save as shared shortcut
+      loadSharedShortcuts(sharedShortcuts => {
+        const key = getSharedShortcutsKey();
+        const updatedShortcuts = [...(sharedShortcuts || []), shortcut]
+        storeData(key, updatedShortcuts, function () {
           messagingUtils.sendMessageToAllTabs({
             action: contentActions.SHORTCUT_ADDED,
-            keys: shortkey.k
+            keys: shortcut.k
           })
         });
       })
 
     } else {
-      // save as host shortkey
+      // save as host shortcut
       loadHostData((siteData = {}) => {
 
-        const updatedData = {...siteData, shortkeys: [...(siteData.shortkeys || []), shortkey]}
+        const updatedData = {...siteData, shortcuts: [...(siteData.shortcuts || []), shortcut]}
         const key = getHost();
         storeData(key, updatedData, function () {
           messagingUtils.sendMessageToCurrentTab({
             action: contentActions.SHORTCUT_ADDED,
-            keys: shortkey.k
+            keys: shortcut.k
           })
         });
       });
@@ -589,10 +589,10 @@ const storeUtils = (function () {
       if (cb && typeof cb === "function" && data) {
         const globalOptions = data.globalOptions;
 
-        const shortkeys = data;
-        delete shortkeys[getGlobalOptionsKey()]
+        const shortcuts = data;
+        delete shortcuts[getGlobalOptionsKey()]
 
-        cb({globalOptions, shortkeys})
+        cb({globalOptions, shortcuts})
       }
     });
   }
@@ -627,8 +627,8 @@ const storeUtils = (function () {
     return "globalOptions";
   }
 
-  function getSharedShortkeysKey() {
-    return "shared-shortkeys";
+  function getSharedShortcutsKey() {
+    return "shared-shortcuts";
   }
 
   function getHost() {
@@ -637,21 +637,21 @@ const storeUtils = (function () {
 
   return {
     parseAndSaveImportJson,
-    removeShortkey,
+    removeShortcut,
     removeHost,
     loadHostData,
     storeGlobalOptions,
     loadGlobalOptions,
     storeHostOption,
-    storeNewShortkey,
+    storeNewShortcut,
     getAllData,
     clearAllData,
     setHost,
     get host() {
       return getHost()
     },
-    get sharedShortkeysKey() {
-      return getSharedShortkeysKey()
+    get sharedShortcutsKey() {
+      return getSharedShortcutsKey()
     },
   }
 })();

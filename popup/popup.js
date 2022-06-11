@@ -2,10 +2,9 @@
 
 const {sendMessageToCurrentTab, sendGlobalMessage} = messagingUtils;
 
-let addClickShortkeyBtn = document.getElementById('add-click-shortkey');
-let addScriptShortkeyBtn = document.getElementById('add-script-shortkey');
+let addClickShortcutBtn = document.getElementById('add-click-shortcut');
 let openOptionsBtn = document.getElementById('open-options-btn');
-let openShortkeysBtn = document.getElementById('open-shortkeys-btn');
+let openShortcutsBtn = document.getElementById('open-shortcuts-btn');
 let inSiteInfoWrapper = document.getElementById('in-site-info');
 let offOnSiteSwitch = document.getElementById('off-on-site');
 let offForAllSwitch = document.getElementById('off-for-all');
@@ -31,7 +30,7 @@ openOptionsBtn.onclick = function () {
   window.open(optionsPageURL);
 }
 
-openShortkeysBtn.onclick = function () {
+openShortcutsBtn.onclick = function () {
   chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
     const activeTab = tabs ? tabs[0] : {};
     const targetHost = utils.getOriginOfURL(activeTab.url)
@@ -40,28 +39,22 @@ openShortkeysBtn.onclick = function () {
   });
 }
 
-addClickShortkeyBtn.onclick = function (element) {
+addClickShortcutBtn.onclick = function (element) {
   window.close();
   // send message to content
   sendMessageToCurrentTab({action: contentActions.START_LISTENING, type: 0})
-};
-
-addScriptShortkeyBtn.onclick = function (element) {
-  window.close();
-  // send message to content
-  sendMessageToCurrentTab({action: contentActions.START_LISTENING, type: 1})
 };
 
 function initPopup(host) {
   sendGlobalMessage({action: globalActions.POPUP_INIT, host}, (response) => {
     const {siteData = {}, globalOptions, sharedKeys = []} = response || {};
 
-    const {shortkeys = []} = siteData;
+    const {shortcuts = []} = siteData;
     // update off status
     offOnSiteSwitch.checked = siteData.options && !!siteData.options.off
 
-    const len = shortkeys ? shortkeys.length : 0;
-    let info = '<p>No shortkeys added before. </p>'
+    const len = shortcuts ? shortcuts.length : 0;
+    let info = '<p>No shortcuts added before. </p>'
     if (len) {
       const justOne = (len === 1);
       info = `<p><strong>${len}</strong> short-key${justOne ? "" : "s"} found for this site.</p>`

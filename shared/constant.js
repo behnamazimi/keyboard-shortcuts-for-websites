@@ -1,6 +1,6 @@
 'use strict';
 
-// shortkey type
+// shortcut type
 const TYPES = {
   click: 0,
   script: 1
@@ -14,7 +14,7 @@ const globalActions = {
   GET_ALL_DATA: "GET_ALL_DATA",
   NEW_SHORTCUT: "NEW_SHORTCUT",
   DELETE_HOST: "DELETE_HOST",
-  DELETE_SHORTKEY: "DELETE_SHORTKEY",
+  DELETE_SHORTCUT: "DELETE_SHORTCUT",
   HOST_OPTION_UPDATE: "HOST_OPTION_UPDATE",
   GLOBAL_OPTIONS_UPDATE: "GLOBAL_OPTIONS_UPDATE",
 }

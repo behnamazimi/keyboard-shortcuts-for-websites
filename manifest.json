@@ -1,5 +1,5 @@
 {
-  "name": "In-site Shortkeys",
+  "name": "Keyboard Shortcuts for Websites",
   "version": "1.6",
   "description": "Keyboard shortcuts for actions of websites you use frequently",
   "permissions": [
@@ -37,7 +37,7 @@
       "js": [
         "shared/constant.js",
         "shared/utils.js",
-        "content/shortkeys.js",
+        "content/shortcuts.js",
         "content/index.js"
       ],
       "css": [

@@ -8,12 +8,12 @@ chrome.runtime.onMessage.addListener(handleMessages)
 
 initContent();
 
-ShortKeys.onAdd((shortkeys) => {
-  console.log(shortkeys);
+Shortcuts.onAdd((shortcuts) => {
+  console.log(shortcuts);
   sendGlobalMessage({
     action: globalActions.NEW_SHORTCUT,
     host: location.origin,
-    shortkeys,
+    shortcuts,
   });
 })
 
@@ -21,9 +21,9 @@ function handleMessages(data, details) {
   switch (data.action) {
     case globalActions.GLOBAL_OPTIONS_UPDATE:
     case contentActions.OPTION_UPDATE:
-      const {globalOptions = {}, options = {}, shortkeys = []} = data;
+      const {globalOptions = {}, options = {}, shortcuts = []} = data;
 
-      ShortKeys.upHostShortkeys(shortkeys, {...globalOptions, ...options})
+      Shortcuts.upHostShortcuts(shortcuts, {...globalOptions, ...options})
       break;
 
     case contentActions.START_LISTENING:
@@ -31,7 +31,7 @@ function handleMessages(data, details) {
       break;
 
     case contentActions.SHORTCUT_ADDED:
-      ShortKeys.showSuccessToast(data.keys);
+      Shortcuts.showSuccessToast(data.keys);
       break;
 
     case contentActions.SHORTCUTS_UPDATED:
@@ -42,19 +42,19 @@ function handleMessages(data, details) {
 
 function initContent() {
   sendGlobalMessage({action: globalActions.INIT, host: location.origin}, (data = {}) => {
-    const {siteData = {}, globalOptions = {}, sharedShortkeys = []} = data;
+    const {siteData = {}, globalOptions = {}, sharedShortcuts = []} = data;
 
     if (globalOptions.off) return;
 
     const options = siteData && siteData.options ? siteData.options : {};
 
-    const allKeys = [...(siteData.shortkeys || []), ...(sharedShortkeys || [])];
-    ShortKeys.upHostShortkeys(allKeys, {...globalOptions, ...options})
+    const allKeys = [...(siteData.shortcuts || []), ...(sharedShortcuts || [])];
+    Shortcuts.upHostShortcuts(allKeys, {...globalOptions, ...options})
   });
 }
 
 function startListening(type) {
-  if (ShortKeys.listening) return;
+  if (Shortcuts.listening) return;
 
-  ShortKeys.listen(type);
+  Shortcuts.listen(type);
 }

@@ -38,6 +38,7 @@ body.issk {
     align-items: center;
     padding-left: 30px;
     color: var(--issk-color-text-light);
+    font-size: 14px;
 }
 
 .popup .header .brand img {
@@ -98,7 +99,7 @@ body.issk {
     justify-content: center;
 }
 
-#add-click-shortkey {
+#add-click-shortcut {
     margin-bottom: 0.5rem;
 }
 
@@ -114,7 +115,7 @@ body.issk {
     align-items: baseline;
 }
 
-#stats a.view-shortkeys {
+#stats a.view-shortcuts {
     color: var(--issk-color-text);
     font-size: 14px;
 }

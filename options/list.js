@@ -12,7 +12,7 @@ let searchTrend = '';
 let optionsToast = document.getElementById('issk-toast');
 let searchInput = document.getElementById('search-input');
 let hostsElm = document.getElementById('hosts');
-let shortkeysElm = document.getElementById('shortkeys');
+let shortkeysElm = document.getElementById('shortcuts');
 let listPage = document.getElementById('list-page');
 let hostPage = document.getElementById('host-page');
 let closeHostPageBtn = document.getElementById('close-host-page');
@@ -27,7 +27,7 @@ function initListData() {
     renderHostsList();
 
     // open passed host page only once
-    if (urlHost && allData.shortkeys && allData.shortkeys[urlHost]) {
+    if (urlHost && allData.shortcuts && allData.shortcuts[urlHost]) {
       selectedHost = urlHost;
       showHostDetails();
       urlHost = null
@@ -56,16 +56,16 @@ hostsElm.onclick = (e) => {
 }
 
 shortkeysElm.onclick = (e) => {
-  // remove shortkey
-  let shortkeyElm = e.target.closest(".shortkey-item");
+  // remove shortcut
+  let shortkeyElm = e.target.closest(".shortcut-item");
   if (!shortkeyElm) return;
 
   if (e.target.classList.contains("delete-sk")) {
-    deleteShortkey(shortkeyElm);
+    deleteShortcut(shortkeyElm);
 
   } else if (e.target.classList.contains("copy-script")) {
     const id = shortkeyElm.getAttribute("id")
-    const targetSk = (allData.shortkeys[selectedHost].shortkeys || []).filter(sk => sk.i === id);
+    const targetSk = (allData.shortcuts[selectedHost].shortcuts || []).filter(sk => sk.i === id);
     if (targetSk && targetSk[0]) {
       copyToClipboard(targetSk[0].sc);
       e.target.innerText = "Copied"
@@ -91,35 +91,35 @@ function showHostDetails() {
   hostPage.classList.toggle("open")
 
   document.getElementById("c-host-name").innerText = selectedHost;
-  renderShortkeysList();
+  renderShortcutsList();
 }
 
-function renderShortkeysList() {
-  const {shortkeys = {}} = allData;
+function renderShortcutsList() {
+  const {shortcuts = {}} = allData;
 
-  let items = shortkeys[selectedHost].shortkeys || [];
+  let items = shortcuts[selectedHost].shortcuts || [];
 
-  if (selectedHost === storeUtils.sharedShortkeysKey) {
-    items = shortkeys[selectedHost] || []
+  if (selectedHost === storeUtils.sharedShortcutsKey) {
+    items = shortcuts[selectedHost] || []
   }
 
   if (!items.length) return;
 
   shortkeysElm.innerHTML = '';
   if (!items.length) {
-    shortkeysElm.innerHTML = 'There is not any shortkeys to show.';
+    shortkeysElm.innerHTML = 'There is not any shortcuts to show.';
   }
 
   for (let sk of items) {
     console.log(sk);
-    createShortkeyItemElement(sk)
+    createShortcutItemElement(sk)
   }
 }
 
 function renderHostsList() {
-  const {shortkeys = {}} = allData;
+  const {shortcuts = {}} = allData;
 
-  let items = Object.entries(shortkeys);
+  let items = Object.entries(shortcuts);
 
   if (searchTrend) {
     items = items.filter(([host]) => host.indexOf(searchTrend) > -1)
@@ -132,12 +132,12 @@ function renderHostsList() {
 
   for (let [host, details] of items) {
     // find out keys to get length
-    let sk = details.shortkeys || [];
-    if (host === storeUtils.sharedShortkeysKey)
+    let sk = details.shortcuts || [];
+    if (host === storeUtils.sharedShortcutsKey)
       sk = details || []
 
     if (sk.length > 0)
-      createHostItemElement(host, sk.length, host === storeUtils.sharedShortkeysKey)
+      createHostItemElement(host, sk.length, host === storeUtils.sharedShortcutsKey)
   }
 }
 
@@ -150,7 +150,7 @@ function createHostItemElement(host, count, sharedItem) {
                     <div class="host-detail">
                         <strong class="host-name">${host}</strong>
                         <div>
-                            <span class="host-sk-count">${count} shortkeys</span>
+                            <span class="host-sk-count">${count} shortcuts</span>
                             <div class="item-actions">
                                 <button data-action="delete" class="small danger">Delete</button>
                             </div>
@@ -164,12 +164,12 @@ function createHostItemElement(host, count, sharedItem) {
   hostsElm.appendChild(createElm())
 }
 
-function createShortkeyItemElement({i: id, t: title, k: keys, ty: type, c: stepsCount}) {
+function createShortcutItemElement({i: id, t: title, k: keys, ty: type, c: stepsCount}) {
 
   const createElm = () => {
     let temp = document.createElement("template");
     temp.innerHTML = `
-            <li class="shortkey-item" id="${id}">
+            <li class="shortcut-item" id="${id}">
                 <div class="sk-detail">
                     <strong class="sk-name">${title}</strong>
                     <div class="sk-footer">
@@ -201,20 +201,20 @@ function deleteSelectedHost(hostElm) {
   })
 }
 
-function deleteShortkey(shortkeyElm) {
+function deleteShortcut(shortkeyElm) {
 
   const id = shortkeyElm.getAttribute("id")
   if (!id) return;
 
   if (!id || !selectedHost) {
-    showToast("Cannot find target shortkey", "error")
+    showToast("Cannot find target shortcut", "error")
     return
   }
 
-  sendGlobalMessage({action: globalActions.DELETE_SHORTKEY, id, host: selectedHost}, (res) => {
+  sendGlobalMessage({action: globalActions.DELETE_SHORTCUT, id, host: selectedHost}, (res) => {
     initListData();
     shortkeyElm.remove();
-    if (!res || !res.shortkeys || !res.shortkeys.length) {
+    if (!res || !res.shortcuts || !res.shortcuts.length) {
       closeHostPageBtn.click();
     }
   })

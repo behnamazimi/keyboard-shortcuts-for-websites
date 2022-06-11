@@ -21,34 +21,34 @@ function handleMessages(data, details, sendResponse) {
     case globalActions.INIT:
       storeUtils.getAllData((allData) => {
         sendResponse({
-          siteData: allData.shortkeys[storeUtils.host],
+          siteData: allData.shortcuts[storeUtils.host],
           globalOptions: allData.globalOptions,
-          sharedShortkeys: allData.shortkeys[storeUtils.sharedShortkeysKey]
+          sharedShortcuts: allData.shortcuts[storeUtils.sharedShortcutsKey]
         });
       })
       return true;
     case globalActions.POPUP_INIT:
       // get site data and global options
-      storeUtils.getAllData(({globalOptions, shortkeys}) => {
-        const siteData = shortkeys[storeUtils.host];
-        const sharedKeys = shortkeys[storeUtils.sharedShortkeysKey];
+      storeUtils.getAllData(({globalOptions, shortcuts}) => {
+        const siteData = shortcuts[storeUtils.host];
+        const sharedKeys = shortcuts[storeUtils.sharedShortcutsKey];
 
         sendResponse({siteData, globalOptions, sharedKeys});
       })
       return true;
     case globalActions.NEW_SHORTCUT:
-      if (!Array.isArray(data.shortkeys)) return;
+      if (!Array.isArray(data.shortcuts)) return;
 
-      // the last item is the new shortkey
-      const shortkey = data.shortkeys[data.shortkeys.length - 1]
-      storeUtils.storeNewShortkey(shortkey)
+      // the last item is the new shortcut
+      const shortcut = data.shortcuts[data.shortcuts.length - 1]
+      storeUtils.storeNewShortcut(shortcut)
       break;
     case globalActions.HOST_OPTION_UPDATE:
       storeUtils.storeHostOption(data.options, siteData => {
         messagingUtils.sendMessageToCurrentTab({
           action: contentActions.OPTION_UPDATE,
           options: siteData.options,
-          shortkeys: siteData.shortkeys,
+          shortcuts: siteData.shortcuts,
         });
         getActiveTabInfo((tabInfo = {}) => {
           updateExtStatusInTab(tabInfo.id, tabInfo.url)
@@ -70,8 +70,8 @@ function handleMessages(data, details, sendResponse) {
     case globalActions.CLEAT_DATA:
       storeUtils.clearAllData(() => sendResponse())
       return true
-    case globalActions.DELETE_SHORTKEY:
-      storeUtils.removeShortkey(data.id, (res) => {
+    case globalActions.DELETE_SHORTCUT:
+      storeUtils.removeShortcut(data.id, (res) => {
         sendResponse(res);
         messagingUtils.sendMessageToAllTabs({action: contentActions.SHORTCUTS_UPDATED});
       })
@@ -131,10 +131,10 @@ function updateExtStatusInTab(tabId, url) {
   chrome.action.setBadgeBackgroundColor({color: '#472590'});
   chrome.action.setBadgeText({text: ''});
 
-  storeUtils.getAllData(({globalOptions = {}, shortkeys = []} = {}) => {
-    const hostData = shortkeys[storeUtils.host] || {};
-    const sharedKeys = shortkeys[storeUtils.sharedShortkeysKey] || [];
-    const allKeys = [...sharedKeys, ...(hostData.shortkeys || [])]
+  storeUtils.getAllData(({globalOptions = {}, shortcuts = []} = {}) => {
+    const hostData = shortcuts[storeUtils.host] || {};
+    const sharedKeys = shortcuts[storeUtils.sharedShortcutsKey] || [];
+    const allKeys = [...sharedKeys, ...(hostData.shortcuts || [])]
 
     const isOff = (hostData.options && !!hostData.options.off) || !!globalOptions.off
     if (isOff) {

@@ -73,12 +73,12 @@
     top: -0.2rem;
 }
 
-#host-page #shortkeys {
+#host-page #shortcuts {
     list-style: none;
     padding: 0;
 }
 
-#host-page #shortkeys .shortkey-item {
+#host-page #shortcuts .shortcut-item {
     border-radius: 5px;
     padding: 0.5rem;
     background: #ffffff1a;
@@ -88,17 +88,17 @@
     justify-content: space-between;
 }
 
-#host-page #shortkeys .shortkey-item .sk-detail {
+#host-page #shortcuts .shortcut-item .sk-detail {
     display: inline-flex;
     flex-direction: column;
 }
 
-#host-page #shortkeys .shortkey-item .sk-name {
+#host-page #shortcuts .shortcut-item .sk-name {
     display: inline-block;
     margin-bottom: 0.25rem;
 }
 
-#host-page #shortkeys .shortkey-item .sk-footer {
+#host-page #shortcuts .shortcut-item .sk-footer {
     display: flex;
     justify-content: flex-start;
     align-items: center;
@@ -106,12 +106,12 @@
     color: var(--issk-color-text-dark);
 }
 
-#host-page #shortkeys .shortkey-item .sk-keys {
+#host-page #shortcuts .shortcut-item .sk-keys {
     opacity: 0.7;
     margin-right: 1rem;
 }
 
-#host-page #shortkeys .shortkey-item .sk-type {
+#host-page #shortcuts .shortcut-item .sk-type {
     opacity: 0.7;
     font-weight: bold;
     font-size: 13px;
@@ -123,7 +123,7 @@
     color: var(--issk-color-success-light);
 }
 
-#host-page #shortkeys .shortkey-item .sk-step {
+#host-page #shortcuts .shortcut-item .sk-step {
     opacity: 0.7;
     font-size: 13px;
     display: inline-block;
