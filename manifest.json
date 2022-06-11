@@ -1,7 +1,7 @@
 {
   "name": "Keyboard Shortcuts for Websites",
-  "version": "1.6",
-  "description": "Keyboard shortcuts for actions of websites you use frequently",
+  "version": "1.7",
+  "description": "Define keyboard shortcuts for actions of websites you use frequently",
   "permissions": [
     "activeTab",
     "storage"
