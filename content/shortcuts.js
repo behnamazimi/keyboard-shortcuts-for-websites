@@ -45,8 +45,6 @@ const Shortcuts = (function () {
       document.addEventListener("mousedown", handleDocClick)
       document.addEventListener("click", handleDocClick)
 
-    } else if (type === TYPES.script) {
-      showScriptPopup();
     }
 
   }
@@ -135,8 +133,8 @@ const Shortcuts = (function () {
     if (stepTitleElm) {
       stepTitleElm.addEventListener("input", e => {
         step.tx = e.target.textContent
-            .replace(/[^a-zA-Z -_.]/g, "")
-            .substr(0, 15)
+          .replace(/[^a-zA-Z -_.]/g, "")
+          .substring(0, 15)
       })
     }
 
@@ -189,9 +187,9 @@ const Shortcuts = (function () {
   function fireElementEvents(element, options = {}) {
     if (!element) {
       showToast(
-          "Step calling failed because the element was not found.",
-          "Maybe you are in wrong page.",
-          true);
+        "Step calling failed because the element was not found.",
+        "Maybe you are in wrong page.",
+        true);
       return
     }
 
@@ -229,13 +227,6 @@ const Shortcuts = (function () {
     }, waitingInMS)
   }
 
-  function addScriptToContent(script) {
-    const srcElm = document.createElement("script");
-    srcElm.setAttribute("type", "text/javascript")
-    srcElm.innerHTML = script;
-    document.body.appendChild(srcElm)
-  }
-
   // BUILD IN UTILS
   function isKeysUsedBefore(keys) {
     if (!keys) return true;
@@ -245,16 +236,16 @@ const Shortcuts = (function () {
 
   function preventLinksClick() {
     document.querySelectorAll("a")
-        .forEach((aElm) => {
-          aElm.addEventListener("click", handleLinkTagClick)
-        })
+      .forEach((aElm) => {
+        aElm.addEventListener("click", handleLinkTagClick)
+      })
   }
 
   function releaseLinksClick() {
     document.querySelectorAll("a")
-        .forEach((aElm) => {
-          aElm.removeEventListener("click", handleLinkTagClick)
-        })
+      .forEach((aElm) => {
+        aElm.removeEventListener("click", handleLinkTagClick)
+      })
   }
 
   function findTargetShortcut() {
@@ -334,13 +325,6 @@ const Shortcuts = (function () {
   function handleKeyup(e) {
     if (listeningNewShortcut || !cachedKeys || !cachedKeys.length) return;
 
-    if (options.preventInInputs) {
-      const tagName = e.path && e.path[0].tagName;
-      if (tagName && ["input", "textarea"].includes(tagName.toLowerCase())) {
-        return;
-      }
-    }
-
     let targetShortcut = findTargetShortcut();
 
     // remove up keys from cachedKeys
@@ -348,18 +332,22 @@ const Shortcuts = (function () {
     if (keyIndex !== -1)
       cachedKeys.splice(keyIndex, 1)
 
-    if (targetShortcut !== null) {
+    if (options.preventInInputs || (targetShortcut && targetShortcut.pi)) {
+      const tagName = e.path && e.path[0].tagName;
+      if (tagName && ["input", "textarea"].includes(tagName.toLowerCase())) {
+        return;
+      }
+    }
+
+    if (targetShortcut) {
       const {tr: target, ty: type, sc: script, w: waiting} = targetShortcut;
       if (type === TYPES.click) {
         callNextStep(target, waiting)
-      } else if (type === TYPES.script) {
-        addScriptToContent(script);
       }
 
       e.preventDefault();
       return false;
     }
-
   }
 
   function handleDetectionKeydown(e) {
@@ -478,60 +466,6 @@ const Shortcuts = (function () {
     popupElmWaitingTimeInput.addEventListener("change", handleWaitingInputChange)
 
     popupMove.addEventListener("click", handlePopupMove)
-
-    document.body.appendChild(ui.popupElm)
-  }
-
-  function showScriptPopup() {
-
-    if (ui.popupElm) {
-      ui.popupElm.remove();
-    }
-
-    inProgressShortcut.title = `Shortcut ${hostShortcuts.length + 1}`;
-    ui.popupElm = uiUtils.createScriptPopupElm(inProgressShortcut.title);
-    ui.popupElmMsg = ui.popupElm.querySelector("#popup-msg");
-    const scriptTextarea = ui.popupElm.querySelector("#shortcut-script-input");
-
-    const scriptPopupElmKeysOpenBtn = ui.popupElm.querySelector("#open-keys-modal");
-    const scriptPopupElmCancelBtn = ui.popupElm.querySelector("#shortcut-cancel-btn");
-    const scriptPopupElmTitleInput = ui.popupElm.querySelector("#shortcut-title-input");
-    const sharedSwitch = ui.popupElm.querySelector("#shared-shortcut-switch");
-
-    const handleTextAreaChange = e => inProgressShortcut.script = e.target.value.trim();
-
-    const handleNameInputChange = e => {
-      inProgressShortcut.title = e.target.value.replace(/[^a-zA-Z -_.]/g, "")
-    }
-
-    const handleAddBtnClick = e => {
-      ui.popupElmMsg.innerText = ""
-      if (!inProgressShortcut.script) {
-        ui.popupElmMsg.innerText = "Enter the script first."
-        return;
-      }
-
-      if (!inProgressShortcut.title) {
-        ui.popupElmMsg.innerText = "Enter shortcut title."
-        return;
-      }
-
-      // remove button listener
-      scriptTextarea.removeEventListener("change", handleTextAreaChange)
-      scriptPopupElmKeysOpenBtn.removeEventListener("click", handleAddBtnClick)
-      scriptPopupElmCancelBtn.removeEventListener("click", abortAdding)
-      scriptPopupElmTitleInput.removeEventListener("change", handleNameInputChange)
-
-      showKeysInputPopup()
-    }
-
-    const handleSaveAsSharedSwitchChange = e => inProgressShortcut.shared = e.target.checked;
-
-    scriptTextarea.addEventListener("change", handleTextAreaChange)
-    scriptPopupElmKeysOpenBtn.addEventListener("click", handleAddBtnClick)
-    scriptPopupElmCancelBtn.addEventListener("click", abortAdding)
-    scriptPopupElmTitleInput.addEventListener("change", handleNameInputChange)
-    sharedSwitch.addEventListener("change", handleSaveAsSharedSwitchChange)
 
     document.body.appendChild(ui.popupElm)
   }

@@ -59,11 +59,11 @@ const utils = (function () {
     }
 
     simpleQuery = simpleQuery.replace(/\.\./, ".")
-        .replace(/#:/g, "#\\:")
-        .trim();
+      .replace(/#:/g, "#\\:")
+      .trim();
     complexQuery = complexQuery.replace(/\.\./, ".")
-        .replace(/#:/g, "#\\:")
-        .trim();
+      .replace(/#:/g, "#\\:")
+      .trim();
 
     return [id, simpleQuery, complexQuery]
   }
@@ -131,9 +131,9 @@ const utils = (function () {
 
     step.tg = targetElm.tagName.toLowerCase();
     const text = (targetElm.textContent || '')
-        .replace(/(\r\n|\n|\r)/gm, "")
-        .trim()
-        .substr(0, 20);
+      .replace(/(\r\n|\n|\r)/gm, "")
+      .trim()
+      .substr(0, 20);
 
     if (text) {
       step.tx = text;
@@ -141,8 +141,8 @@ const utils = (function () {
 
     if (step.tg === "input") {
       const inputText = targetElm.getAttribute("title")
-          || targetElm.getAttribute("name")
-          || targetElm.getAttribute("placeholder")
+        || targetElm.getAttribute("name")
+        || targetElm.getAttribute("placeholder")
       if (inputText)
         step.tx = inputText;
     }
@@ -164,7 +164,7 @@ const utils = (function () {
     return step;
   }
 
-  function createNewShortcut({type, keys, title, target, stepCount, script, waiting, shared} = {}) {
+  function createNewShortcut({type, keys, title, target, stepCount, script, waiting, shared, preventOnInput} = {}) {
     const shortcut = {
       i: `${new Date().getTime()}`,
       t: title,
@@ -193,9 +193,9 @@ const utils = (function () {
       altKey: keysArr.includes("Alt"),
       metaKey: keysArr.includes("Meta"),
       key: keysArr
-          .filter(k => !["Control", "Shift", "Alt", "Meta"].includes(k))
-          .map(k => k && k.toLowerCase())
-          .join(" + ").trim(),
+        .filter(k => !["Control", "Shift", "Alt", "Meta"].includes(k))
+        .map(k => k && k.toLowerCase())
+        .join(" + ").trim(),
     }
 
     return generateKeysString(keys)
@@ -321,38 +321,6 @@ const uiUtils = (function () {
     return temp.content.firstElementChild;
   }
 
-  function createScriptPopupElm(defaultTitle = '') {
-    let temp = document.createElement("template");
-    temp.innerHTML = `
-            <div class="issk issk-popup">
-                    <div class="issk-container">
-                        <strong class="label">Script:</strong>
-                        <textarea id="shortcut-script-input" rows="4"
-                            placeholder="Script here *"></textarea>
-                    </div>
-                    <div class="issk-container">
-                        <strong class="label">Title:</strong>
-                        <input type="text" id="shortcut-title-input"
-                            value="${defaultTitle}" maxlength="20"
-                            placeholder="Title *">
-                    </div>
-                    <div class="issk-container">
-                        <div class="custom-switch small">
-                            <input type="checkbox" id="shared-shortcut-switch">
-                            <label for="shared-shortcut-switch"><span>Share with all sites</span></label>
-                        </div>
-                        <small>If save as shared shortcuts it will be accessible from all sites.</small>
-                    </div>
-                    <div id="popup-msg" class="issk-popup-msg"></div>
-                    <div class="actions">
-                        <button id="shortcut-cancel-btn" class="cancel">Cancel</button>
-                        <button id="open-keys-modal">Set Keys</button>
-                    </div>
-                </div>`;
-
-    return temp.content.firstElementChild;
-  }
-
   function createKeysDefinePopupElm() {
     let temp = document.createElement("template");
     temp.innerHTML = `
@@ -391,7 +359,6 @@ const uiUtils = (function () {
 
   return {
     createStepsPopupElm,
-    createScriptPopupElm,
     createKeysDefinePopupElm,
     createToastElm,
   }
