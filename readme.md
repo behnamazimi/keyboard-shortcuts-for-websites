@@ -5,12 +5,6 @@
 With **Keyboard Shortcuts for Websites**, you can define custom keyboard shortcuts for certain actions of websites you
 use frequently.
 
-FYI:
-> Because of new policies, it's impossible to inject Javascript codes and run it on a website, so I decided to remove
-> the functionality of adding shortcuts for executing scripts which was available on previous version.
-
-> The name of the extension changed from "In-site Shortcuts" to "Keyboard Shortcuts for Websites"
-
 You can export your custom keyboard shortcuts and share it with your friend or your teammate.
 
 For the shortcut, you can specify any key combination. Here are some examples:
@@ -42,6 +36,9 @@ then assign a shortcut to your code. Your code will add to the site and execute 
 - You need to trigger shortcuts on which page you define otherwise it will not find the target elements of its steps.
 - You can't override some browser-reserved keyboard shortcuts. e.g `ctrl + t`, `ctrl + n`, `ctrl + shift + n`,
   `ctrl + w`, `ctrl + shift + n` and a few other keys.
+- The name of the extension changed from "In-site Shortcuts" to "Keyboard Shortcuts for Websites"
+- Because of new policies, it's impossible to inject Javascript codes and run it on a website, so I decided to remove
+  the functionality of adding shortcuts for executing scripts which was available on previous version.
 
 Because of the special event handling in some sites Keyboard Shortcuts for Websites may not work properly,
 but we will continue to improve features and fix bugs.
