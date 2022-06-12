@@ -128,7 +128,7 @@ function updateExtStatusInTab(tabId, url) {
   chrome.action.setIcon({tabId: tabId, path: iconPath});
 
   // reset badge
-  chrome.action.setBadgeBackgroundColor({color: '#472590'});
+  chrome.action.setBadgeBackgroundColor({color: '#5e498c'});
   chrome.action.setBadgeText({text: ''});
 
   storeUtils.getAllData(({globalOptions = {}, shortcuts = []} = {}) => {
