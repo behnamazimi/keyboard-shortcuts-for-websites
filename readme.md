@@ -1,13 +1,10 @@
 # Keyboard Shortcuts for Websites
 
-**[Chrome Web Store](https://chrome.google.com/webstore/detail/keyboard-shortcuts-for-websites/dgigbgdgmhhncfgaidcbmafkcmagkool)**
+**[Chrome Web Store](https://chrome.google.com/webstore/detail/dgigbgdgmhhncfgaidcbmafkcmagkool)**
 
-With **Keyboard Shortcuts for Websites**, you can define custom keyboard shortcuts for certain actions of websites you
+With **Keyboard Shortcuts for Websites**, you can have custom keyboard shortcuts for certain actions of websites you
 use frequently.
-
-You can export your custom keyboard shortcuts and share it with your friend or your teammate.
-
-For the shortcut, you can specify any key combination. Here are some examples:
+As keyboard shortcuts, you can specify any key combination. Here are some examples:
 
 - `ctrl + shift + e`
 - `alt + ctrl + shift + u`
@@ -19,17 +16,31 @@ For the shortcut, you can specify any key combination. Here are some examples:
 Keys determination is order sensitive, it means the same pressed keys in different orders would consider as two
 different shortcuts. e.g `a + b + c` is not same as `c + b + a`.
 
+### How to install?
+
+It's available
+on **[Chrome Web Store](https://chrome.google.com/webstore/detail/dgigbgdgmhhncfgaidcbmafkcmagkool)**.
+
+### How to install it manually on Chromium base browsers?
+
+1. Clone the repo or download it as a zip and extract it
+2. Go to extensions settings of your browser and active **Developer mode** by clicking the toggle that is already in the
+   extensions page. (You can also open extensions' page by going to `chrome://extensions` or `edge://extensions` for
+   Edge or, `opera://extensions` for Opera browser)
+3. At the same page, click on **Load unpacked** button and load the folder you just cloned or the zip
+   file you have downloaded.
+4. Enjoy! :)
+
 ### How It Works
 
-There is two type of shortcuts, **click shortcut** and **script shortcut**.
-When you want to add a **click shortcut** it will listen to your clicks and keep each click as a step then you need to
-determine any combination of keys as shortcut to your steps, so you could execute the steps whenever with that shortcut.
+By adding a **click shortcut** this extension listen to your clicks and keep track of your click steps then, you have to
+determine any combination of keys as shortcut to your steps, and then you would be able to execute the steps by using
+that shortcut.
 
-There is not any steps for **script shortcuts** and its easy. You just need to write/copy your code in the specified
-field
-then assign a shortcut to your code. Your code will add to the site and execute when the keys triggered.
+You can prevent shortcuts execution on input focus. For this there is a global option on the settings page also, you can
+do this for each individually by activating the option, "Prevent when focused on an input" on shortcut add flow.
 
-**Notice:**
+**For Your Information:**
 
 - It works only on websites.
 - Shortcuts would trigger just when the focus is on the site itself.
